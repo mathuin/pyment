@@ -1,0 +1,51 @@
+{% extends 'catalog.djhtml' %}
+
+{% block content %}
+<table summary='Your Shopping Cart' id='shopping_cart'>
+	<caption>Your Shopping Cart</caption>
+	<thead>
+		<tr>
+			<th scope='col'>Product</th>
+			<th colspan='3'> </th>
+		</tr>
+	</thead>
+	<tfoot>
+		{% if cart_items %}
+		<tr>
+			<th class='right' colspan='4'>
+				<a href='/url/to/checkout/'>Checkout Now</a>
+			</th>
+		</tr>
+		{% endif %}
+	</tfoot>
+	<tbody>
+		{% if cart_items %}
+		{% for item in cart_items %}
+		<tr>
+			<td><a href='{{ item.get_absolute_url }}' class='cart'>	{{ item.name }} </a></td>
+			<td> {{ item.title }}</td>
+			<td class='right'>
+				<form method='post' action='.' class='cart'>{% csrf_token %}
+					<label for='quantity'>Quantity:</label>
+					<input type='text' name='quantity' value='{{ item.quantity }}' id='quantity' 
+					size='2' class='quantity' maxlength='5' />
+					<input type='hidden' name='item_id' value='{{ item.id }}' />
+					<input type='submit' name='submit' value='Update' />
+				</form>
+			</td>
+			<td>
+				<form method='post' action='.' class='cart'>{% csrf_token %}
+					<input type='hidden' name='item_id' value='{{ item.id }}' />
+					<input type='submit' name='submit' value='Remove'/>
+				</form>
+			</td>
+		</tr>
+		{% endfor %}
+		{% else %}
+		<tr>
+			<td colspan='4' style='height:30px;'>Your cart is empty.</td>
+		</tr>
+		{% endif %}
+	</tbody>
+</table>
+{% endblock %}

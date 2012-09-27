@@ -1,0 +1,7 @@
+# .gitignore
+*~
+*.pyc
+# stuff specific to instances
+pyment/settings.py
+*.sqlite3
+*.png

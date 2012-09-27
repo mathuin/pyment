@@ -1,0 +1,7 @@
+{% extends 'catalog.djhtml' %}
+
+{% load catalog_tags %}
+
+{% block content %}
+	<h1>Welcome to {{ site_name }}!</h1>
+{% endblock %}
