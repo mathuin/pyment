@@ -1,37 +1,24 @@
-from tempfile import mkstemp
-from shutil import move
-from os import remove, close
+import re
 
-def replace(file, pattern, subst):
-    fh, abs_path = mkstemp()
-    new_file = open(abs_path, 'w')
-    old_file = open(file)
-    for line in old_file:
-        new_file.write(line.replace(pattern, subst))
-    new_file.close()
-    close(fh)
-    old_file.close()
-    remove(file)
-    move(abs_path, file)
-fh, abs_path = mkstemp()
 stockname = 'settings-stock.py'
 settingsname = 'settings.py'
 
-oldsitename = "^SITE_NAME = .*$"
-newsitename = "SITE_NAME = 'Pyment'"
+oldnew = {
+    "^SITE_NAME = .*$": "SITE_NAME = 'Pyment'",
+    "^META_DESCRIPTION = .*$": "META_DESCRIPTION = 'Pyment is a small online supplier of high-quality fermented honey wine products.'",
+    "^BREWER_NAME = .*$": "BREWER_NAME = 'Your Name'",
+    "^BREWER_EMAIL = .*$": "BREWER_EMAIL = 'your_email@example.com'",
+    "^BREWER_LOCATION = .*$": "BREWER_LOCATION = 'Anywhere, USA'",
+    "'NAME': .*$": "'NAME': os.path.join(PROJECT_ROOT, 'pyment.sqlite3'),",
+    "^SECRET_KEY = .*$": "SECRET_KEY = '&amp;b_htw&amp;h^-@cd&amp;666#-s49)=h@yijtb1oz+o@(a^!+-5610hcd'",
+}
 
-oldmetadesc = "^META_DESCRIPTION = .*$"
-newmetadesc = "META_DESCRIPTION = 'Pyment is a small online supplier of high-quality fermented honey wine products.'"
-
-olddbengine = "'ENGINE': .*$"
-newdbengine = "'ENGINE: 'django.db.backends.sqlite3'"
-
-oldsecretkey = "^SECRET_KEY = .*$"
-newsecretkey = "SECRET_KEY = '&amp;b_htw&amp;h^-@cd&amp;666#-s49)=h@yijtb1oz+o@(a^!+-5610hcd'
-"
-
-# overwrite the stock file
+# brute force!
 old_settings = open(settingsname, 'r')
 new_stock = open(stockname, 'w')
-for line in old_file:
-    line.replace("^SITE_NAME = .*$", "SITE_NAME = 'Pyment'").replace("^META_DESCRIPTION = .*$
+for line in old_settings:
+    for old, new in oldnew.iteritems():
+        line = re.sub(old, new, line)
+    new_stock.write(line)
+old_settings.close()
+new_stock.close()

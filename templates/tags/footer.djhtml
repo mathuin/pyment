@@ -1,3 +1,3 @@
 {% load catalog_tags %}
 
-<p>Brewed and bottled by <a href="mailto:{{ 'mathuin@gmail.com'|obfuscate }}">Jack Twilley</a>, Corvallis, OR</p>
+<p>Brewed and bottled by <a href="mailto:{{ email }}">{{ name }} </a>, {{ location }}</p>

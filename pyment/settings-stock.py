@@ -9,9 +9,13 @@ TEMPLATE_DEBUG = DEBUG
 SITE_NAME = 'Pyment'
 META_KEYWORDS = 'mead, cyser, pyment, melomel, metheglin, braggot'
 META_DESCRIPTION = 'Pyment is a small online supplier of high-quality fermented honey wine products.'
+BREWER_NAME = 'Your Name'
+BREWER_EMAIL = 'your_email@example.com'
+BREWER_LOCATION = 'Anywhere, USA'
 
 ADMINS = (
     # ('Your Name', 'your_email@example.com'),
+    (BREWER_NAME, BREWER_EMAIL),
 )
 
 MANAGERS = ADMINS
@@ -19,7 +23,7 @@ MANAGERS = ADMINS
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3', # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
-        'NAME': os.path.join(PROJECT_ROOT, 'pyment.sqlite3'),                      # Or path to database file if using sqlite3.
+        'NAME': os.path.join(PROJECT_ROOT, 'pyment.sqlite3'),
         'USER': '',                      # Not used with sqlite3.
         'PASSWORD': '',                  # Not used with sqlite3.
         'HOST': '',                      # Set to empty string for localhost. Not used with sqlite3.

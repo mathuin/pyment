@@ -1,7 +1,7 @@
 from django import template
 from cart import cart
 from catalog.models import Category
-from django.template.defaultfilters import stringfilter
+from pyment.settings import BREWER_NAME, BREWER_EMAIL, BREWER_LOCATION
 
 register = template.Library()
 
@@ -22,10 +22,10 @@ def category_list(request_path):
             'request_path': request_path
             }
 
-@register.filter(is_safe=True)
-@stringfilter
-def obfuscate(value):
-    obfuscated_string = ''
-    for character in value:
-        obfuscated_string = obfuscated_string + '&#' + str(ord(character)) + ';'
-    return obfuscated_string
+@register.inclusion_tag("tags/footer.djhtml")
+def footer():
+    return {
+        'name': BREWER_NAME,
+        'email': BREWER_EMAIL,
+        'location': BREWER_LOCATION,
+        }
