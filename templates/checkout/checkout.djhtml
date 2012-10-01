@@ -1,0 +1,25 @@
+{% extends 'catalog.djhtml' %}
+
+{% load checkout_tags %}
+
+{% block content %}
+<h1>Checkout</h1>{% if error_message %}
+	<ul class="errorlist">
+		<li>{{ error_message }}</li>
+	</ul>
+{% endif %}
+<form action="." method="post">{% csrf_token %}
+	<fieldset class="checkout">
+		<legend>Contact Info</legend>
+		<table>
+		{% form_table_row form.email %}
+		{% form_table_row form.phone %}
+		</table>
+	</fieldset>
+	<table>
+		<tr>
+			<th colspan="2"><input type="submit" value="Place Order" class="submit" /></th>
+		</tr>
+	</table>
+</form>
+{% endblock %}

@@ -1,0 +1,23 @@
+{% extends 'catalog.djhtml' %}
+
+{% block content %}
+	<table id="receipt">
+		<caption>Your order has been placed!<br /><br />
+			Your Order Number is: {{ order.id }}
+		</caption>
+		<thead>
+			<tr>
+				<th scope="col">Name</th>
+				<th scope="col">Quantity</th>
+			</tr>
+		</thead>
+		<tbody>
+		{% for item in order_items %}
+		<tr>
+			<td>{{ item.title }} ({{ item.name }})</td>
+			<td>{{ item.quantity }}</td>
+		</tr>
+		{% endfor %}
+		</tbody>
+	</table>
+{% endblock %}

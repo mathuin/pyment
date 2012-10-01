@@ -168,3 +168,29 @@ div#footer a{
 	font-weight: normal;
 	margin-right: 10px;
 }
+fieldset.checkout{
+	padding-bottom: 15px;
+	margin-bottom: 15px;
+}
+fieldset.checkout legend{
+	font-weight: bold;
+	color: Black;
+	margin-left: 15px;
+}
+fieldset.checkout table{
+	border-collapse: collapse;
+	width: 100%;
+}
+fieldset.checkout table th{
+	text-align: right;
+	width: 200px;
+	font-weight: normal;
+}
+fieldset.checkout input {
+	font-family: Courier;
+	font-size: Large;
+}
+table#receipt{
+	width: 100%;
+	border-collapse: collapse;
+}

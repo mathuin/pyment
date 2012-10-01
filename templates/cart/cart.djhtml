@@ -13,7 +13,9 @@
 		{% if cart_items %}
 		<tr>
 			<th class='right' colspan='4'>
-				<a href='/url/to/checkout/'>Checkout Now</a>
+				<form method='post' action='.'>{% csrf_token %}
+				<input type='submit' name='submit' value='Checkout' alt='Checkout' />
+				</form>
 			</th>
 		</tr>
 		{% endif %}

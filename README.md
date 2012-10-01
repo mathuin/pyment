@@ -22,15 +22,15 @@ The catalog is based on two models: category and product.  The categories are de
 
 For each crate in your warehouse, create a crate in the admin site and assign it to a bin.  For each jar in that crate, create a jar in the admin site with the corresponding product data and assign it to that crate.  That's it!
 
-Once all the mead has been entered into the database, take another tour of the sit to ensure that everything works as you expect.
+Once all the mead has been entered into the database, take another tour of the site to ensure that everything works as you expect.
 
 # Work still to be done
 
-Checkout needs to be done like the book, with the following exceptions: all the references to money are removed, and the checkout app needs to generate orders and picklists and the like.  The book doesn't effectively cover order fulfillment so I will have to work that out on my own.
+The checkout app has been added and appears to work well.  Orders are created which are visible in the admin site.  The next step I think is to create picklists.  The order states will be redone -- "Submitted", "Approved", "Picked", "Completed" and "Cancelled".  When an order is changed from "Submitted" to "Approved", a picklist will be created.  The picklist model will be in the inventory app, and will be a list of the exact jars that correspond to the order items, complete with location in the warehouse(s).  When jars are placed on a picklist, their "is_active" flag will be set to False so they do not show up as "in stock" in the catalog.  If the order is set to "Cancelled", the flags will be set back to True.  I'm not yet sure what to do if the order is set to "Completed".  For now, nothing, I guess.
 
 The inventory app needs to be beefed up.  It will have to support the picklists mentioned above as well as common tasks like crate consolidation, location of all jars of a particular product, and the like.
 
-The meadery app needs to be written.  It will keep track of recipes past and present and document the differences between theory and practice as well as  track the buckets and carboys and create jars at bottling time.
+The meadery app needs to be written.  It will keep track of recipes past and present and document the differences between theory and practice as well as track the buckets and carboys and create jars at bottling time.
 
 # License
 

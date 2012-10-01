@@ -6,7 +6,7 @@
 		<img src="{% static 'images/products/main/'|add:p.image %}" alt="{{ p.title }}" />
 	</div>
 	<h1>{{ p.title }}</h1>
-	<h2>{{ p.name }} ({{ p.quantity }} in stock)</h2>
+	<h2>{{ p.name }} ({{ p.jars }} in stock)</h2>
 	{% if p.category %}
 	In category: <a href="{{ p.category.get_absolute_url }}">{{p.category.name}}</a>
 	{% endif %}

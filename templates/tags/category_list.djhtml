@@ -1,5 +1,3 @@
-<!-- FIXME: Eventually check that the products are not out of stock -->
-
 <h3>Categories</h3>
 	<ul id="categories">
 	{% with active_categories as cats %}

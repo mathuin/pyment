@@ -78,3 +78,10 @@ def remove_from_cart(request):
     if cart_item:
         cart_item.delete()
 
+def is_empty(request):
+    return cart_distinct_item_count(request) == 0
+
+def empty_cart(request):
+    user_cart = get_cart_items(request)
+    user_cart.delete()
+
