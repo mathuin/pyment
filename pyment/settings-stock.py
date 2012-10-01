@@ -133,6 +133,9 @@ TEMPLATE_DIRS = (
     os.path.join(PROJECT_ROOT, 'templates'),
 )
 
+LOGIN_REDIRECT_URL = '/accounts/my_account'
+AUTH_PROFILE_MODULE = 'accounts.userprofile'
+
 INSTALLED_APPS = (
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -145,6 +148,8 @@ INSTALLED_APPS = (
     'inventory',
     'utils',
     'cart', 
+    'checkout',
+    'accounts',
     # Uncomment the next line to enable the admin:
     'django.contrib.admin',
     # Uncomment the next line to enable admin documentation:

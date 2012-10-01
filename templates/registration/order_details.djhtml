@@ -1,0 +1,31 @@
+{% extends 'catalog.djhtml' %}
+
+{% block content %}
+	<table id="receipt">
+	<caption>Details for Order # {{ order.id }}</caption>
+	<thead>
+		<tr>
+			<th scope="col">Status</th>
+			<td>{{ order.printstatus }}</td>
+		</tr>
+		<tr>
+			<td> </td>
+			<td> </td>
+		</tr>
+		<tr>
+			<th scope="col">Name</th>
+			<th scope="col">Quantity</th>
+		</tr>
+	</thead>
+	<tbody>
+	{% for item in order_items %}
+	<tr>
+		<td>
+			<a href="{{ item.get_absolute_url }}">{{ item.title }} ({{ item.name }})</a>
+		</td>
+		<td>{{ item.quantity }}</td>
+	</tr>
+	{% endfor %}
+	</tbody>
+	</table>
+{% endblock %}

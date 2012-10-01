@@ -9,6 +9,9 @@ urlpatterns = patterns('',
     url(r'^', include('catalog.urls')),
     url(r'^cart/', include('cart.urls')),
     url(r'^checkout/', include('checkout.urls')),
+    url(r'^accounts/', include('accounts.urls')),
+    url(r'^accounts/', include('django.contrib.auth.urls')),
+
     #(r'^inventory/$', 'inventory.views.home'),
     #(r'^brewery/$', 'meadery.views.home'),
     # Examples:

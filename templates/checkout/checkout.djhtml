@@ -3,6 +3,13 @@
 {% load checkout_tags %}
 
 {% block content %}
+{% if not request.user.is_authenticated %}
+<div class="fr">
+	<a href="{% url login %}?next={{ request.path }}">
+	Have an account?<br />Sign in now!
+	</a>
+</div>
+{% endif %}
 <h1>Checkout</h1>{% if error_message %}
 	<ul class="errorlist">
 		<li>{{ error_message }}</li>

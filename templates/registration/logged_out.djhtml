@@ -1,0 +1,5 @@
+{% extends 'catalog.djhtml' %}
+
+{% block content %}
+	<h1>You've Logged Out!</h1>
+{% endblock %}

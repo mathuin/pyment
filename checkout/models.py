@@ -1,9 +1,16 @@
 from django.db import models
-from django import forms
 from django.contrib.auth.models import User
 from catalog.models import Product
 
-class Order(models.Model):
+class BaseOrderInfo(models.Model):
+    class Meta:
+        abstract = True
+
+    #contact info
+    email = models.EmailField(max_length=50)
+    phone = models.CharField(max_length=20)
+
+class Order(BaseOrderInfo):
     # each individual status
     SUBMITTED = 1
     PROCESSED = 2
@@ -20,12 +27,17 @@ class Order(models.Model):
     ip_address = models.IPAddressField()
     last_updated = models.DateTimeField(auto_now=True)
     user = models.ForeignKey(User, null=True)
-    # contact info
-    email = models.EmailField(max_length=50)
-    phone = models.CharField(max_length=20)
 
     def __unicode__(self):
         return 'Order #' + str(self.id)
+
+    @models.permalink
+    def get_absolute_url(self):
+        return ('order_details', (), { 'order_id': self.id })
+    
+    def printstatus(self):
+        # FIXME: ugly
+        return [mystr for (val, mystr) in self.ORDER_STATUSES if val == self.status][0]
 
 class OrderItem(models.Model):
     product = models.ForeignKey(Product)
