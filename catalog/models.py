@@ -1,7 +1,10 @@
 from django.db import models
 from django.template.defaultfilters import slugify
 
-# Create your models here.
+class ActiveCategoryManager(models.Manager):
+    def get_query_set(self):
+        return super(ActiveCategoryManager, self).get_query_set().filter(is_active=True)
+
 class Category(models.Model):
     name = models.CharField(max_length=50)
     bjcptag = models.CharField('BJCP Tag', max_length=5, unique=True, 
@@ -16,6 +19,9 @@ class Category(models.Model):
                                         help_text='Content for description meta tag')
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+
+    objects = models.Manager()
+    active = ActiveCategoryManager()
 
     class Meta:
         ordering = ['bjcptag']
@@ -32,6 +38,10 @@ class Category(models.Model):
     def get_absolute_url(self):
         return ('catalog_category', (), { 'category_slug': self.slug })
     
+class ActiveProductManager(models.Manager):
+    def get_query_set(self):
+        return super(ActiveProductManager, self).get_query_set().filter(is_active=True)
+
 class Product(models.Model):
     # need clever way to say that 
     brewname = models.CharField('Brew Name', max_length=8,
@@ -73,6 +83,9 @@ class Product(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
     # ugh, does not work here for me
     category = models.ForeignKey(Category)
+
+    objects = models.Manager()
+    active = ActiveProductManager()
 
     class Meta:
         ordering = ['brewname', 'batchletter']
