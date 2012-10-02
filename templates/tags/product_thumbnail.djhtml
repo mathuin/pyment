@@ -1,0 +1,11 @@
+{% load staticfiles %}
+
+<div class="product_thumbnail">
+	<a href="{{ p.get_absolute_url }}">
+		<img src="{% static p.thumbnail.url %}" alt="{{ p.name }}" class="bn" />
+		<br />
+		{{ p.title }} 
+		<br />
+		({{ p.name }})
+	</a>
+</div>

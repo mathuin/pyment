@@ -1,9 +1,11 @@
 {% extends 'catalog.djhtml' %}
+
 {% load staticfiles %}
 
 {% block content %}
 	<div class="product_image" >
-		<img src="{% static 'images/products/main/'|add:p.image %}" alt="{{ p.title }}" />
+		<img src="{% static p.image.url %}" alt="{{ p.title }}" />
+		{{ p.image_caption }}
 	</div>
 	<h1>{{ p.title }}</h1>
 	<h2>{{ p.name }} ({{ p.jars }} in stock)</h2>
@@ -21,6 +23,7 @@
 	<h2>Product Description</h2>
 		{{ p.description }}
 	<div class="cb"><br /><br /></div>
+	<!-- FIXME: This is ugly and needs to be rewritten -->
 	<h2>Vital Statistics</h2>
 	<dl>
 		<dt>Brewed:</dt>
@@ -28,6 +31,7 @@
 		<dt>Bottled:</dt>
 		<dd>{{ p.bottled_date }} (SG: {{ p.bottled_sg }})</dd>
 		<dt>Alcohol by percent volume:</dt>
+		<!-- FIXME: this does not work, why? -->
 		<dd>{{ p.abv }} %</dd>
 	</dl>
 	

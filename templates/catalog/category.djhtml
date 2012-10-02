@@ -1,5 +1,4 @@
 {% extends 'catalog.djhtml' %}
-{% load staticfiles %}
 
 {% block content %}
 	<h1>{{ c.name }}</h1>
@@ -7,15 +6,7 @@
 	<br /><br />
 	{% for p in products %}
 		{% if p.is_active and p.jars > 0 %}
-		<div class="product_thumbnail">
-			<a href="{{ p.get_absolute_url }}">
-				<img src="{% static 'images/products/thumbnails/'|add:p.image %}" alt="{{ p.name }}" class="bn" />
-				<br />
-				{{ p.name }}
-				<br />
-				{{ p.title }}
-			</a>
-		</div>
+		{% include 'tags/product_thumbnail.djhtml' %}
 		{% endif %}
 	{% endfor %}
 {% endblock %}
