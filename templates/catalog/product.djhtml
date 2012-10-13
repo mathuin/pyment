@@ -18,8 +18,15 @@
 		<br />
 		<input type="submit" value="Add To Cart" name="submit" alt="Add To Cart" />
 	</form>
-	<div class="cb"> </div>
-	<br /><br />
+	<div class="cb"><br /><br /></div>
+	<h3>Related Products</h3>
+		{% for p in p.cross_sells_hybrid %}
+			{% include 'tags/product_thumbnail.djhtml' %}
+		{% empty %}
+			No related products.
+		{% endfor %}
+	<div class="cb"><br /><br /></div>
+
 	<h2>Product Description</h2>
 		{{ p.description }}
 	<div class="cb"><br /><br /></div>

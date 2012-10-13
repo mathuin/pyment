@@ -5,9 +5,15 @@ from django.core import urlresolvers
 from cart.cart import add_to_cart
 from django.http import HttpResponseRedirect
 from catalog.forms import ProductAddToCartForm
+from stats import stats
+from pyment.settings import PRODUCTS_PER_ROW
 
 def index(request, template_name='catalog/index.djhtml'):
     page_title = 'Only The Best Fermented Honey Wine'
+    search_recs = stats.recommended_from_search(request)
+    featured = Product.featured.all()[0:PRODUCTS_PER_ROW]
+    recently_viewed = stats.get_recently_viewed(request)
+    view_recs = stats.recommended_from_views(request)
     return render(request, template_name, locals())
     
 def show_category(request, category_slug, template_name='catalog/category.djhtml'):
@@ -45,6 +51,8 @@ def show_product(request, product_slug, template_name="catalog/product.djhtml"):
     form.fields['product_slug'].widget.attrs['value'] = product_slug
     # set the test cookie on our first GET request
     request.session.set_test_cookie()
+    # log product view
+    stats.log_product_view(request, p)
     return render(request, 'catalog/product.djhtml', locals())
 
 

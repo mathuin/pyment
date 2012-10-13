@@ -136,6 +136,7 @@ TEMPLATE_DIRS = (
 LOGIN_REDIRECT_URL = '/accounts/my_account'
 AUTH_PROFILE_MODULE = 'accounts.userprofile'
 PRODUCTS_PER_PAGE = 12
+PRODUCTS_PER_ROW = 4
 
 INSTALLED_APPS = (
     'django.contrib.auth',
@@ -152,6 +153,7 @@ INSTALLED_APPS = (
     'checkout',
     'accounts',
     'search',
+    'stats',
     # Uncomment the next line to enable the admin:
     'django.contrib.admin',
     # Uncomment the next line to enable admin documentation:

@@ -42,6 +42,10 @@ class ActiveProductManager(models.Manager):
     def get_query_set(self):
         return super(ActiveProductManager, self).get_query_set().filter(is_active=True)
 
+class FeaturedProductManager(models.Manager):
+    def all(self):
+        return super(FeaturedProductManager, self).all().filter(is_active=True).filter(is_featured=True)
+
 class Product(models.Model):
     # need clever way to say that 
     brewname = models.CharField('Brew Name', max_length=8,
@@ -86,6 +90,7 @@ class Product(models.Model):
 
     objects = models.Manager()
     active = ActiveProductManager()
+    featured = FeaturedProductManager()
 
     class Meta:
         ordering = ['brewname', 'batchletter']
@@ -113,6 +118,18 @@ class Product(models.Model):
     @models.permalink
     def get_absolute_url(self):
         return ('catalog_product', (), { 'product_slug': self.slug })
+
+    def cross_sells_hybrid(self):
+        from checkout.models import Order, OrderItem
+        from django.contrib.auth.models import User
+        from django.db.models import Q
+        orders = Order.objects.filter(orderitem__product=self)
+        users = User.objects.filter(order__orderitem__product=self)
+        items = OrderItem.objects.filter( Q(order__in=orders) |
+                                          Q(order__user__in=users)
+                                          ).exclude(product=self)
+        products = Product.active.filter(orderitem__in=items).distinct()
+        return products
 
     #def sale_price(self):
     #    if self.old_price > self.price:
