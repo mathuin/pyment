@@ -1,5 +1,6 @@
 from django.db import models
 from django.template.defaultfilters import slugify
+from decimal import Decimal
 
 class ActiveCategoryManager(models.Manager):
     def get_query_set(self):
@@ -54,15 +55,9 @@ class Product(models.Model):
     slug = models.SlugField(max_length=255, blank=True, unique=True,
                             help_text='Unique value for product page URL, created from brewname and batchletter.')
     title = models.CharField(max_length=255, help_text='Title of batch (e.g., Chocolate With Mint)')
-    #brand = models.CharField(max_length=50)
-    #sku = models.CharField(max_length=50)
-    #price = models.DecimalField(max_digits=9,decimal_places=2)
-    #old_price = models.DecimalField(max_digits=9,decimal_places=2,
-    #                                blank=True,default=0.00)
     # label
     image = models.ImageField(upload_to='images/products/main')
     thumbnail = models.ImageField(upload_to='images/products/thumbnails')
-    image_caption = models.CharField(max_length=200)
     is_active = models.BooleanField(default=True)
     # popular?
     is_bestseller = models.BooleanField(default=False)
@@ -104,10 +99,6 @@ class Product(models.Model):
         from inventory.models import Jar
         return Jar.objects.filter(product__id=self.pk, crate__is_active=True, crate__bin__is_active=True, crate__bin__shelf__is_active=True, crate__bin__shelf__row__is_active=True, crate__bin__shelf__row__warehouse__is_active=True).count()
 
-    @property
-    def quantity(self):
-        return self.jars.count()
-
     def __unicode__(self):
         return self.name
            
@@ -131,14 +122,9 @@ class Product(models.Model):
         products = Product.active.filter(orderitem__in=items).distinct()
         return products
 
-    #def sale_price(self):
-    #    if self.old_price > self.price:
-    #        return self.price
-    #    else:
-    #        return None
-
+    @property
     def abv(self):
         if (self.brewed_sg and self.bottled_sg):
-            return 100*((self.brewed_sg-self.bottled_sg)/0.75)
+            return '%0.2f' % (Decimal(100)*(self.brewed_sg - self.bottled_sg)/Decimal(0.75))
         else:
-            return None
+            return '---'

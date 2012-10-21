@@ -5,12 +5,11 @@
 {% block content %}
 	<div class="product_image" >
 		<img src="{% static p.image.url %}" alt="{{ p.title }}" />
-		{{ p.image_caption }}
 	</div>
 	<h1>{{ p.title }}</h1>
 	<h2>{{ p.name }} ({{ p.jars }} in stock)</h2>
 	{% if p.category %}
-	In category: <a href="{{ p.category.get_absolute_url }}">{{p.category.name}}</a>
+	In category: <a href="{{ p.category.get_absolute_url }}">{{ p.category.name }}</a>
 	{% endif %}
 	<br /><br />
 	<form method="post" action="." class="cart">{% csrf_token %}
@@ -18,6 +17,17 @@
 		<br />
 		<input type="submit" value="Add To Cart" name="submit" alt="Add To Cart" />
 	</form>
+	<br />
+	<h2>Product Description</h2>
+		{{ p.description }}
+	<!-- FIXME: This is ugly and needs to be rewritten -->
+	<br /><br />
+	<h2>Vital Statistics</h2>
+		<p>Brewed: {{ p.brewed_date }} (SG: {{ p.brewed_sg }})</p>
+		<p>Bottled: {{ p.bottled_date }} (SG: {{ p.bottled_sg }})</p>
+		<!-- FIXME: this does not work, why? -->
+		<p>Alcohol by percent volume: {{ p.abv }} %</p>
+
 	<div class="cb"><br /><br /></div>
 	<h3>Related Products</h3>
 		{% for p in p.cross_sells_hybrid %}
@@ -26,20 +36,5 @@
 			No related products.
 		{% endfor %}
 	<div class="cb"><br /><br /></div>
-
-	<h2>Product Description</h2>
-		{{ p.description }}
-	<div class="cb"><br /><br /></div>
-	<!-- FIXME: This is ugly and needs to be rewritten -->
-	<h2>Vital Statistics</h2>
-	<dl>
-		<dt>Brewed:</dt>
-		<dd>{{ p.brewed_date }} (SG: {{ p.brewed_sg }})</dd>
-		<dt>Bottled:</dt>
-		<dd>{{ p.bottled_date }} (SG: {{ p.bottled_sg }})</dd>
-		<dt>Alcohol by percent volume:</dt>
-		<!-- FIXME: this does not work, why? -->
-		<dd>{{ p.abv }} %</dd>
-	</dl>
 	
 {% endblock %}
