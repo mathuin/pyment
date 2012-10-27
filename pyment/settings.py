@@ -6,12 +6,17 @@ PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), '..').dec
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 
-SITE_NAME = 'Pyment'
-META_KEYWORDS = 'mead, cyser, pyment, melomel, metheglin, braggot'
-META_DESCRIPTION = 'Pyment is a small online supplier of high-quality fermented honey wine products.'
-BREWER_NAME = 'Your Name'
-BREWER_EMAIL = 'your_email@example.com'
-BREWER_LOCATION = 'Anywhere, USA'
+# import local settings
+try:
+    from settings_local import SITE_NAME, META_KEYWORDS, META_DESCRIPTION, BREWER_NAME, BREWER_EMAIL, BREWER_LOCATION, DBNAME 
+except ImportError:
+    SITE_NAME = 'Pyment'
+    META_KEYWORDS = 'mead, cyser, pyment, melomel, metheglin, braggot'
+    META_DESCRIPTION = 'Pyment is a small online supplier of high-quality fermented honey wine products.'
+    BREWER_NAME = 'Your Name'
+    BREWER_EMAIL = 'your_email@example.com'
+    BREWER_LOCATION = 'Anywhere, USA'
+    DBNAME = 'pyment.sqlite3'
 
 ADMINS = (
     # ('Your Name', 'your_email@example.com'),
@@ -23,7 +28,7 @@ MANAGERS = ADMINS
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3', # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
-        'NAME': os.path.join(PROJECT_ROOT, 'pyment.sqlite3'),
+        'NAME': os.path.join(PROJECT_ROOT, DBNAME),
         'USER': '',                      # Not used with sqlite3.
         'PASSWORD': '',                  # Not used with sqlite3.
         'HOST': '',                      # Set to empty string for localhost. Not used with sqlite3.
@@ -137,6 +142,8 @@ LOGIN_REDIRECT_URL = '/accounts/my_account'
 AUTH_PROFILE_MODULE = 'accounts.userprofile'
 PRODUCTS_PER_PAGE = 12
 PRODUCTS_PER_ROW = 4
+SESSION_AGE_DAYS = 90
+SESSION_COOKIE_AGE = 60 * 60 * 24 * SESSION_AGE_DAYS
 
 INSTALLED_APPS = (
     'django.contrib.auth',
@@ -188,9 +195,3 @@ LOGGING = {
         },
     }
 }
-
-# import local settings
-try:
-    from settings_local import *
-except ImportError:
-    pass
