@@ -212,4 +212,38 @@ fieldset.my_account ul{
 fieldset.my_account ul li{
 	margin-bottom: 5px;
 }
-
+#add_review{
+	cursor: pointer;
+}
+.hidden{display: none;}
+.visible{display: block;}
+.new_review{background-color: Pink;}
+#loading{
+	display: none;
+	position: fixed;
+	top: 0;
+	left: 45%;
+	background-color: Pink;
+	width: 200px;
+	font-size: medium;
+	color: Black;
+	font-weight: bold;
+	padding: 2px;
+	border: solid 1px Red;
+	text-align: center;
+	z-index: 100;
+}
+#noscript{
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+	background-color: Red;
+	color: White;
+	font-weight: bold;
+	padding: 5px;
+	text-align: center;
+}
+#noscript_padder{
+	height: 30px;
+}

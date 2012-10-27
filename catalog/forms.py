@@ -1,5 +1,5 @@
 from django import forms
-from catalog.models import Product, Category
+from catalog.models import Product, Category, ProductReview
 
 class ProductAdminForm(forms.ModelForm):
     category = forms.ModelChoiceField(queryset=Category.objects.order_by('bjcptag')) 
@@ -25,3 +25,8 @@ class ProductAddToCartForm(forms.Form):
             if not self.request.session.test_cookie_worked():
                 raise forms.ValidationError("Cookies must be enabled.")
         return self.cleaned_data
+
+class ProductReviewForm(forms.ModelForm):
+    class Meta:
+        model = ProductReview
+        exclude = ('user','product', 'is_approved')

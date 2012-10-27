@@ -6,4 +6,5 @@ urlpatterns = patterns('catalog.views',
                         'show_category', { 'template_name':'catalog/category.djhtml'}, 'catalog_category'),
                        (r'^product/(?P<product_slug>[-\w]+)/$', 
                         'show_product', { 'template_name':'catalog/product.djhtml'}, 'catalog_product'),
+                       (r'^review/product/add/$', 'add_review', { }, 'product_add_review' ),
 )

@@ -1,6 +1,8 @@
 from django.db import models
 from django.template.defaultfilters import slugify
 from decimal import Decimal
+from django.contrib.auth.models import User
+
 
 class ActiveCategoryManager(models.Manager):
     def get_query_set(self):
@@ -112,7 +114,6 @@ class Product(models.Model):
 
     def cross_sells_hybrid(self):
         from checkout.models import Order, OrderItem
-        from django.contrib.auth.models import User
         from django.db.models import Q
         orders = Order.objects.filter(orderitem__product=self)
         users = User.objects.filter(order__orderitem__product=self)
@@ -128,3 +129,24 @@ class Product(models.Model):
             return '%0.2f' % (Decimal(100)*(self.brewed_sg - self.bottled_sg)/Decimal(0.75))
         else:
             return '---'
+
+class ActiveProductReviewManager(models.Manager):
+    def all(self):
+        return super(ActiveProductReviewManager, self).all().filter(is_approved=True)
+
+class ProductReview(models.Model):
+    RATINGS = ((5,'5 - Outstanding'),
+               (4,'4 - Excellent'),
+               (3,'3 - Very Good'),
+               (2,'2 - Good'),
+               (1,'1 - Fair'),)
+    product = models.ForeignKey(Product)
+    user = models.ForeignKey(User)
+    title = models.CharField(max_length=50)
+    date = models.DateTimeField(auto_now_add=True)
+    rating = models.PositiveSmallIntegerField(default=5, choices=RATINGS)
+    is_approved = models.BooleanField(default=True)
+    content = models.TextField()
+
+    objects = models.Manager()
+    approved = ActiveProductReviewManager()
