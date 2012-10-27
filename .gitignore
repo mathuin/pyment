@@ -2,6 +2,5 @@
 *~
 *.pyc
 # stuff specific to instances
-pyment/settings.py
+pyment/settings_local.py
 *.sqlite3
-*.png
