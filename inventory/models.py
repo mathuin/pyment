@@ -196,6 +196,9 @@ class Jar(models.Model):
     volume = models.IntegerField(default=1)
     crate = models.ForeignKey(Crate)
     is_active = models.BooleanField(default=True)
+    # is_available = considered 'in stock'
+    # FIXME: consider replacing crazy inventory checks by simply unavailable'ing display stuff
+    is_available = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     

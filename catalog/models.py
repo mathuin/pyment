@@ -3,7 +3,6 @@ from django.template.defaultfilters import slugify
 from decimal import Decimal
 from django.contrib.auth.models import User
 
-
 class ActiveCategoryManager(models.Manager):
     def get_query_set(self):
         return super(ActiveCategoryManager, self).get_query_set().filter(is_active=True)
@@ -49,6 +48,10 @@ class FeaturedProductManager(models.Manager):
     def all(self):
         return super(FeaturedProductManager, self).all().filter(is_active=True).filter(is_featured=True)
 
+class InStockProductManager(models.Manager):
+    def get_query_set(self):
+        return [p for p in super(InStockProductManager, self).get_query_set().filter(is_active=True) if p.jars_in_stock.count() > 0]
+
 class Product(models.Model):
     # need clever way to say that 
     brewname = models.CharField('Brew Name', max_length=8,
@@ -88,6 +91,7 @@ class Product(models.Model):
     objects = models.Manager()
     active = ActiveProductManager()
     featured = FeaturedProductManager()
+    instock = InStockProductManager()
 
     class Meta:
         ordering = ['brewname', 'batchletter']
@@ -97,9 +101,15 @@ class Product(models.Model):
         return '%s %s' % (self.brewname, self.batchletter)
     
     @property
-    def jars(self):
+    def jars_in_stock(self):
         from inventory.models import Jar
-        return Jar.objects.filter(product__id=self.pk, crate__is_active=True, crate__bin__is_active=True, crate__bin__shelf__is_active=True, crate__bin__shelf__row__is_active=True, crate__bin__shelf__row__warehouse__is_active=True).count()
+        return Jar.objects.filter(product__id=self.pk, is_available=True, is_active=True, crate__is_active=True, crate__bin__is_active=True, crate__bin__shelf__is_active=True, crate__bin__shelf__row__is_active=True, crate__bin__shelf__row__warehouse__is_active=True)
+
+    def first_available(self):
+        try:
+            return self.jars_in_stock[0]
+        except IndexError:
+            return None
 
     def __unicode__(self):
         return self.name

@@ -14,12 +14,12 @@ class Order(BaseOrderInfo):
     # each individual status
     SUBMITTED = 1
     PROCESSED = 2
-    SHIPPED = 3
+    DELIVERED = 3
     CANCELLED = 4
     # set of possible order statuses
     ORDER_STATUSES = ((SUBMITTED,'Submitted'),
                       (PROCESSED,'Processed'),
-                      (SHIPPED,'Shipped'),
+                      (DELIVERED,'Delivered'),
                       (CANCELLED,'Cancelled'))
     # order info
     date = models.DateTimeField(auto_now_add=True)

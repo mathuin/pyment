@@ -13,7 +13,7 @@
 	{% endif %}
 	<br /><br />
 	<form method="post" action="." class="cart">{% csrf_token %}
-		<p>In Stock: {{ p.jars }}</p>
+		<p>In Stock: {{ p.jars_in_stock.count }}</p>
 		{{ form.as_p }}
 		<br />
 		<input type="submit" value="Add To Cart" name="submit" alt="Add To Cart" />

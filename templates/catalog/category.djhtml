@@ -5,7 +5,7 @@
 	{{ c.description }}
 	<br /><br />
 	{% for p in products %}
-		{% if p.is_active and p.jars > 0 %}
+		{% if p.is_active and p.jars_in_stock > 0 %}
 		{% include 'tags/product_thumbnail.djhtml' %}
 		{% endif %}
 	{% endfor %}
