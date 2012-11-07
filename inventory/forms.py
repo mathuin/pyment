@@ -32,6 +32,6 @@ class CrateAdminForm(forms.ModelForm):
 
 # jars will likely be created en masse by the brewery!
 class JarAdminForm(forms.ModelForm):
-    product = forms.ModelChoiceField(queryset=Product.objects)
+    product = forms.ModelChoiceField(queryset=Product.active)
     class Meta:
         model = Jar

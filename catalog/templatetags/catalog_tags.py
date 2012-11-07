@@ -17,7 +17,7 @@ def category_list(request_path):
     # they have products,
     # and those products have jars
     # there has to be a more django-ish way to do this
-    active_categories = [ category for category in Category.objects.filter(is_active=True) if any([product for product in category.products if product.jars_in_stock > 0])]
+    active_categories = [ category for category in Category.active.all() if category.instock ]
     return {
             'active_categories': active_categories,
             'request_path': request_path

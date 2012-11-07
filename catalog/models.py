@@ -36,6 +36,11 @@ class Category(models.Model):
     def products(self):
         return Product.objects.filter(category__id=self.pk, is_active=True)
     
+    @property
+    def instock(self):
+        from inventory.models import Jar
+        return Jar.objects.filter(product_id__in=Product.objects.filter(pk__in=self.product_set.values_list('id', flat=True)).values_list('id', flat=True),is_active=True,is_available=True).exists()
+    
     @models.permalink
     def get_absolute_url(self):
         return ('catalog_category', (), { 'category_slug': self.slug })
@@ -50,7 +55,8 @@ class FeaturedProductManager(models.Manager):
 
 class InStockProductManager(models.Manager):
     def get_query_set(self):
-        return [p for p in super(InStockProductManager, self).get_query_set().filter(is_active=True) if p.jars_in_stock.count() > 0]
+        #return [p for p in super(InStockProductManager, self).get_query_set().filter(is_active=True) if p.jars_in_stock.count() > 0]
+        return super(InStockProductManager, self).get_query_set().filter(is_active=True,jar__is_active=True,jar__is_available=True)
 
 class Product(models.Model):
     # need clever way to say that 
@@ -102,13 +108,14 @@ class Product(models.Model):
     
     @property
     def jars_in_stock(self):
-        from inventory.models import Jar
-        return Jar.objects.filter(product__id=self.pk, is_available=True, is_active=True, crate__is_active=True, crate__bin__is_active=True, crate__bin__shelf__is_active=True, crate__bin__shelf__row__is_active=True, crate__bin__shelf__row__warehouse__is_active=True)
+        return self.jar_set.filter(is_available=True, is_active=True).order_by('number') 
 
+    # FIXME: don't repeat yourself!
     def first_available(self):
-        try:
-            return self.jars_in_stock[0]
-        except IndexError:
+        instockquery = self.jar_set.filter(is_available=True, is_active=True)
+        if instockquery.exists():
+            return instockquery.order_by('number')[0]
+        else:
             return None
 
     def __unicode__(self):
