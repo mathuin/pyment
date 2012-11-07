@@ -1,0 +1,95 @@
+BEGIN TRANSACTION;
+CREATE TABLE "inventory_warehouse_new" (
+    "id" integer NOT NULL PRIMARY KEY,
+    "number" integer NOT NULL,
+    "slug" varchar(50) NOT NULL UNIQUE,
+    "location" text NOT NULL,
+    "created_at" datetime NOT NULL,
+    "updated_at" datetime NOT NULL
+)
+;
+INSERT INTO "inventory_warehouse_new" select "id", "number", "slug", "location", "created_at", "updated_at" FROM "inventory_warehouse";
+DROP TABLE "inventory_warehouse";
+ALTER TABLE "inventory_warehouse_new" RENAME TO "inventory_warehouse";
+
+CREATE TABLE "inventory_row_new" (
+    "id" integer NOT NULL PRIMARY KEY,
+    "warehouse_id" integer NOT NULL REFERENCES "inventory_warehouse" ("id"),
+    "number" integer NOT NULL,
+    "slug" varchar(55) NOT NULL,
+    "created_at" datetime NOT NULL,
+    "updated_at" datetime NOT NULL,
+    UNIQUE ("warehouse_id", "number")
+)
+;
+INSERT INTO "inventory_row_new" select "id", "warehouse_id", "number", "slug", "created_at", "updated_at" FROM "inventory_row";
+DROP TABLE "inventory_row";
+ALTER TABLE "inventory_row_new" RENAME TO "inventory_row";
+
+CREATE TABLE "inventory_shelf_new" (
+    "id" integer NOT NULL PRIMARY KEY,
+    "row_id" integer NOT NULL REFERENCES "inventory_row" ("id"),
+    "number" integer NOT NULL,
+    "slug" varchar(60) NOT NULL,
+    "created_at" datetime NOT NULL,
+    "updated_at" datetime NOT NULL,
+    UNIQUE ("row_id", "number")
+)
+;
+INSERT INTO "inventory_shelf_new" select "id", "row_id", "number", "slug", "created_at", "updated_at" FROM "inventory_shelf";
+DROP TABLE "inventory_shelf";
+ALTER TABLE "inventory_shelf_new" RENAME TO "inventory_shelf";
+
+CREATE TABLE "inventory_bin_new" (
+    "id" integer NOT NULL PRIMARY KEY,
+    "shelf_id" integer NOT NULL REFERENCES "inventory_shelf" ("id"),
+    "number" integer NOT NULL,
+    "slug" varchar(65) NOT NULL,
+    "capacity" integer NOT NULL,
+    "created_at" datetime NOT NULL,
+    "updated_at" datetime NOT NULL,
+    UNIQUE ("shelf_id", "number")
+)
+;
+INSERT INTO "inventory_bin_new" select "id", "shelf_id", "number", "slug", "capacity", "created_at", "updated_at" FROM "inventory_bin";
+DROP TABLE "inventory_bin";
+ALTER TABLE "inventory_bin_new" RENAME TO "inventory_bin";
+
+CREATE TABLE "inventory_crate_new" (
+    "id" integer NOT NULL PRIMARY KEY,
+    "number" integer NOT NULL,
+    "slug" varchar(10) NOT NULL UNIQUE,
+    "capacity" integer NOT NULL,
+    "bin_id" integer NOT NULL REFERENCES "inventory_bin" ("id"),
+    "created_at" datetime NOT NULL,
+    "updated_at" datetime NOT NULL
+)
+;
+INSERT INTO "inventory_crate_new" select "id", "number", "slug", "capacity", "bin_id", "created_at", "updated_at" FROM "inventory_crate";
+DROP TABLE "inventory_crate";
+ALTER TABLE "inventory_crate_new" RENAME TO "inventory_crate";
+
+-- CREATE TABLE "inventory_jar" (
+--     "id" integer NOT NULL PRIMARY KEY,
+--     "product_id" integer NOT NULL REFERENCES "catalog_product" ("id"),
+--     "number" integer NOT NULL,
+--     "slug" varchar(13) NOT NULL UNIQUE,
+--     "volume" integer NOT NULL,
+--     "crate_id" integer NOT NULL REFERENCES "inventory_crate" ("id"),
+--     "is_active" bool NOT NULL,
+--     "is_available" bool NOT NULL,
+--     "created_at" datetime NOT NULL,
+--     "updated_at" datetime NOT NULL,
+--     UNIQUE ("product_id", "number")
+-- )
+-- ;
+CREATE INDEX "inventory_row_152fb8a0" ON "inventory_row" ("warehouse_id");
+CREATE INDEX "inventory_row_a951d5d6" ON "inventory_row" ("slug");
+CREATE INDEX "inventory_shelf_42e828ff" ON "inventory_shelf" ("row_id");
+CREATE INDEX "inventory_shelf_a951d5d6" ON "inventory_shelf" ("slug");
+CREATE INDEX "inventory_bin_1691871" ON "inventory_bin" ("shelf_id");
+CREATE INDEX "inventory_bin_a951d5d6" ON "inventory_bin" ("slug");
+CREATE INDEX "inventory_crate_bd7acaf4" ON "inventory_crate" ("bin_id");
+CREATE INDEX "inventory_jar_bb420c12" ON "inventory_jar" ("product_id");
+CREATE INDEX "inventory_jar_ea68462c" ON "inventory_jar" ("crate_id");
+COMMIT;
