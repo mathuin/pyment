@@ -3,7 +3,7 @@
 import os
 PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), '..').decode('utf-8')).replace('\\', '/')
 
-DEBUG = True
+DEBUG = False
 TEMPLATE_DEBUG = DEBUG
 
 SITE_NAME = 'Pyment'
