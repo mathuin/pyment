@@ -8,9 +8,7 @@ class Warehouse(models.Model):
     slug = models.SlugField(max_length=50, unique=True,
                             help_text='Unique value for warehouse page URL, created from name.')
     location = models.TextField()
-    # "is_active" means that stuff can be retrieved from it via the normal interface
-    # the admin interface can do what it wants
-    is_active = models.BooleanField(default=True)
+
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     
@@ -19,7 +17,7 @@ class Warehouse(models.Model):
     
     @property
     def rows(self):
-        return Row.objects.filter(warehouse__id=self.pk, is_active=True).count()
+        return self.row_set.count()
     
     @property
     def name(self):
@@ -37,7 +35,7 @@ class Row(models.Model):
     number = models.IntegerField()
     slug = models.SlugField(max_length=55, blank=True,
                             help_text='Unique value for this row page URL.')
-    is_active = models.BooleanField(default=True)
+
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     
@@ -47,7 +45,7 @@ class Row(models.Model):
         
     @property
     def shelves(self):
-        return Shelf.objects.filter(row__id=self.pk, is_active=True).count()
+        return self.shelf_set.count()
     
     @property
     def name(self):
@@ -71,7 +69,7 @@ class Shelf(models.Model):
     number = models.IntegerField()
     slug = models.SlugField(max_length=60, blank=True,
                             help_text='Unique value for this shelf page URL.')
-    is_active = models.BooleanField(default=True)
+
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     
@@ -86,7 +84,7 @@ class Shelf(models.Model):
     
     @property
     def bins(self):
-        return Bin.objects.filter(shelf__id=self.pk, is_active=True).count()
+        return self.bin_set.count()
     
     @property
     def name(self):
@@ -113,7 +111,7 @@ class Bin(models.Model):
                             help_text='Unique value for this bin page URL.')
     # how many crates can fit in this bin
     capacity = models.IntegerField(default=1)
-    is_active = models.BooleanField(default=True)
+
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     
@@ -131,7 +129,7 @@ class Bin(models.Model):
     
     @property
     def crates(self):
-        return Crate.objects.filter(bin__id=self.pk, is_active=True).count()
+        return self.crate_set.count()
     
     @property
     def name(self):
@@ -152,7 +150,7 @@ class Bin(models.Model):
 
     def clean(self):
         # ensure that the current number of crates is less than or equal to the capacity
-        if Crate.objects.filter(bin__id=self.pk, is_active=True).count() > self.capacity:
+        if self.crates > self.capacity:
             raise ValidationError('Capacity of bin exceeded')
           
 class Crate(models.Model):
@@ -161,7 +159,7 @@ class Crate(models.Model):
     capacity = models.IntegerField(default=12)
     # bin where the crate can currently be found
     bin = models.ForeignKey(Bin)
-    is_active = models.BooleanField(default=True)
+
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     
@@ -174,7 +172,7 @@ class Crate(models.Model):
     
     @property
     def jars(self):
-        return Jar.objects.filter(crate__id=self.pk, is_active=True).count()
+        return self.jar_set.count()
         
     def __unicode__(self):
         return self.name
@@ -195,9 +193,9 @@ class Jar(models.Model):
     # volume in liters
     volume = models.IntegerField(default=1)
     crate = models.ForeignKey(Crate)
+    # is_active = not yet sold
     is_active = models.BooleanField(default=True)
     # is_available = considered 'in stock'
-    # FIXME: consider replacing crazy inventory checks by simply unavailable'ing display stuff
     is_available = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
