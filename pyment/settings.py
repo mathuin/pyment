@@ -6,17 +6,13 @@ PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), '..').dec
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 
-# import local settings
-try:
-    from settings_local import SITE_NAME, META_KEYWORDS, META_DESCRIPTION, BREWER_NAME, BREWER_EMAIL, BREWER_LOCATION, DBNAME 
-except ImportError:
-    SITE_NAME = 'Pyment'
-    META_KEYWORDS = 'mead, cyser, pyment, melomel, metheglin, braggot'
-    META_DESCRIPTION = 'Pyment is a small online supplier of high-quality fermented honey wine products.'
-    BREWER_NAME = 'Your Name'
-    BREWER_EMAIL = 'your_email@example.com'
-    BREWER_LOCATION = 'Anywhere, USA'
-    DBNAME = 'pyment.sqlite3'
+SITE_NAME = 'Pyment'
+META_KEYWORDS = 'mead, cyser, pyment, melomel, metheglin, braggot'
+META_DESCRIPTION = 'Pyment is a small online supplier of high-quality fermented honey wine products.'
+BREWER_NAME = 'Your Name'
+BREWER_EMAIL = 'your_email@example.com'
+BREWER_LOCATION = 'Anywhere, USA'
+DBNAME = 'pyment.sqlite3'
 
 ADMINS = (
     # ('Your Name', 'your_email@example.com'),
@@ -196,3 +192,9 @@ LOGGING = {
         },
     }
 }
+
+# import local settings
+try:
+    from settings_local import * 
+except ImportError:
+    pass
