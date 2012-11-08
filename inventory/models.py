@@ -185,6 +185,10 @@ class Crate(models.Model):
         # ensure that the current number of jars is less than or equal to the capacity
         if self.jars > self.capacity:
             raise ValidationError('Capacity of crate exceeded')
+
+class InStockJarManager(models.Manager):
+    def get_query_set(self):
+        return super(InStockJarManager, self).get_query_set().filter(is_active=True, is_available=True)
           
 class Jar(models.Model):
     product = models.ForeignKey(Product)
@@ -199,6 +203,9 @@ class Jar(models.Model):
     is_available = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
+    
+    objects = models.Manager()
+    instock = InStockJarManager()
     
     class Meta:
         ordering = ['crate']

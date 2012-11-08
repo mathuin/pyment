@@ -3,7 +3,6 @@ from django.core import urlresolvers
 import httplib
 from django.contrib.auth import SESSION_KEY
 from catalog.models import Category, Product
-from pyment import views
 
 class NewUserTestCase(TestCase):
     def setUp(self):
@@ -73,7 +72,27 @@ class ProductTestCase(TestCase):
         
     def test_unicode(self):
         self.assertEqual(self.product.__unicode__(), self.product.name)
+
+    def test_jars_in_stock(self):
+        # FIXME: need fixtures
+        # one product with two jars that are available and true (returns true)
+        # one product with no jars (false)
+        # one product with one jar that is available but not true (false)
+        return True
+    
+    def test_first_available(self):
+        # FIXME: need fixtures (same as above)
+        # returns first jar, None, None, respectively
+        return True
         
+    def test_abv(self):
+        # FIXME: need fixtures
+        # one product with only one SG value ('---')
+        # one product with backwards SG values (dunno!)
+        # one product with equal SG values (dunno!)
+        # one product with proper SG values (duh)
+        return True
+    
 class CategoryTestCase(TestCase):
     def setUp(self):
         self.category = Category.active.all()[0]
@@ -87,5 +106,12 @@ class CategoryTestCase(TestCase):
 
     def test_unicode(self):
         self.assertEqual(self.category.__unicode__(), self.category.name)
+        
+    def test_instock(self):
+        # FIXME: needs fixtures
+        # one category with one product that is inactive wtih one jar (false)
+        # one category with one product that is active with no jars (false)
+        # one category with one product that is active wtih one jar (true)
+        return True
     
-
+# No product review tests?!
