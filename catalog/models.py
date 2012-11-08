@@ -75,11 +75,11 @@ class Product(models.Model):
     description = models.TextField()
     # brewed date and SG
     brewed_date = models.DateField(help_text='Date product was brewed')
-    brewed_sg = models.DecimalField(max_digits=4, decimal_places=3, 
+    brewed_sg = models.DecimalField(max_digits=4, decimal_places=3, default=Decimal('0.000'),
                                     help_text='Specific Gravity when product was brewed')
     # bottled date and SG
     bottled_date = models.DateField(help_text='Date product was bottled')
-    bottled_sg = models.DecimalField(max_digits=4, decimal_places=3,
+    bottled_sg = models.DecimalField(max_digits=4, decimal_places=3, default=('0.000'),
                                      help_text='Specific Gravity when product was bottled')
     # status, expected bottling date, expected drinkability date?
 
@@ -139,8 +139,9 @@ class Product(models.Model):
 
     @property
     def abv(self):
-        if (self.brewed_sg and self.bottled_sg):
-            return '%0.2f' % (Decimal(100)*(self.brewed_sg - self.bottled_sg)/Decimal(0.75))
+        zero = Decimal('0.000')
+        if (self.brewed_sg != zero and self.bottled_sg != zero and self.brewed_sg > self.bottled_sg):
+            return '%0.2f' % (Decimal('100')*(self.brewed_sg - self.bottled_sg)/Decimal('0.75'))
         else:
             return '---'
 

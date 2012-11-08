@@ -86,12 +86,15 @@ class ProductTestCase(TestCase):
         return True
         
     def test_abv(self):
-        # FIXME: need fixtures
-        # one product with only one SG value ('---')
-        # one product with backwards SG values (dunno!)
-        # one product with equal SG values (dunno!)
-        # one product with proper SG values (duh)
-        return True
+        # check for valid values
+        sip1a = Product.active.get(slug='sip-1-a')
+        self.assertEqual(sip1a.abv, '6.27')
+        # check for equal SGs
+        sip1b = Product.active.get(slug='sip-1-b')
+        self.assertEqual(sip1b.abv, '---')
+        # check for one SG being zero
+        sip1c = Product.active.get(slug='sip-1-c')
+        self.assertEqual(sip1c.abv, '---')
     
 class CategoryTestCase(TestCase):
     def setUp(self):
