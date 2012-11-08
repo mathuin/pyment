@@ -104,7 +104,6 @@ class Product(models.Model):
     def name(self):
         return '%s %s' % (self.brewname, self.batchletter)
     
-    @property
     def jars_in_stock(self):
         return self.jar_set.filter(is_available=True, is_active=True) 
 

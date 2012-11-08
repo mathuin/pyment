@@ -3,6 +3,7 @@ from django.core import urlresolvers
 import httplib
 from django.contrib.auth import SESSION_KEY
 from catalog.models import Category, Product
+from inventory.models import Jar
 
 class NewUserTestCase(TestCase):
     def setUp(self):
@@ -60,6 +61,8 @@ class DeleteExistTestCase(TestCase):
         self.assertTrue(Product.objects.all().count() > 0)
         
 class ProductTestCase(TestCase):
+    fixtures = ['catalog', 'inventory']
+
     def setUp(self):
         self.product = Product.active.all()[0]
         self.client = Client()
@@ -74,16 +77,27 @@ class ProductTestCase(TestCase):
         self.assertEqual(self.product.__unicode__(), self.product.name)
 
     def test_jars_in_stock(self):
-        # FIXME: need fixtures
-        # one product with two jars that are available and true (returns true)
-        # one product with no jars (false)
-        # one product with one jar that is available but not true (false)
-        return True
+        # one product with two jars that are available and true (returns 2)
+        sip1a = Product.active.get(slug='sip-1-a')
+        self.assertEqual(sip1a.jars_in_stock().count(), 2)
+        # one product with no jars (0)
+        sip1b = Product.active.get(slug='sip-1-b')
+        self.assertEqual(sip1b.jars_in_stock().count(), 0)
+        # one product with one jar that is available but not true (0)
+        sip1c = Product.active.get(slug='sip-1-c')
+        self.assertEqual(sip1c.jars_in_stock().count(), 0)
     
     def test_first_available(self):
-        # FIXME: need fixtures (same as above)
-        # returns first jar, None, None, respectively
-        return True
+        # returns first jar (see sip1a in test_jars_in_stock)
+        sip1a = Product.active.get(slug='sip-1-a')
+        jar1a2 = Jar.objects.get(slug='sip-1-a2')
+        self.assertEqual(sip1a.first_available(), jar1a2)
+        # returns None (see sip1b in test_jars_in_stock)
+        sip1b = Product.active.get(slug='sip-1-b')
+        self.assertEqual(sip1b.first_available(), None)
+        # returns None (see sip1c in test_jars_in_stock)
+        sip1c = Product.active.get(slug='sip-1-c')
+        self.assertEqual(sip1c.first_available(), None)
         
     def test_abv(self):
         # check for valid values
