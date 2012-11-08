@@ -1,5 +1,4 @@
 from django.test import TestCase, Client
-import httplib
 from inventory.models import Warehouse, Row, Shelf, Bin, Crate, Jar
 
 class WarehouseTestCase(TestCase):
