@@ -1,0 +1,147 @@
+[
+  {
+    "pk": 1,
+    "model": "catalog.category",
+    "fields": {
+      "meta_description": "Dry mead",
+      "meta_keywords": "dry",
+      "description": "These beverages are quite tasty, if a little dry.",
+      "created_at": "2012-11-07T23:27:11.890Z",
+      "is_active": true,
+      "updated_at": "2012-11-07T23:27:11.890Z",
+      "bjcptag": "24A",
+      "slug": "dry-mead",
+      "name": "Dry Mead"
+    }
+  },
+  {
+    "pk": 2,
+    "model": "catalog.category",
+    "fields": {
+      "meta_description": "semi-sweet mead",
+      "meta_keywords": "semi-sweet",
+      "description": "A nice blend of dry and sweet.",
+      "created_at": "2012-11-07T23:27:56.449Z",
+      "is_active": true,
+      "updated_at": "2012-11-07T23:27:56.449Z",
+      "bjcptag": "24B",
+      "slug": "semi-sweet-mead",
+      "name": "Semi-Sweet Mead"
+    }
+  },
+  {
+    "pk": 3,
+    "model": "catalog.category",
+    "fields": {
+      "meta_description": "sweet mead",
+      "meta_keywords": "sweet",
+      "description": "Delicious and sweet.",
+      "created_at": "2012-11-07T23:28:27.228Z",
+      "is_active": false,
+      "updated_at": "2012-11-07T23:28:27.228Z",
+      "bjcptag": "24C",
+      "slug": "sweet-mead",
+      "name": "Sweet Mead"
+    }
+  },
+  {
+    "pk": 1,
+    "model": "catalog.product",
+    "fields": {
+      "meta_description": "dry-stuff",
+      "created_at": "2012-09-24T02:46:49.215Z",
+      "is_featured": false,
+      "batchletter": "A",
+      "description": "Sounds yummy.",
+      "category": 1,
+      "title": "Dry Stuff",
+      "updated_at": "2012-10-21T21:57:35.728Z",
+      "image": "images/products/main/Empty.jpg",
+      "is_active": false,
+      "brewname": "SIP 1",
+      "slug": "sip-1-a",
+      "bottled_sg": "0.992",
+      "meta_keywords": "dry",
+      "is_bestseller": false,
+      "brewed_sg": "1.126",
+      "bottled_date": "2007-02-03",
+      "thumbnail": "images/products/thumbnails/Empty.jpg",
+      "brewed_date": "2007-02-03"
+    }
+  },
+  {
+    "pk": 2,
+    "model": "catalog.product",
+    "fields": {
+      "meta_description": "semi-sweet-stuff",
+      "created_at": "2012-09-23T19:47:26.264Z",
+      "is_featured": false,
+      "batchletter": "B",
+      "description": "Sounds yummy.",
+      "category": 2,
+      "title": "Semi-Sweet Stuff",
+      "updated_at": "2012-10-21T21:57:42.168Z",
+      "image": "images/products/main/Empty_1.jpg",
+      "is_active": false,
+      "brewname": "SIP 1",
+      "slug": "sip-1-b",
+      "bottled_sg": "1.026",
+      "meta_keywords": "semi-sweet stuff",
+      "is_bestseller": false,
+      "brewed_sg": "1.126",
+      "bottled_date": "2007-02-03",
+      "thumbnail": "images/products/thumbnails/Empty_1.jpg",
+      "brewed_date": "2007-02-03"
+    }
+  },
+  {
+    "pk": 3,
+    "model": "catalog.product",
+    "fields": {
+      "meta_description": "sweet stuff",
+      "created_at": "2012-09-23T19:48:26.576Z",
+      "is_featured": false,
+      "batchletter": "C",
+      "description": "Sounds yummy.",
+      "category": 3,
+      "title": "Sweet Stuff",
+      "updated_at": "2012-10-21T21:57:50.248Z",
+      "image": "images/products/main/Empty_2.jpg",
+      "is_active": false,
+      "brewname": "SIP 1",
+      "slug": "sip-1-c",
+      "bottled_sg": "1.100",
+      "meta_keywords": "sweet stuff",
+      "is_bestseller": false,
+      "brewed_sg": "1.126",
+      "bottled_date": "2007-02-03",
+      "thumbnail": "images/products/thumbnails/Empty_2.jpg",
+      "brewed_date": "2007-02-03"
+    }
+  },
+  {
+    "pk": 28,
+    "model": "catalog.product",
+    "fields": {
+      "meta_description": "in stock",
+      "created_at": "2012-10-22T01:35:22.215Z",
+      "is_featured": false,
+      "batchletter": "A",
+      "description": "It is dry and in stock.",
+      "category": 1,
+      "title": "Dry Stock",
+      "updated_at": "2012-10-22T02:27:44.837Z",
+      "image": "images/products/main/Empty_3.jpg",
+      "is_active": true,
+      "brewname": "SIP 10",
+      "slug": "sip-10-a",
+      "bottled_sg": "1.044",
+      "meta_keywords": "sweet, stock",
+      "is_bestseller": false,
+      "brewed_sg": "1.156",
+      "bottled_date": "2009-09-29",
+      "thumbnail": "images/products/thumbnails/Empty_3.jpg",
+      "brewed_date": "2009-05-02"
+    }
+  }
+]
