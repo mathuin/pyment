@@ -143,7 +143,7 @@ class Product(models.Model):
     @property
     def abv(self):
         if (self.brewed_sg and self.bottled_sg):
-            return '%0.2f' % (Decimal(100)*(self.brewed_sg - self.bottled_sg)/Decimal(0.75))
+            return '%0.2f' % (Decimal('100')*(self.brewed_sg - self.bottled_sg)/Decimal('0.75'))
         else:
             return '---'
 
