@@ -1,8 +1,7 @@
 from django.test import TestCase, Client
 import httplib
-from models import Order, OrderItem
+from models import Order, PickList
 from catalog.models import Product
-from inventory.models import Jar
 from checkout import all_in_stock, create_picklist, process_picklist, cancel_picklist
 
 class OrderTestCase(TestCase):
@@ -16,7 +15,7 @@ class OrderTestCase(TestCase):
         url = self.order.get_absolute_url()
         response = self.client.get(url)
         self.failUnless(response)
-	# not OK, but FOUND (302, redirect)
+        # not OK, but FOUND (302, redirect)
         self.assertEqual(response.status_code, httplib.FOUND)
         # FIXME: check that it redirects the right place
         
@@ -42,7 +41,6 @@ class OrderTestCase(TestCase):
         checkval2 = all_in_stock(order2)
         self.assertFalse(checkval2)
 
-    # FIXME: check create_picklist
     def test_create_picklist(self):
         # confirm both jars are marked active and available
         sip1a = Product.active.get(slug='sip-1-a')
@@ -72,7 +70,7 @@ class OrderTestCase(TestCase):
         # generate valid picklist from order #1
         picklist = create_picklist(self.order)
         retval = process_picklist(picklist)
-        self.assertEqual(retval2, True)
+        self.assertEqual(retval, True)
         # check that jars are no longer active
         self.assertEqual(sip1a.jar_set.filter(is_active=True).count(), 0)
         # check status of picklist
@@ -81,7 +79,7 @@ class OrderTestCase(TestCase):
         self.assertEqual(self.order.status, Order.DELIVERED)
         # process it again
         # (should fail as status should have changed)
-        retval2 = process_picklist(self.picklist)
+        retval2 = process_picklist(picklist)
         self.assertEqual(retval2, False)
 
     # FIXME: check cancel_picklist
@@ -95,7 +93,7 @@ class OrderTestCase(TestCase):
         # confirm jars are unavailable
         self.assertEqual(sip1a.jar_set.filter(is_available=True).count(), 0)
         retval = cancel_picklist(picklist)
-        self.assertEqual(retval2, True)
+        self.assertEqual(retval, True)
         # check that jars are available again
         self.assertEqual(sip1a.jar_set.filter(is_available=True).count(), 2)
         # check status of picklist

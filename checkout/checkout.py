@@ -45,7 +45,7 @@ def create_order(request):
     return order
 
 def create_picklist(order):
-    if order.status == Order.SUBMITTED:
+    if order.status == Order.SUBMITTED and all_in_stock(order):
         picklist = PickList()
         picklist.order = order
         picklist.status = PickList.SUBMITTED
@@ -53,14 +53,15 @@ def create_picklist(order):
         if picklist.pk:
             order_items = OrderItem.objects.filter(order=order)
             for oi in order_items:
-                # create picklist item for each order item
-                pi = PickListItem()
-                pi.picklist = picklist
-                pi.jar = oi.product.first_available()
-                # take the jar off the shelf!
-                pi.jar.is_available = False
-                pi.jar.save()
-                pi.save()
+                for _ in range(oi.quantity):
+                    # create picklist item for each individual order item
+                    pi = PickListItem()
+                    pi.picklist = picklist
+                    pi.jar = oi.product.first_available()
+                    # take the jar off the shelf!
+                    pi.jar.is_available = False
+                    pi.jar.save()
+                    pi.save()
         # on success, set picklist to Submitted and order to Processed
         order.status = Order.PROCESSED
         order.save()
