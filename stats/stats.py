@@ -51,6 +51,8 @@ def log_product_view(request, product):
         v = ProductView()
         v.product = product
         v.ip_address = request.META.get('REMOTE_ADDR')
+        if not request.META.get('REMOTE_ADDR'):
+            v.ip_address = '127.0.0.1'
         v.tracking_id = t_id
         v.user = None
         if request.user.is_authenticated():

@@ -1,0 +1,59 @@
+[
+  {
+    "pk": 1,
+    "model": "checkout.order",
+    "fields": {
+      "status": 1,
+      "last_updated": "2012-10-28T01:28:58.125Z",
+      "phone": "202-555-1212",
+      "user": null,
+      "date": "2012-10-27T17:15:50.295Z",
+      "ip_address": "169.254.12.34", 
+      "email": "foo@example.com"
+    }
+  },
+  {
+    "pk": 2,
+    "model": "checkout.order",
+    "fields": {
+      "status": 1,
+      "last_updated": "2012-11-03T21:30:54.875Z",
+      "phone": "202-555-1212",
+      "user": null,
+      "date": "2012-11-03T21:28:52.432Z",
+      "ip_address": "169.254.12.34", 
+      "email": "foo@example.com"
+    }
+  },
+  {
+    "pk": 3,
+    "model": "checkout.order",
+    "fields": {
+      "status": 1,
+      "last_updated": "2012-11-03T21:30:54.875Z",
+      "phone": "202-555-1212",
+      "user": null,
+      "date": "2012-11-03T21:28:52.432Z",
+      "ip_address": "169.254.12.34", 
+      "email": "foo@example.com"
+    }
+  },
+  {
+    "pk": 1,
+    "model": "checkout.orderitem",
+    "fields": {
+      "product": 1,
+      "order": 1,
+      "quantity": 2
+    }
+  },
+  {
+    "pk": 2,
+    "model": "checkout.orderitem",
+    "fields": {
+      "product": 2,
+      "order": 2,
+      "quantity": 1
+    }
+  }
+]

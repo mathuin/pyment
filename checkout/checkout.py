@@ -1,8 +1,7 @@
 from cart import cart
-from models import Order, OrderItem
+from models import Order, OrderItem, PickList, PickListItem
 from forms import CheckoutForm
 from django.core import urlresolvers
-from picklist.models import PickList, PickListItem
 from catalog.models import Product
 from django.core.exceptions import ValidationError
 
@@ -73,12 +72,42 @@ def all_in_stock(order):
     order_items = OrderItem.objects.filter(order=order)
     try:
         for oi in order_items:
-            if Product.objects.get(id=oi.product_id).jars_in_stock.count() < oi.quantity:
+            if Product.objects.get(id=oi.product_id).jars_in_stock().count() < oi.quantity:
                 raise ValidationError, 'Insufficient product in stock - please select another product'
     except ValidationError:
         return None
     else:
         return order 
                 
+def process_picklist(self):
+    if self.status == PickList.SUBMITTED and self.order.status == Order.PROCESSED:
+        # FIXME: test for presence of picklist
+        picklist_items = PickListItem.objects.filter(picklist=self.pk)
+        for pli in picklist_items:
+            pli.jar.is_active = False
+            pli.jar.save()
+        self.order.status = Order.DELIVERED
+        self.order.save()
+        self.status = PickList.PROCESSED
+        self.save()
+        return True
+    else:
+        return False
         
+def cancel_picklist(self):
+    if self.status == PickList.SUBMITTED and self.order.status == Order.PROCESSED:
+        # FIXME: test for presence of picklist
+        picklist_items = PickListItem.objects.filter(picklist=self.pk)
+        for pli in picklist_items:
+            pli.jar.is_available = True
+            pli.jar.save()           
+        self.order.status = Order.SUBMITTED
+        self.order.save()
+        self.status = PickList.CANCELLED
+        self.save()
+        return True
+    else:
+        return False
+    
+       
     
