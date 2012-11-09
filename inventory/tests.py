@@ -2,6 +2,8 @@ from django.test import TestCase, Client
 from inventory.models import Warehouse, Row, Shelf, Bin, Crate, Jar
 
 class WarehouseTestCase(TestCase):
+    fixtures = ['inventory', 'catalog']
+
     def setUp(self):
         self.warehouse = Warehouse.objects.all()[0]
         self.client = Client()
@@ -10,6 +12,8 @@ class WarehouseTestCase(TestCase):
         self.assertEqual(self.warehouse.__unicode__(), self.warehouse.name)
     
 class RowTestCase(TestCase):
+    fixtures = ['inventory', 'catalog']
+
     def setUp(self):
         self.row = Row.objects.all()[0]
         self.client = Client()
@@ -18,6 +22,8 @@ class RowTestCase(TestCase):
         self.assertEqual(self.row.__unicode__(), self.row.name)
     
 class ShelfTestCase(TestCase):
+    fixtures = ['inventory', 'catalog']
+
     def setUp(self):
         self.shelf = Shelf.objects.all()[0]
         self.client = Client()
@@ -26,6 +32,8 @@ class ShelfTestCase(TestCase):
         self.assertEqual(self.shelf.__unicode__(), self.shelf.name)
     
 class BinTestCase(TestCase):
+    fixtures = ['inventory', 'catalog']
+
     def setUp(self):
         self.bin = Bin.objects.all()[0]
         self.client = Client()
@@ -36,6 +44,8 @@ class BinTestCase(TestCase):
     # FIXME: test bin capacity
     
 class CrateTestCase(TestCase):
+    fixtures = ['inventory', 'catalog']
+
     def setUp(self):
         self.crate = Crate.objects.all()[0]
         self.client = Client()
@@ -46,6 +56,8 @@ class CrateTestCase(TestCase):
     # FIXME: test crate capacity
     
 class JarTestCase(TestCase):
+    fixtures = ['inventory', 'catalog']
+
     def setUp(self):
         self.jar = Jar.objects.all()[0]
         self.client = Client()

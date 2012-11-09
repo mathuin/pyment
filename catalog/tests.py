@@ -6,6 +6,8 @@ from catalog.models import Category, Product
 from inventory.models import Jar
 
 class NewUserTestCase(TestCase):
+    fixtures = ['catalog']
+
     def setUp(self):
         self.client = Client()
         logged_in = self.client.session.has_key(SESSION_KEY)
@@ -51,6 +53,8 @@ class NewUserTestCase(TestCase):
         self.assertContains(response, product.description)
 
 class DeleteExistTestCase(TestCase):
+    fixtures = ['catalog']
+
     def test_delete_all(self):
         for p in Product.objects.all():
             p.delete()
@@ -111,6 +115,8 @@ class ProductTestCase(TestCase):
         self.assertEqual(sip1c.abv, '---')
     
 class CategoryTestCase(TestCase):
+    fixtures = ['catalog']
+
     def setUp(self):
         self.category = Category.active.all()[0]
         self.client = Client()
