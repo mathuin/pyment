@@ -1,6 +1,9 @@
 from django.test import TestCase, Client
-from django.utils import unittest
+from django.core.management import call_command
 from inventory.models import Warehouse, Row, Shelf, Bin, Crate, Jar
+from pyment import settings
+from datetime import datetime, timedelta
+from django.utils.timezone import utc
 
 class WarehouseTestCase(TestCase):
     fixtures = ['inventory', 'catalog']
@@ -54,7 +57,6 @@ class CrateTestCase(TestCase):
     def test_unicode(self):
         self.assertEqual(self.crate.__unicode__(), self.crate.name)
     
-    # FIXME: test crate capacity
     def test_capacity(self):
         self.assertGreater(self.crate.capacity, self.crate.jars)
     
@@ -68,3 +70,10 @@ class JarTestCase(TestCase):
     def test_unicode(self):
         self.assertEqual(self.jar.__unicode__(), self.jar.name)
     
+    def test_delete_old_jars(self):
+        all_count = Jar.objects.count()
+        remove_before = datetime.utcnow().replace(tzinfo=utc) + timedelta(days=-settings.INACTIVE_JAR_AGE_DAYS)
+        deletable_count = Jar.objects.filter(is_active=False,updated_at__lt=remove_before).count()
+        remaining_count = all_count - deletable_count
+        call_command('delete_old_jars')
+        self.assertEqual(Jar.objects.all().count(), remaining_count)
