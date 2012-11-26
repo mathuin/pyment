@@ -1,4 +1,5 @@
 from django.test import TestCase, Client
+from django.utils import unittest
 from inventory.models import Warehouse, Row, Shelf, Bin, Crate, Jar
 
 class WarehouseTestCase(TestCase):
@@ -54,6 +55,8 @@ class CrateTestCase(TestCase):
         self.assertEqual(self.crate.__unicode__(), self.crate.name)
     
     # FIXME: test crate capacity
+    def test_capacity(self):
+        self.assertGreater(self.crate.capacity, self.crate.jars)
     
 class JarTestCase(TestCase):
     fixtures = ['inventory', 'catalog']
