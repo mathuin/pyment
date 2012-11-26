@@ -29,8 +29,12 @@ class Order(BaseOrderInfo):
     last_updated = models.DateTimeField(auto_now=True)
     user = models.ForeignKey(User, null=True)
 
-    def __unicode__(self):
+    @property
+    def name(self):
         return 'Order #' + str(self.id)
+    
+    def __unicode__(self):
+        return u'%s' % (self.name,)
 
     @models.permalink
     def get_absolute_url(self):
@@ -56,6 +60,7 @@ class OrderItem(models.Model):
     def __unicode__(self):
         return self.product.title + ' (' + self.product.name + ')'
     
+    @models.permalink
     def get_absolute_url(self):
         return self.product.get_absolute_url()
 
@@ -76,8 +81,12 @@ class PickList(models.Model):
     date = models.DateTimeField(auto_now_add=True)
     last_updated = models.DateTimeField(auto_now=True)
 
-    def __unicode__(self):
+    @property
+    def name(self):
         return 'Pick List #' + str(self.id)
+
+    def __unicode__(self):
+        return u'%s' % (self.name,)
 
     @models.permalink
     def get_absolute_url(self):
