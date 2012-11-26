@@ -172,7 +172,7 @@ class Crate(models.Model):
     
     @property
     def jars(self):
-        return self.jar_set.count()
+        return self.jar_set.filter(is_active=True).count()
         
     def __unicode__(self):
         return self.name
