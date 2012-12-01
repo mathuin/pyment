@@ -4,7 +4,7 @@ Pyment is a website that tracks the production, storage, and distribution of my 
 
 Pyment was written in Python using the Django framework. The distribution portion of the website (the catalog, the shopping cart, and other associated code) is based heavily upon the example site from "Beginning Django E-Commerce" by Jim McGaw.
 
-Please note that this code is in the alpha state!  The database schemas and models and views and everything else are subject to change without notice.  When the code settles down, I will modify the documentation to reflect any increase in stability.  Additionally, there are a number of design decisions that I have made to support my specific environment: many jars of mead stored in multiple locations brewed during regularly-scheduled brewing events with multiple batches per event.  Feel free to modify the code to match your particular needs -- I am especially interested in pull requests that improve the look and feel of the site!
+Please note that this code is in the beta state!  The database schemas and models and views and everything else are subject to change without notice.  When the code settles down, I will modify the documentation to reflect any increase in stability.  Additionally, there are a number of design decisions that I have made to support my specific environment: many jars of mead stored in multiple locations brewed during regularly-scheduled brewing events with multiple batches per event.  Feel free to modify the code to match your particular needs -- I am especially interested in pull requests that improve the look and feel of the site!
 
 # Additional Features
 
