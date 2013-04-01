@@ -28,7 +28,7 @@ class Command(BaseCommand):
         try:
             dest_number = args[1]
         except ValueError:
-            raise ValueError('Destination crate is not an int: %s' % args[1])
+            raise CommandError('Destination crate is not an int: %s' % args[1])
         if Crate.objects.filter(number=dest_number).exists():
             dest = Crate.objects.get(number=dest_number)
         else:

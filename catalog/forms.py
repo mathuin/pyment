@@ -23,7 +23,7 @@ class ProductAddToCartForm(forms.Form):
     def clean(self):
         if self.request:
             if not self.request.session.test_cookie_worked():
-                raise forms.ValidationError("Cookies must be enabled.")
+                raise forms.ValidationError('Cookies must be enabled.')
         return self.cleaned_data
 
 class ProductReviewForm(forms.ModelForm):

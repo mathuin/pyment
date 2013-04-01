@@ -74,7 +74,7 @@ def all_in_stock(order):
     try:
         for oi in order_items:
             if Product.objects.get(id=oi.product_id).jars_in_stock().count() < oi.quantity:
-                raise ValidationError, 'Insufficient product in stock - please select another product'
+                raise ValidationError('Insufficient product in stock - please select another product')
     except ValidationError:
         return None
     else:
