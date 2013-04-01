@@ -14,6 +14,9 @@ An inventory management system has been implemented, including support for multi
 
 Pyment is my first experience with virtualenv.  I have created a requirements.txt file from the output of 'pip freeze' which should be enough to recreate my environment.  Please let me know if anything is missing!
 
+In addition to the packages listed in the requirements file, pyment
+requires python 2.6 or greater.
+
 # Initial Configuration
 
 Copy pyment/settings.py to pyment/settings_local.py and modify it to suit your environment.
