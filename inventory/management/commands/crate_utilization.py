@@ -35,8 +35,8 @@ class Command(BaseCommand):
         # need to find a better way to calculate them on the fly
         # they will break if row/shelf/bin exceeds one digit in length
         fieldwidths = (9, 21, 10, 6)
-        headerformat = '{:^%ds}|{:^%ds}|{:^%ds}|{:^%ds}\n' % fieldwidths
-        dataformat = '{:^%dd}|{:^%ds}|{:^%dd}|{:^%dd}\n' % fieldwidths
+        headerformat = '{0:^%ds}|{1:^%ds}|{2:^%ds}|{3:^%ds}\n' % fieldwidths
+        dataformat = '{0:^%dd}|{1:^%ds}|{2:^%dd}|{3:^%dd}\n' % fieldwidths
         headerline = headerformat.format('Crate ID', 'Bin', 'Capacity', 'Jars')
         self.stdout.write(headerline)
         self.stdout.write('='*len(headerline))
