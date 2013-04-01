@@ -21,10 +21,10 @@ class Warehouse(models.Model):
     
     @property
     def name(self):
-        return u"Warehouse %d" % self.number
+        return u"W%d" % self.number
         
     def __unicode__(self):
-        return self.name
+        return u"Warehouse %d" % self.number
     
     @models.permalink
     def get_absolute_url(self):
@@ -49,10 +49,10 @@ class Row(models.Model):
     
     @property
     def name(self):
-        return u"Row %d in %s" % (self.number, self.warehouse)
+        return u"%sR%d" % (self.warehouse.name, self.number)
     
     def __unicode__(self):
-        return self.name
+        return u"%s Row %d" % (self.warehouse, self.number) 
     
     def save(self, *args, **kwargs):
         self.slug = str(self.warehouse.slug)
@@ -88,10 +88,10 @@ class Shelf(models.Model):
     
     @property
     def name(self):
-        return u"Shelf %d in %s" % (self.number, self.row)
+        return u"%sS%d" % (self.row.name, self.number)
         
     def __unicode__(self):
-        return self.name
+        return u"%s Shelf %d" % (self.row, self.number)
     
     def save(self, *args, **kwargs):
         self.slug = str(self.row.slug)
@@ -133,10 +133,10 @@ class Bin(models.Model):
     
     @property
     def name(self):
-        return u"Bin %d on %s" % (self.number, self.shelf)
+        return u"%sB%d" % (self.shelf.name, self.number)
     
     def __unicode__(self):
-        return self.name
+        return u"%s Bin %d" % (self.shelf, self.number)
     
     def save(self, *args, **kwargs):
         self.slug = str(self.shelf.slug)
@@ -168,14 +168,14 @@ class Crate(models.Model):
 
     @property
     def name(self):
-        return u"Crate %d" % self.number
+        return u"C%d" % self.number
     
     @property
     def jars(self):
         return self.jar_set.filter(is_active=True).count()
         
     def __unicode__(self):
-        return self.name
+        return u"Crate %d" % self.number
     
     @models.permalink
     def get_absolute_url(self):
