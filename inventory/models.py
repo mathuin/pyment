@@ -20,11 +20,19 @@ class Warehouse(models.Model):
         return self.row_set.count()
     
     @property
-    def name(self):
+    def shortname(self):
         return u"W%d" % self.number
         
-    def __unicode__(self):
+    @property
+    def longname(self):
         return u"Warehouse %d" % self.number
+
+    @property
+    def name(self):
+        return self.longname
+        
+    def __unicode__(self):
+        return self.name
     
     @models.permalink
     def get_absolute_url(self):
@@ -48,11 +56,19 @@ class Row(models.Model):
         return self.shelf_set.count()
     
     @property
-    def name(self):
-        return u"%sR%d" % (self.warehouse.name, self.number)
+    def shortname(self):
+        return u"%sR%d" % (self.warehouse.shortname, self.number)
     
+    @property
+    def longname(self):
+        return u"%s Row %d" % (self.warehouse.longname, self.number)
+
+    @property
+    def name(self):
+        return self.longname
+
     def __unicode__(self):
-        return u"%s Row %d" % (self.warehouse, self.number) 
+        return self.name
     
     def save(self, *args, **kwargs):
         self.slug = str(self.warehouse.slug)
@@ -87,11 +103,19 @@ class Shelf(models.Model):
         return self.bin_set.count()
     
     @property
-    def name(self):
-        return u"%sS%d" % (self.row.name, self.number)
+    def shortname(self):
+        return u"%sS%d" % (self.row.shortname, self.number)
         
+    @property
+    def longname(self):
+        return u"%s Shelf %d" % (self.row.longname, self.number)
+        
+    @property
+    def name(self):
+        return self.longname
+
     def __unicode__(self):
-        return u"%s Shelf %d" % (self.row, self.number)
+        return self.name
     
     def save(self, *args, **kwargs):
         self.slug = str(self.row.slug)
@@ -132,11 +156,19 @@ class Bin(models.Model):
         return self.crate_set.count()
     
     @property
-    def name(self):
-        return u"%sB%d" % (self.shelf.name, self.number)
+    def shortname(self):
+        return u"%sB%d" % (self.shelf.shortname, self.number)
     
+    @property
+    def longname(self):
+        return u"%s Bin %d" % (self.shelf.longname, self.number)
+    
+    @property
+    def name(self):
+        return self.longname
+
     def __unicode__(self):
-        return u"%s Bin %d" % (self.shelf, self.number)
+        return self.name
     
     def save(self, *args, **kwargs):
         self.slug = str(self.shelf.slug)
@@ -167,16 +199,24 @@ class Crate(models.Model):
         ordering = ['bin']
 
     @property
-    def name(self):
-        return u"C%d" % self.number
-    
-    @property
     def jars(self):
         return self.jar_set.filter(is_active=True).count()
         
-    def __unicode__(self):
-        return u"Crate %d" % self.number
+    @property
+    def shortname(self):
+        return u"C%d" % self.number
     
+    @property
+    def longname(self):
+        return u"Crate %d" % self.number
+
+    @property
+    def name(self):
+        return self.longname
+    
+    def __unicode__(self):
+        return self.name
+
     @models.permalink
     def get_absolute_url(self):
         return('inventory_crate', (), { 'crate_slug': self.slug })
