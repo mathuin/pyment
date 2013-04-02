@@ -2,24 +2,24 @@ from django.core.management.base import BaseCommand, CommandError
 from inventory.models import Warehouse, Row, Shelf, Bin, Crate, Jar
 from optparse import make_option
 
+
 class Command(BaseCommand):
     args = '<warehouse number>'
     help = 'Generates a crate utilization table for the specified warehouse.'
     option_list = BaseCommand.option_list + (
-        make_option('--full', 
-                    action='store_true', 
-                    dest='full', 
-                    default=False, 
+        make_option('--full',
+                    action='store_true',
+                    dest='full',
+                    default=False,
                     help='Include full crates in table'),
-        make_option('--empty', 
-                    action='store_true', 
-                    dest='empty', 
-                    default=False, 
+        make_option('--empty',
+                    action='store_true',
+                    dest='empty',
+                    default=False,
                     help='Include empty crates in table'),
-        )
+    )
 
     def handle(self, *args, **options):
-        
         if len(args) != 1:
             raise CommandError('Wrong number of arguments')
         try:

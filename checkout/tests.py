@@ -4,6 +4,7 @@ from models import Order, PickList
 from catalog.models import Product
 from checkout import all_in_stock, create_picklist, process_picklist, cancel_picklist
 
+
 class OrderTestCase(TestCase):
     fixtures = ['catalog', 'inventory', 'checkout']
 
@@ -18,7 +19,7 @@ class OrderTestCase(TestCase):
         # not OK, but FOUND (302, redirect)
         self.assertEqual(response.status_code, httplib.FOUND)
         # FIXME: check that it redirects the right place
-        
+
     def test_unicode(self):
         self.assertEqual(self.order.__unicode__(), 'Order #' + str(self.order.id))
 

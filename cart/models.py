@@ -1,5 +1,6 @@
 from django.db import models
 
+
 class CartItem(models.Model):
     cart_id = models.CharField(max_length=50)
     date_added = models.DateTimeField(auto_now_add=True)
@@ -11,7 +12,7 @@ class CartItem(models.Model):
 
     def name(self):
         return self.product.name
-    
+
     def title(self):
         return self.product.title
 

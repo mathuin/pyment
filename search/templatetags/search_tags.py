@@ -4,16 +4,18 @@ import urllib
 
 register = template.Library()
 
+
 @register.inclusion_tag("tags/search_box.djhtml")
 def search_box(request):
-    q = request.GET.get('q','')
-    form = SearchForm({'q': q })
-    return {'form': form }
+    q = request.GET.get('q', '')
+    form = SearchForm({'q': q})
+    return {'form': form}
+
 
 @register.inclusion_tag('tags/pagination_links.djhtml')
 def pagination_links(request, paginator):
     raw_params = request.GET.copy()
-    page = raw_params.get('page',1)
+    page = raw_params.get('page', 1)
     p = paginator.page(page)
     try:
         del raw_params['page']
@@ -23,4 +25,4 @@ def pagination_links(request, paginator):
     return {'request': request,
             'paginator': paginator,
             'p': p,
-            'params': params }
+            'params': params}

@@ -3,16 +3,17 @@ from inventory.models import Jar, Crate
 from catalog.models import Product
 from optparse import make_option
 
+
 class Command(BaseCommand):
     args = '<product> <start_jar> <end_jar> <crate number>'
     help = 'Creates new jars in a particular product placing them in a particular crate'
     option_list = BaseCommand.option_list + (
-        make_option('--dry-run', 
-                    action='store_true', 
-                    dest='dryrun', 
-                    default=False, 
+        make_option('--dry-run',
+                    action='store_true',
+                    dest='dryrun',
+                    default=False,
                     help='Simulate the command'),
-        )
+    )
 
     def handle(self, *args, **options):
         if len(args) != 4:

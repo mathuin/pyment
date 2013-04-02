@@ -3,16 +3,17 @@ from inventory.models import Jar, Crate
 from catalog.models import Product
 from optparse import make_option
 
+
 class Command(BaseCommand):
     args = '<source number> <dest number>'
     help = 'Move jars from one crate to another.'
     option_list = BaseCommand.option_list + (
-        make_option('--dry-run', 
-                    action='store_true', 
-                    dest='dryrun', 
-                    default=False, 
+        make_option('--dry-run',
+                    action='store_true',
+                    dest='dryrun',
+                    default=False,
                     help='Simulate the command'),
-        )
+    )
 
     def handle(self, *args, **options):
         if len(args) != 2:

@@ -3,7 +3,8 @@ from catalog.models import Product
 from django.db.models import Q
 from stats import stats
 
-STRIP_WORDS = ['a','an','and','by','for','from','in','no','not','of','on','or','that','the','to','with']
+STRIP_WORDS = ['a', 'an', 'and', 'by', 'for', 'from', 'in', 'no', 'not', 'of', 'on', 'or', 'that', 'the', 'to', 'with']
+
 
 # store the search text in the database
 def store(request, q):
@@ -17,6 +18,7 @@ def store(request, q):
         if request.user.is_authenticated():
             term.user = request.user
         term.save()
+
 
 # get products matching the search text
 def products(search_text):
@@ -33,6 +35,7 @@ def products(search_text):
         results['products'] = products
     return results
 
+
 # strip out common words, limit to 5 words
 def _prepare_words(search_text):
     words = search_text.split()
@@ -40,4 +43,3 @@ def _prepare_words(search_text):
         if common in words:
             words.remove(common)
     return words[0:5]
-

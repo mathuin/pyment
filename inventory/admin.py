@@ -2,6 +2,7 @@ from django.contrib import admin
 from inventory.models import Warehouse, Row, Shelf, Bin, Crate, Jar
 from inventory.forms import WarehouseAdminForm, RowAdminForm, ShelfAdminForm, BinAdminForm, CrateAdminForm, JarAdminForm
 
+
 class WarehouseAdmin(admin.ModelAdmin):
     form = WarehouseAdminForm
     list_display = ('name', 'rows', 'location',)
@@ -14,6 +15,7 @@ class WarehouseAdmin(admin.ModelAdmin):
 
 admin.site.register(Warehouse, WarehouseAdmin)
 
+
 class RowAdmin(admin.ModelAdmin):
     form = RowAdminForm
     list_display = ('name', 'shelves',)
@@ -24,6 +26,7 @@ class RowAdmin(admin.ModelAdmin):
     readonly_fields = ('created_at', 'updated_at',)
 
 admin.site.register(Row, RowAdmin)
+
 
 class ShelfAdmin(admin.ModelAdmin):
     form = ShelfAdminForm
@@ -36,6 +39,7 @@ class ShelfAdmin(admin.ModelAdmin):
 
 admin.site.register(Shelf, ShelfAdmin)
 
+
 class BinAdmin(admin.ModelAdmin):
     form = BinAdminForm
     list_display = ('name', 'capacity', 'crates',)
@@ -47,9 +51,10 @@ class BinAdmin(admin.ModelAdmin):
 
 admin.site.register(Bin, BinAdmin)
 
+
 class CrateAdmin(admin.ModelAdmin):
     form = CrateAdminForm
-    list_display = ('name', 'bin', 'capacity', 'jars',) # contents? count?
+    list_display = ('name', 'bin', 'capacity', 'jars',)  # contents? count?
     list_display_links = ('name',)
     list_per_page = 50
     ordering = ['bin', 'number']
@@ -58,6 +63,7 @@ class CrateAdmin(admin.ModelAdmin):
     prepopulated_fields = {'slug': ('number',)}
 
 admin.site.register(Crate, CrateAdmin)
+
 
 class JarAdmin(admin.ModelAdmin):
     form = JarAdminForm

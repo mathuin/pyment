@@ -5,15 +5,16 @@ from django.core import urlresolvers
 from catalog.models import Product
 from django.core.exceptions import ValidationError
 
-# returns the URL from the checkout module for cart
+
 def get_checkout_url(request):
     return urlresolvers.reverse('checkout')
 
-# process request
+
 def process(request):
     order = create_order(request)
-    results = {'order_number':order.id, 'message':''}
+    results = {'order_number': order.id, 'message': ''}
     return results
+
 
 def create_order(request):
     order = Order()
@@ -44,6 +45,7 @@ def create_order(request):
     # return the new order object
     return order
 
+
 def create_picklist(order):
     if order.status == Order.SUBMITTED and all_in_stock(order):
         picklist = PickList()
@@ -69,6 +71,7 @@ def create_picklist(order):
     else:
         return None
 
+
 def all_in_stock(order):
     order_items = OrderItem.objects.filter(order=order)
     try:
@@ -78,8 +81,9 @@ def all_in_stock(order):
     except ValidationError:
         return None
     else:
-        return order 
-                
+        return order
+
+
 def process_picklist(self):
     if self.status == PickList.SUBMITTED and self.order.status == Order.PROCESSED:
         # FIXME: test for presence of picklist
@@ -94,14 +98,15 @@ def process_picklist(self):
         return True
     else:
         return False
-        
+
+
 def cancel_picklist(self):
     if self.status == PickList.SUBMITTED and self.order.status == Order.PROCESSED:
         # FIXME: test for presence of picklist
         picklist_items = PickListItem.objects.filter(picklist=self.pk)
         for pli in picklist_items:
             pli.jar.is_available = True
-            pli.jar.save()           
+            pli.jar.save()
         self.order.status = Order.SUBMITTED
         self.order.save()
         self.status = PickList.CANCELLED
@@ -109,6 +114,3 @@ def cancel_picklist(self):
         return True
     else:
         return False
-    
-       
-    

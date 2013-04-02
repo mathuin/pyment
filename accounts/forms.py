@@ -2,10 +2,12 @@ from django import forms
 from accounts.models import UserProfile
 from django.contrib.auth.forms import UserCreationForm
 
+
 class UserProfileForm(forms.ModelForm):
     class Meta:
         model = UserProfile
         exclude = ('user',)
+
 
 class RegistrationForm(UserCreationForm):
     password1 = forms.RegexField(label="Password", regex=r'^(?=.*\W+).*$',

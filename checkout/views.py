@@ -8,6 +8,7 @@ import checkout
 from cart import cart
 from accounts import profile
 
+
 def show_checkout(request, template_name='checkout/checkout.djhtml'):
     if cart.is_empty(request):
         cart_url = urlresolvers.reverse('show_cart')
@@ -17,8 +18,8 @@ def show_checkout(request, template_name='checkout/checkout.djhtml'):
         form = CheckoutForm(postdata)
         if form.is_valid():
             response = checkout.process(request)
-            order_number = response.get('order_number',0)
-            error_message = response.get('message','')
+            order_number = response.get('order_number', 0)
+            error_message = response.get('message', '')
             if order_number:
                 request.session['order_number'] = order_number
                 receipt_url = urlresolvers.reverse('checkout_receipt')
@@ -34,8 +35,9 @@ def show_checkout(request, template_name='checkout/checkout.djhtml'):
     page_title = 'Checkout'
     return render(request, template_name, locals())
 
+
 def receipt(request, template_name='checkout/receipt.djhtml'):
-    order_number = request.session.get('order_number','')
+    order_number = request.session.get('order_number', '')
     if order_number:
         order = Order.objects.filter(id=order_number)[0]
         order_items = OrderItem.objects.filter(order=order)

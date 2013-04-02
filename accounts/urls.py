@@ -12,6 +12,6 @@ urlpatterns = patterns('accounts.views',
 
 urlpatterns += patterns('django.contrib.auth.views',
                         (r'^login/$', 'login',
-                         {'template_name': 'registration/login.djhtml', }, 'login'), 
+                         {'template_name': 'registration/login.djhtml', }, 'login'),
                         (r'^logout/$', 'logout',
                          {'template_name': 'registration/logout.djhtml', }, 'logout'), )

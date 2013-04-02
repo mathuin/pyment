@@ -11,6 +11,7 @@ from django.contrib.auth.decorators import login_required
 from django.template.loader import render_to_string
 from django.utils import simplejson
 
+
 def index(request, template_name='catalog/index.djhtml'):
     page_title = 'Only The Best Fermented Honey Wine'
     search_recs = stats.recommended_from_search(request)
@@ -18,7 +19,8 @@ def index(request, template_name='catalog/index.djhtml'):
     recently_viewed = stats.get_recently_viewed(request)
     view_recs = stats.recommended_from_views(request)
     return render(request, template_name, locals())
-    
+
+
 def show_category(request, category_slug, template_name='catalog/category.djhtml'):
     c = get_object_or_404(Category, slug=category_slug)
     products = c.product_set.all()
@@ -26,6 +28,7 @@ def show_category(request, category_slug, template_name='catalog/category.djhtml
     meta_keywords = c.meta_keywords
     meta_description = c.meta_description
     return render(request, template_name, locals())
+
 
 # new product view, with POST vs GET detection
 def show_product(request, product_slug, template_name="catalog/product.djhtml"):
@@ -56,11 +59,12 @@ def show_product(request, product_slug, template_name="catalog/product.djhtml"):
     request.session.set_test_cookie()
     # log product view
     stats.log_product_view(request, p)
-    # don't forget product reviews 
+    # don't forget product reviews
     product_reviews = ProductReview.approved.filter(product=p).order_by('-date')
     review_form = ProductReviewForm()
 
     return render(request, 'catalog/product.djhtml', locals())
+
 
 @login_required
 def add_review(request):
@@ -76,7 +80,7 @@ def add_review(request):
             review.save()
 
             template = "catalog/product_review.djhtml"
-            html = render_to_string(template, {'review': review })
+            html = render_to_string(template, {'review': review})
             response = simplejson.dumps({'success': 'True', 'html': html})
 
         else:
