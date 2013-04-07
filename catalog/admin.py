@@ -1,6 +1,8 @@
 from django.contrib import admin
 from catalog.models import Product, Category, ProductReview
 from catalog.forms import ProductAdminForm
+from django.core.urlresolvers import reverse
+from django.utils.safestring import mark_safe
 
 
 class ProductAdmin(admin.ModelAdmin):
@@ -34,8 +36,15 @@ class CategoryAdmin(admin.ModelAdmin):
     prepopulated_fields = {'slug': ('name', )}
 
     def count(self, obj):
-        return obj.products.count()
-    count.short_descriptions = 'Products'
+        howmany = obj.products.count()
+        # FIXME: learn how to create the URL for 'the admin page for products filtering on this particular category'
+        # http://localhost:8000/admin/catalog/product/?category__id__exact=1
+        anchor = '%s?category__id__exact=%d' % (reverse('admin:catalog_product_changelist'), obj.pk)
+        if howmany > 0:
+            return mark_safe('%d (<a href="%s">list</a>)' % (howmany, anchor))
+        else:
+            return howmany
+    count.short_description = 'Products'
 
 admin.site.register(Category, CategoryAdmin)
 
