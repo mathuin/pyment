@@ -8,8 +8,9 @@ class ProductAdmin(admin.ModelAdmin):
     # sets values for how the admin site lists your products
     list_display = ('name', 'title', 'category', 'description', 'jars_in_stock', 'is_active', 'created_at', 'updated_at',)
     list_display_links = ('name',)
-    list_per_page = 50
-    ordering = ['brewname', 'batchletter']
+    list_filter = ('is_active', 'category')
+    # list_per_page = 50
+    ordering = ['-created_at', 'is_active']
     search_fields = ['name', 'title', 'description', 'meta_keywords', 'meta_description']
     readonly_fields = ('created_at', 'updated_at',)
     # sets up slug to be generated from product name
@@ -22,14 +23,19 @@ admin.site.register(Product, ProductAdmin)
 
 class CategoryAdmin(admin.ModelAdmin):
     #sets up values for how admin site lists categories
-    list_display = ('name', 'bjcptag', 'products', 'is_active', 'created_at', 'updated_at',)
+    list_display = ('name', 'bjcptag', 'count', 'is_active', 'created_at', 'updated_at',)
     list_display_links = ('name',)
+    list_filter = ('is_active',)
     list_per_page = 20
     ordering = ['bjcptag']
     search_fields = ['name', 'description', 'meta_keywords', 'meta_description']
     readonly_fields = ('created_at', 'updated_at',)
     # sets up slug to be generated from category name
     prepopulated_fields = {'slug': ('name', )}
+
+    def count(self, obj):
+        return obj.products.count()
+    count.short_descriptions = 'Products'
 
 admin.site.register(Category, CategoryAdmin)
 
