@@ -60,7 +60,7 @@ class FeaturedProductManager(models.Manager):
 
 class InStockProductManager(models.Manager):
     def get_query_set(self):
-        return super(InStockProductManager, self).get_query_set().filter(is_active=True, jar__is_active=True, jar__is_available=True)
+        return super(InStockProductManager, self).get_query_set().filter(is_active=True, jar__is_active=True, jar__is_available=True).distinct()
 
 
 class Product(models.Model):
