@@ -2,6 +2,8 @@ from django.contrib import admin
 from utils.buttonadmin import ButtonAdmin
 from models import Order, OrderItem, PickList, PickListItem
 from checkout import create_picklist, all_in_stock, process_picklist, cancel_picklist
+from django.core.urlresolvers import reverse
+from django.utils.safestring import mark_safe
 
 
 class OrderItemInline(admin.StackedInline):
@@ -10,7 +12,7 @@ class OrderItemInline(admin.StackedInline):
 
 
 class OrderAdmin(ButtonAdmin):
-    list_display = ('__unicode__', 'date', 'status', 'user')
+    list_display = ('__unicode__', 'picklist', 'date', 'status', 'user')
     list_filter = ('status', 'date')
     search_fields = ('email', 'id')
     inlines = [OrderItemInline, ]
@@ -44,6 +46,14 @@ class OrderAdmin(ButtonAdmin):
 
     change_buttons = [process_one]
 
+    # FIXME: add a manager that excludes cancelled orders?
+    def picklist(self, obj):
+        if PickList.objects.exclude(status=Order.CANCELLED).filter(order=obj).exists():
+            mylist = PickList.objects.exclude(status=Order.CANCELLED).get(order=obj)
+            return mark_safe('<a href="%s">%s</a>' % (reverse('admin:checkout_picklist_change', args=(mylist.id,)), mylist.name))
+        else:
+            return ''
+
 admin.site.register(Order, OrderAdmin)
 
 
@@ -55,9 +65,10 @@ class PickListItemInline(admin.TabularInline):
 
 
 class PickListAdmin(ButtonAdmin):
-    list_display = ('__unicode__', 'date', 'status')
+    list_display = ('__unicode__', 'link_order', 'date', 'status')
     inlines = [PickListItemInline, ]
     actions = ['make_processed', 'make_cancelled']
+    readonly_fields = ('order',)
 
     def make_processed(self, request, queryset):
         picklists_processed = 0
@@ -108,5 +119,10 @@ class PickListAdmin(ButtonAdmin):
     cancel_one.short_description = 'Cancel picklist'
 
     change_buttons = [process_one, cancel_one]
+
+    def link_order(self, obj):
+        myorder = obj.order
+        return mark_safe('<a href="%s">%s</a>' % (reverse('admin:checkout_order_change', args=(myorder.pk,)), myorder.name))
+    link_order.short_description = 'Order'
 
 admin.site.register(PickList, PickListAdmin)
