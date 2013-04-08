@@ -23,7 +23,7 @@ MANAGERS = ADMINS
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2', # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',  # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
         'NAME': 'pyment_db',
         'USER': 'pyment_user',           # Not used with sqlite3.
         'PASSWORD': 'pyment_password',   # Not used with sqlite3.
@@ -87,7 +87,6 @@ STATICFILES_DIRS = (
 STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.FileSystemFinder',
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
-#    'django.contrib.staticfiles.finders.DefaultStorageFinder',
 )
 
 # Make this unique, and don't share it with anybody.
@@ -97,7 +96,6 @@ SECRET_KEY = '&amp;b_htw&amp;h^-@cd&amp;666#-s49)=h@yijtb1oz+o@(a^!+-5610hcd'
 TEMPLATE_LOADERS = (
     'django.template.loaders.filesystem.Loader',
     'django.template.loaders.app_directories.Loader',
-#     'django.template.loaders.eggs.Loader',
 )
 
 TEMPLATE_CONTEXT_PROCESSORS = (
@@ -153,7 +151,7 @@ INSTALLED_APPS = (
     'catalog',
     'inventory',
     'utils',
-    'cart', 
+    'cart',
     'checkout',
     'accounts',
     'search',
@@ -195,6 +193,6 @@ LOGGING = {
 
 # import local settings
 try:
-    from settings_local import * 
+    from settings_local import *
 except ImportError:
     pass

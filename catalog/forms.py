@@ -1,16 +1,18 @@
 from django import forms
 from catalog.models import Product, Category, ProductReview
 
+
 class ProductAdminForm(forms.ModelForm):
-    category = forms.ModelChoiceField(queryset=Category.objects.order_by('bjcptag')) 
-    
+    category = forms.ModelChoiceField(queryset=Category.objects.order_by('bjcptag'))
+
     class Meta:
         model = Product
 
+
 class ProductAddToCartForm(forms.Form):
-    quantity = forms.IntegerField(widget=forms.TextInput(attrs={'size':'2',
-                                                                'value':'1', 'class':'quantity', 'maxlength':'5'}),
-                                  error_messages={'invalid':'Please enter a valid quantity.'},
+    quantity = forms.IntegerField(widget=forms.TextInput(attrs={'size': '2',
+                                                                'value': '1', 'class': 'quantity', 'maxlength': '5'}),
+                                  error_messages={'invalid': 'Please enter a valid quantity.'},
                                   min_value=1)
     product_slug = forms.CharField(widget=forms.HiddenInput())
 
@@ -23,10 +25,11 @@ class ProductAddToCartForm(forms.Form):
     def clean(self):
         if self.request:
             if not self.request.session.test_cookie_worked():
-                raise forms.ValidationError("Cookies must be enabled.")
+                raise forms.ValidationError('Cookies must be enabled.')
         return self.cleaned_data
+
 
 class ProductReviewForm(forms.ModelForm):
     class Meta:
         model = ProductReview
-        exclude = ('user','product', 'is_approved')
+        exclude = ('user', 'product', 'is_approved')

@@ -3,6 +3,7 @@ from django.contrib.auth.models import User
 from catalog.models import Product
 from inventory.models import Jar
 
+
 class BaseOrderInfo(models.Model):
     class Meta:
         abstract = True
@@ -11,6 +12,7 @@ class BaseOrderInfo(models.Model):
     email = models.EmailField(max_length=50)
     phone = models.CharField(max_length=20)
 
+
 class Order(BaseOrderInfo):
     # each individual status
     SUBMITTED = 1
@@ -18,10 +20,10 @@ class Order(BaseOrderInfo):
     DELIVERED = 3
     CANCELLED = 4
     # set of possible order statuses
-    ORDER_STATUSES = ((SUBMITTED,'Submitted'),
-                      (PROCESSED,'Processed'),
-                      (DELIVERED,'Delivered'),
-                      (CANCELLED,'Cancelled'))
+    ORDER_STATUSES = ((SUBMITTED, 'Submitted'),
+                      (PROCESSED, 'Processed'),
+                      (DELIVERED, 'Delivered'),
+                      (CANCELLED, 'Cancelled'))
     # order info
     date = models.DateTimeField(auto_now_add=True)
     status = models.IntegerField(choices=ORDER_STATUSES, default=SUBMITTED)
@@ -32,17 +34,18 @@ class Order(BaseOrderInfo):
     @property
     def name(self):
         return 'Order #' + str(self.id)
-    
+
     def __unicode__(self):
         return u'%s' % (self.name,)
 
     @models.permalink
     def get_absolute_url(self):
-        return ('order_details', (), { 'order_id': self.id })
-    
+        return ('order_details', (), {'order_id': self.id})
+
     def printstatus(self):
         # FIXME: ugly
         return [mystr for (val, mystr) in self.ORDER_STATUSES if val == self.status][0]
+
 
 class OrderItem(models.Model):
     product = models.ForeignKey(Product)
@@ -52,14 +55,14 @@ class OrderItem(models.Model):
     @property
     def name(self):
         return self.product.name
-    
+
     @property
     def title(self):
         return self.product.title
-    
+
     def __unicode__(self):
         return self.product.title + ' (' + self.product.name + ')'
-    
+
     @models.permalink
     def get_absolute_url(self):
         return self.product.get_absolute_url()
@@ -72,9 +75,9 @@ class PickList(models.Model):
     PROCESSED = 2
     CANCELLED = 4
     # set of possible order statuses
-    PICKLIST_STATUSES = ((SUBMITTED,'Submitted'),
-                         (PROCESSED,'Processed'),
-                         (CANCELLED,'Cancelled'))
+    PICKLIST_STATUSES = ((SUBMITTED, 'Submitted'),
+                         (PROCESSED, 'Processed'),
+                         (CANCELLED, 'Cancelled'))
 
     order = models.ForeignKey(Order)
     status = models.IntegerField(choices=PICKLIST_STATUSES, default=SUBMITTED)
@@ -90,7 +93,8 @@ class PickList(models.Model):
 
     @models.permalink
     def get_absolute_url(self):
-        return ('picklist_details', (), { 'picklist_id': self.id })
+        return ('picklist_details', (), {'picklist_id': self.id})
+
 
 class PickListItem(models.Model):
     """A picklist item consists of the jar that is being picked.  The jar contains its name and location."""
@@ -104,7 +108,7 @@ class PickListItem(models.Model):
     @property
     def bin(self):
         return self.jar.crate.bin.name
-    
+
     @property
     def crate(self):
         return self.jar.crate.name

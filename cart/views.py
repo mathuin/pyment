@@ -4,6 +4,7 @@ from django.http import HttpResponseRedirect
 from checkout import checkout
 import cart
 
+
 def show_cart(request, template_name="cart/cart.djhtml"):
     if request.method == 'POST':
         postdata = request.POST.copy()

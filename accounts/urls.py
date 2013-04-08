@@ -1,4 +1,4 @@
-from django.conf.urls.defaults import patterns
+from django.conf.urls import patterns
 
 urlpatterns = patterns('accounts.views',
                        (r'^register/$', 'register',
@@ -12,6 +12,6 @@ urlpatterns = patterns('accounts.views',
 
 urlpatterns += patterns('django.contrib.auth.views',
                         (r'^login/$', 'login',
-                         {'template_name': 'registration/login.djhtml', }, 'login'), 
+                         {'template_name': 'registration/login.djhtml', }, 'login'),
                         (r'^logout/$', 'logout',
                          {'template_name': 'registration/logout.djhtml', }, 'logout'), )

@@ -6,6 +6,7 @@ from django.contrib.auth.decorators import login_required
 from accounts.forms import UserProfileForm, RegistrationForm
 from accounts import profile
 
+
 def register(request, template_name="registration/register.djhtml"):
     if request.method == 'POST':
         postdata = request.POST.copy()
@@ -14,8 +15,8 @@ def register(request, template_name="registration/register.djhtml"):
             user = form.save(commit=False)
             user.email = postdata.get('email', '')
             user.save()
-            un = postdata.get('username','')
-            pw = postdata.get('password1','')
+            un = postdata.get('username', '')
+            pw = postdata.get('password1', '')
             from django.contrib.auth import login, authenticate
             new_user = authenticate(username=un, password=pw)
             if new_user and new_user.is_active:
@@ -27,6 +28,7 @@ def register(request, template_name="registration/register.djhtml"):
     page_title = 'User Registration'
     return render(request, template_name, locals())
 
+
 @login_required
 def my_account(request, template_name="registration/my_account.djhtml"):
     page_title = 'My Account'
@@ -34,12 +36,14 @@ def my_account(request, template_name="registration/my_account.djhtml"):
     name = request.user.username
     return render(request, template_name, locals())
 
+
 @login_required
 def order_details(request, order_id, template_name="registration/order_details.djhtml"):
     order = get_object_or_404(Order, id=order_id, user=request.user)
     page_title = 'Order Details for Order #' + order_id
     order_items = OrderItem.objects.filter(order=order)
     return render(request, template_name, locals())
+
 
 @login_required
 def order_info(request, template_name="registration/order_info.djhtml"):

@@ -3,6 +3,7 @@ from django.core.paginator import Paginator, InvalidPage, EmptyPage
 import search
 from pyment import settings
 
+
 def results(request, template_name="search/results.djhtml"):
     # get current search phrase
     q = request.GET.get('q', '')

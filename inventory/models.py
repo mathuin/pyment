@@ -2,7 +2,7 @@ from django.db import models
 from catalog.models import Product
 from django.core.exceptions import ValidationError
 
-# Create your models here.
+
 class Warehouse(models.Model):
     number = models.IntegerField()
     slug = models.SlugField(max_length=50, unique=True,
@@ -11,24 +11,33 @@ class Warehouse(models.Model):
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    
+
     class Meta:
         ordering = ['number']
-    
+
     @property
     def rows(self):
         return self.row_set.count()
-    
+
+    @property
+    def shortname(self):
+        return u"W%d" % self.number
+
+    @property
+    def longname(self):
+        return u"Warehouse %d" % self.number
+
     @property
     def name(self):
-        return u"Warehouse %d" % self.number
-        
+        return self.longname
+
     def __unicode__(self):
         return self.name
-    
+
     @models.permalink
     def get_absolute_url(self):
-        return('inventory_warehouse', (), { 'warehouse_slug': self.slug })
+        return('inventory_warehouse', (), {'warehouse_slug': self.slug})
+
 
 class Row(models.Model):
     warehouse = models.ForeignKey(Warehouse)
@@ -38,31 +47,40 @@ class Row(models.Model):
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    
+
     class Meta:
-        ordering = ['number']
+        ordering = ['warehouse', 'number']
         unique_together = ('warehouse', 'number')
-        
+
     @property
     def shelves(self):
         return self.shelf_set.count()
-    
+
+    @property
+    def shortname(self):
+        return u"%sR%d" % (self.warehouse.shortname, self.number)
+
+    @property
+    def longname(self):
+        return u"%s Row %d" % (self.warehouse.longname, self.number)
+
     @property
     def name(self):
-        return u"Row %d in %s" % (self.number, self.warehouse)
-    
+        return self.longname
+
     def __unicode__(self):
         return self.name
-    
+
     def save(self, *args, **kwargs):
         self.slug = str(self.warehouse.slug)
         super(Row, self).save(*args, **kwargs)
         self.slug = str(self.warehouse.slug) + '-' + str(self.number)
         super(Row, self).save(*args, **kwargs)
-    
+
     @models.permalink
     def get_absolute_url(self):
-        return('inventory_row', (), { 'row_slug': self.slug })
+        return('inventory_row', (), {'row_slug': self.slug})
+
 
 class Shelf(models.Model):
     row = models.ForeignKey(Row)
@@ -72,37 +90,46 @@ class Shelf(models.Model):
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    
+
     class Meta:
-        ordering = ['number']
+        ordering = ['row', 'number']
         unique_together = ('row', 'number')
         verbose_name_plural = 'Shelves'
 
-    @property        
+    @property
     def warehouse(self):
         return self.row.warehouse
-    
+
     @property
     def bins(self):
         return self.bin_set.count()
-    
+
+    @property
+    def shortname(self):
+        return u"%sS%d" % (self.row.shortname, self.number)
+
+    @property
+    def longname(self):
+        return u"%s Shelf %d" % (self.row.longname, self.number)
+
     @property
     def name(self):
-        return u"Shelf %d in %s" % (self.number, self.row)
-        
+        return self.longname
+
     def __unicode__(self):
         return self.name
-    
+
     def save(self, *args, **kwargs):
         self.slug = str(self.row.slug)
         super(Shelf, self).save(*args, **kwargs)
         self.slug = str(self.row.slug) + '-' + str(self.number)
         super(Shelf, self).save(*args, **kwargs)
-        
+
     @models.permalink
     def get_absolute_url(self):
-        return('inventory_shelf', (), { 'shelf_slug': self.slug })
-    
+        return('inventory_shelf', (), {'shelf_slug': self.slug})
+
+
 class Bin(models.Model):
     shelf = models.ForeignKey(Shelf)
     # must be unique within the shelf
@@ -114,45 +141,54 @@ class Bin(models.Model):
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    
+
     class Meta:
-        ordering = ['number']
+        ordering = ['shelf', 'number']
         unique_together = ('shelf', 'number')
-        
+
     @property
     def warehouse(self):
         return self.shelf.row.warehouse
-    
+
     @property
     def row(self):
         return self.shelf.row
-    
+
     @property
     def crates(self):
         return self.crate_set.count()
-    
+
+    @property
+    def shortname(self):
+        return u"%sB%d" % (self.shelf.shortname, self.number)
+
+    @property
+    def longname(self):
+        return u"%s Bin %d" % (self.shelf.longname, self.number)
+
     @property
     def name(self):
-        return u"Bin %d on %s" % (self.number, self.shelf)
-    
+        return self.longname
+
     def __unicode__(self):
         return self.name
-    
+
     def save(self, *args, **kwargs):
         self.slug = str(self.shelf.slug)
         super(Bin, self).save(*args, **kwargs)
         self.slug = str(self.shelf.slug) + '-' + str(self.number)
         super(Bin, self).save(*args, **kwargs)
-        
+
     @models.permalink
     def get_absolute_url(self):
-        return('inventory_bin', (), { 'bin_slug': self.slug })
+        return('inventory_bin', (), {'bin_slug': self.slug})
 
     def clean(self):
         # ensure that the current number of crates is less than or equal to the capacity
         if self.crates > self.capacity:
             raise ValidationError('Capacity of bin exceeded')
-          
+
+
 class Crate(models.Model):
     number = models.IntegerField()
     slug = models.SlugField(max_length=10, unique=True, blank=True)
@@ -162,34 +198,44 @@ class Crate(models.Model):
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    
-    class Meta:
-        ordering = ['bin']
 
-    @property
-    def name(self):
-        return u"Crate %d" % self.number
-    
+    class Meta:
+        ordering = ['number']
+
     @property
     def jars(self):
         return self.jar_set.filter(is_active=True).count()
-        
+
+    @property
+    def shortname(self):
+        return u"C%d" % self.number
+
+    @property
+    def longname(self):
+        return u"Crate %d" % self.number
+
+    @property
+    def name(self):
+        return self.longname
+
     def __unicode__(self):
         return self.name
-    
+
     @models.permalink
     def get_absolute_url(self):
-        return('inventory_crate', (), { 'crate_slug': self.slug })
+        return('inventory_crate', (), {'crate_slug': self.slug})
 
     def clean(self):
         # ensure that the current number of jars is less than or equal to the capacity
         if self.jars > self.capacity:
             raise ValidationError('Capacity of crate exceeded')
 
+
 class InStockJarManager(models.Manager):
     def get_query_set(self):
         return super(InStockJarManager, self).get_query_set().filter(is_active=True, is_available=True)
-          
+
+
 class Jar(models.Model):
     product = models.ForeignKey(Product)
     number = models.IntegerField()
@@ -203,27 +249,27 @@ class Jar(models.Model):
     is_available = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    
+
     objects = models.Manager()
     instock = InStockJarManager()
-    
+
     class Meta:
-        ordering = ['crate']
+        ordering = ['created_at']
         unique_together = ('product', 'number')
 
     @property
     def name(self):
         return u"%s%d" % (self.product, self.number)
-    
+
     def __unicode__(self):
         return self.name
-    
+
     def save(self, *args, **kwargs):
         self.slug = str(self.product.slug)
         super(Jar, self).save(*args, **kwargs)
         self.slug = str(self.product.slug) + str(self.number)
         super(Jar, self).save(*args, **kwargs)
-        
+
     @models.permalink
     def get_absolute_url(self):
-        return('inventory_jar', (), { 'jar_slug': self.slug })
+        return('inventory_jar', (), {'jar_slug': self.slug})

@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 
+
 class SearchTerm(models.Model):
     q = models.CharField(max_length=50)
     search_date = models.DateTimeField(auto_now_add=True)
