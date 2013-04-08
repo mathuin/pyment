@@ -8,14 +8,15 @@ Please note that this code is in the beta state!  The database schemas and model
 
 # Additional Features
 
-An inventory management system has been implemented, including support for multiple warehouses and picklists.
+Pyment now runs on Django 1.5.1.  This required minimal changes to the codebase, which is now PEP8-compliant except for line length.  
+
+An inventory management system has been implemented, including support for multiple warehouses and picklists.  A number of management commands have been added to facilitate capacity management and to aid in adding new product in bulk.  Drill-down capability is now available from warehouse to crate as well as a few other places.
 
 # Requirements
 
 Pyment is my first experience with virtualenv.  I have created a requirements.txt file from the output of 'pip freeze' which should be enough to recreate my environment.  Please let me know if anything is missing!
 
-In addition to the packages listed in the requirements file, pyment
-requires python 2.6 or greater.
+In addition to the packages listed in the requirements file, pyment requires python 2.6 or greater.
 
 # Initial Configuration
 
@@ -34,8 +35,6 @@ Once all the mead has been entered into the database, take another tour of the s
 # Work still to be done
 
 Picklists have been implemented and work from the admin site.  Minor future changes possibly include emailing admins when new orders are placed and that sort of thing.
-
-The inventory app needs to be beefed up.  Future features include crate consolidation, location of all jars of a particular product, and the like.
 
 The meadery app needs to be written.  It will keep track of recipes past and present and document the differences between theory and practice as well as track the buckets and carboys and create jars at bottling time.
 
