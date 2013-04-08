@@ -104,7 +104,7 @@ class Product(models.Model):
     instock = InStockProductManager()
 
     class Meta:
-        ordering = ['brewname', 'batchletter']
+        ordering = ['-is_active', '-created_at']
 
     @property
     def name(self):

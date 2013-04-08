@@ -49,7 +49,7 @@ class Row(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
-        ordering = ['number']
+        ordering = ['warehouse', 'number']
         unique_together = ('warehouse', 'number')
 
     @property
@@ -92,7 +92,7 @@ class Shelf(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
-        ordering = ['number']
+        ordering = ['row', 'number']
         unique_together = ('row', 'number')
         verbose_name_plural = 'Shelves'
 
@@ -143,7 +143,7 @@ class Bin(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
-        ordering = ['number']
+        ordering = ['shelf', 'number']
         unique_together = ('shelf', 'number')
 
     @property
@@ -200,7 +200,7 @@ class Crate(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
-        ordering = ['bin']
+        ordering = ['number']
 
     @property
     def jars(self):
@@ -254,7 +254,7 @@ class Jar(models.Model):
     instock = InStockJarManager()
 
     class Meta:
-        ordering = ['crate']
+        ordering = ['created_at']
         unique_together = ('product', 'number')
 
     @property
