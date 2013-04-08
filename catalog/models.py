@@ -104,20 +104,22 @@ class Product(models.Model):
     instock = InStockProductManager()
 
     class Meta:
-        ordering = ['brewname', 'batchletter']
+        ordering = ['-is_active', '-created_at']
 
     @property
     def name(self):
         return '%s %s' % (self.brewname, self.batchletter)
 
+    # FIXME: these two have the same magic, need to remove duplication
     def jars_in_stock(self):
-        return self.jar_set.filter(is_available=True, is_active=True)
+        from inventory.models import Jar
+        return Jar.instock.filter(product_id=self.pk).count()
 
     def first_available(self):
-        instockquery = self.jars_in_stock()
-        if instockquery.exists():
-            return instockquery.order_by('number')[0]
-        else:
+        from inventory.models import Jar
+        try:
+            return Jar.instock.filter(product_id=self.pk).order_by('number')[0]
+        except IndexError:
             return None
 
     def __unicode__(self):

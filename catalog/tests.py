@@ -86,13 +86,13 @@ class ProductTestCase(TestCase):
     def test_jars_in_stock(self):
         # one product with two jars that are available and true (returns 2)
         sip1a = Product.active.get(slug='sip-1-a')
-        self.assertEqual(sip1a.jars_in_stock().count(), 2)
+        self.assertEqual(sip1a.jars_in_stock(), 2)
         # one product with no jars (0)
         sip1b = Product.active.get(slug='sip-1-b')
-        self.assertEqual(sip1b.jars_in_stock().count(), 0)
+        self.assertEqual(sip1b.jars_in_stock(), 0)
         # one product with one jar that is available but not true (0)
         sip1c = Product.active.get(slug='sip-1-c')
-        self.assertEqual(sip1c.jars_in_stock().count(), 0)
+        self.assertEqual(sip1c.jars_in_stock(), 0)
 
     def test_first_available(self):
         # returns first jar (see sip1a in test_jars_in_stock)
