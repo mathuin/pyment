@@ -10,7 +10,7 @@ Please note that this code is in the beta state!  The database schemas and model
 
 Pyment now runs on Django 1.5.1.  This required minimal changes to the codebase, which is now PEP8-compliant except for line length.  
 
-An inventory management system has been implemented, including support for multiple warehouses and picklists.  A number of management commands have been added to facilitate capacity management and to aid in adding new product in bulk.  Drill-down capability is now available from warehouse to crate as well as a few other places.
+An inventory management system has been implemented, including support for multiple warehouses and picklists.  A number of management commands have been added to facilitate capacity management and to aid in adding new product in bulk.  Drill-down capability is now available on the admin site from warehouse to crate as well as a few other places.
 
 # Requirements
 
