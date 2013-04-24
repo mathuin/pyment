@@ -1,3 +1,4 @@
+from django.core.urlresolvers import reverse
 from django.db import models
 from catalog.models import Product
 from django.core.exceptions import ValidationError
@@ -34,9 +35,8 @@ class Warehouse(models.Model):
     def __unicode__(self):
         return self.name
 
-    @models.permalink
     def get_absolute_url(self):
-        return('inventory_warehouse', (), {'warehouse_slug': self.slug})
+        return reverse('inventory_warehouse', kwargs={'warehouse_slug': self.slug})
 
 
 class Row(models.Model):
@@ -77,9 +77,8 @@ class Row(models.Model):
         self.slug = str(self.warehouse.slug) + '-' + str(self.number)
         super(Row, self).save(*args, **kwargs)
 
-    @models.permalink
     def get_absolute_url(self):
-        return('inventory_row', (), {'row_slug': self.slug})
+        return reverse('inventory_row', kwargs={'row_slug': self.slug})
 
 
 class Shelf(models.Model):
@@ -125,9 +124,8 @@ class Shelf(models.Model):
         self.slug = str(self.row.slug) + '-' + str(self.number)
         super(Shelf, self).save(*args, **kwargs)
 
-    @models.permalink
     def get_absolute_url(self):
-        return('inventory_shelf', (), {'shelf_slug': self.slug})
+        return reverse('inventory_shelf', kwargs={'shelf_slug': self.slug})
 
 
 class Bin(models.Model):
@@ -179,9 +177,8 @@ class Bin(models.Model):
         self.slug = str(self.shelf.slug) + '-' + str(self.number)
         super(Bin, self).save(*args, **kwargs)
 
-    @models.permalink
     def get_absolute_url(self):
-        return('inventory_bin', (), {'bin_slug': self.slug})
+        return reverse('inventory_bin', kwargs={'bin_slug': self.slug})
 
     def clean(self):
         # ensure that the current number of crates is less than or equal to the capacity
@@ -221,9 +218,8 @@ class Crate(models.Model):
     def __unicode__(self):
         return self.name
 
-    @models.permalink
     def get_absolute_url(self):
-        return('inventory_crate', (), {'crate_slug': self.slug})
+        return reverse('inventory_crate', kwargs={'crate_slug': self.slug})
 
     def clean(self):
         # ensure that the current number of jars is less than or equal to the capacity
@@ -270,6 +266,5 @@ class Jar(models.Model):
         self.slug = str(self.product.slug) + str(self.number)
         super(Jar, self).save(*args, **kwargs)
 
-    @models.permalink
     def get_absolute_url(self):
-        return('inventory_jar', (), {'jar_slug': self.slug})
+        return reverse('inventory_jar', kwargs={'jar_slug': self.slug})
