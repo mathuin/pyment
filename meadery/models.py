@@ -121,11 +121,18 @@ class Recipe(models.Model):
         brew_tempC = total_heat/total_heat_capacity
         return int((float(brew_tempC)*1.8)+32)
 
+    def brew_mass(self):
+        # Total mass of product in kilograms.
+        return self.warm_water.mass(self.warm_volume) + self.cool_water.mass(self.cool_volume) + self.honey_mass
+
+    def brew_volume(self):
+        # Total volume of product in liters.
+        # JMT: does not consider volume of flavors...
+        return self.warm_volume + self.cool_volume + self.honey.volume(self.honey_mass)
+
     def brew_sg(self):
         # SG of total is total mass divided by total volume.
-        total_mass = self.warm_water.mass(self.warm_volume) + self.cool_water.mass(self.cool_volume) + self.honey_mass
-        total_volume = self.warm_volume + self.cool_volume + self.honey.volume(self.honey_mass)
-        return Decimal(total_mass/total_volume).quantize(Decimal('0.001'))
+        return Decimal(self.brew_mass()/self.brew_volume()).quantize(Decimal('0.001'))
 
     def all_natural(self):
         # TRUE if all ingredients are natural
@@ -155,7 +162,7 @@ class Batch(Recipe):
     recipe = models.ForeignKey(Recipe, related_name='originals')
     brewname = models.CharField('Brew Name', max_length=8, help_text='Unique value for brew name (e.g., SIP 99)')
     batchletter = models.CharField('Batch Letter', max_length=1, help_text='Letter corresponding to batch (e.g., A)')
-    jars = models.IntegerField(help_text='Number of jars produced from this batch.')
+    jars = models.IntegerField(help_text='Number of jars actually produced from this batch.')
 
     @property
     def abv(self):

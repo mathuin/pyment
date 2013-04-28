@@ -66,3 +66,11 @@ class RecipeTest(TestCase):
         Standard recipe should have a specific gravity of 1.061.
         """
         self.assertEqual(self.recipe.brew_sg(), Decimal('1.061'))
+
+    def test_volume(self):
+        """
+        Test brewing volume prediction.
+
+        Standard recipe should produce 22.127 liters.
+        """
+        self.assertEqual(self.recipe.brew_volume(), Decimal('22.127'))
