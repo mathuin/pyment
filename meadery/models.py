@@ -5,10 +5,13 @@ from decimal import Decimal
 
 class Ingredient(models.Model):
     """ Ingredients are found in recipes. """
-    name = models.CharField(max_length=40, help_text='Ingredient name')
-    natural = models.BooleanField(default=False, help_text='TRUE if the ingredient does not contain added color, artificial flavors, or synthetic substances.')
+    name = models.CharField('Ingredient Name', max_length=40, help_text='Ingredient name')
+    is_natural = models.BooleanField(default=False, help_text='TRUE if the ingredient does not contain added color, artificial flavors, or synthetic substances.')
     # JMT: may need to change appellation to a dropdown list
-    appellation = models.CharField(max_length=20, help_text='Where the ingredient was made (i.e., Oregon, California, Brazil)')
+    appellation = models.CharField('Appellation', max_length=20, help_text='Where the ingredient was made (i.e., Oregon, California, Brazil)')
+
+    class Meta:
+        abstract = True
 
 
 class Honey(Ingredient):
@@ -21,8 +24,8 @@ class Honey(Ingredient):
     """
     # JMT: should do something about pounds/kilograms
     # JMT: may need to make specific gravity its own class
-    sg = models.DecimalField(max_digits=4, decimal_places=3, default=Decimal('1.422'), help_text='Specific gravity of honey (default value should be fine)')
-    sh = models.DecimalField(max_digits=3, decimal_places=2, default=Decimal('0.57'), help_text='Specific heat of honey (default value should be fine)')
+    sg = models.DecimalField('Specific Gravity', max_digits=4, decimal_places=3, default=Decimal('1.422'), help_text='Specific gravity of honey (default value should be fine)')
+    sh = models.DecimalField('Specific Heat', max_digits=3, decimal_places=2, default=Decimal('0.57'), help_text='Specific heat of honey (default value should be fine)')
 
     # converting mass to volume
     def volume(self, mass):
@@ -39,8 +42,8 @@ class Water(Ingredient):
     """
     # JMT: should do something about gallons/liters
     # JMT: may need to make specific gravity its own class
-    sg = models.DecimalField(max_digits=4, decimal_places=3, default=Decimal('1.000'), help_text='Specific gravity of water (default value should be fine)')
-    sh = models.DecimalField(max_digits=3, decimal_places=2, default=Decimal('1.00'), help_text='Specific heat of water (default value should be fine)')
+    sg = models.DecimalField('Specific Gravity', max_digits=4, decimal_places=3, default=Decimal('1.000'), help_text='Specific gravity of water (default value should be fine)')
+    sh = models.DecimalField('Specific Heat', max_digits=3, decimal_places=2, default=Decimal('1.00'), help_text='Specific heat of water (default value should be fine)')
 
     # converting volume to mass
     def mass(self, volume):
@@ -58,13 +61,18 @@ class Flavor(Ingredient):
     The units for flavors are specific to each flavor.
 
     """
-    units = models.CharField(max_length=12, help_text='Units used to measure ingredient')
+    units = models.CharField('Units', max_length=12, help_text='Units used to measure ingredient')
 
 
 class Yeast(Ingredient):
     """ Yeasts are what converts sugars into alcohol. """
     # JMT: what info do I need to store here?  alcohol tolerance?
-    pass
+    tolerance = models.IntegerField('Alcohol tolerance', help_text='Maximum alcohol tolerance (in percent)')
+    
+    # JMT: DRY violation
+    def maxdeltasg(self):
+        """ Maximum change in specific gravity based on alcohol tolerance. """
+        return Decimal(self.tolerance / 100.0 * 0.75).quantize(Decimal('0.001'))
 
 
 class Recipe(models.Model):
@@ -138,7 +146,7 @@ class Recipe(models.Model):
         # TRUE if all ingredients are natural
         # JMT: skipping yeast at the moment
         # JMT: need to handle the no-flavor case
-        return self.honey.natural and self.warm_water.natural and self.cool_water.natural and self.flavor.natural
+        return self.honey.is_natural and self.warm_water.is_natural and self.cool_water.is_natural and self.flavor.is_natural
 
     def appellation(self):
         # Proper implementation of appellation testing is very complex.  See 27 CFR 4.25(b) for more information.
@@ -163,6 +171,8 @@ class Batch(Recipe):
     brewname = models.CharField('Brew Name', max_length=8, help_text='Unique value for brew name (e.g., SIP 99)')
     batchletter = models.CharField('Batch Letter', max_length=1, help_text='Letter corresponding to batch (e.g., A)')
     jars = models.IntegerField(help_text='Number of jars actually produced from this batch.')
+
+    # Batches are created from recipes, and have links back to them.
 
     @property
     def abv(self):

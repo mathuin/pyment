@@ -1,6 +1,6 @@
 from decimal import Decimal
 from django.test import TestCase
-from meadery.models import Honey, Water, Flavor, Yeast, Recipe
+from models import Honey, Water, Flavor, Yeast, Recipe
 
 
 class HoneyTest(TestCase):
@@ -25,6 +25,26 @@ class WaterTest(TestCase):
         Test conversion from volume to mass.
         """
         self.assertEqual(self.water.mass(self.water_volume), Decimal('9.467'))
+
+
+class FlavorTest(TestCase):
+    def setUp(self):
+        pass
+
+    def test_flavor(self):
+        pass
+
+
+class YeastTest(TestCase):
+    def setUp(self):
+        self.yeast = Yeast()
+        self.yeast.tolerance = 18
+
+    def test_maxdeltasg(self):
+        """
+        Test maximum specific gravity change calculation.
+        """
+        self.assertEqual(self.yeast.maxdeltasg(), Decimal('0.135'))
 
 
 class RecipeTest(TestCase):
