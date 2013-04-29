@@ -1,3 +1,4 @@
+from __future__ import division
 from django.db import models
 from catalog.models import Category
 from decimal import Decimal
@@ -27,10 +28,6 @@ class Honey(Ingredient):
     sg = models.DecimalField('Specific Gravity', max_digits=4, decimal_places=3, default=Decimal('1.422'), help_text='Specific gravity of honey (default value should be fine)')
     sh = models.DecimalField('Specific Heat', max_digits=3, decimal_places=2, default=Decimal('0.57'), help_text='Specific heat of honey (default value should be fine)')
 
-    # converting mass to volume
-    def volume(self, mass):
-        return Decimal(mass / self.sg).quantize(Decimal('0.001'))
-
 
 class Water(Ingredient):
     """
@@ -44,10 +41,6 @@ class Water(Ingredient):
     # JMT: may need to make specific gravity its own class
     sg = models.DecimalField('Specific Gravity', max_digits=4, decimal_places=3, default=Decimal('1.000'), help_text='Specific gravity of water (default value should be fine)')
     sh = models.DecimalField('Specific Heat', max_digits=3, decimal_places=2, default=Decimal('1.00'), help_text='Specific heat of water (default value should be fine)')
-
-    # converting volume to mass
-    def mass(self, volume):
-        return Decimal(volume * self.sg).quantize(Decimal('0.001'))
 
 
 class Flavor(Ingredient):
@@ -68,11 +61,50 @@ class Yeast(Ingredient):
     """ Yeasts are what converts sugars into alcohol. """
     # JMT: what info do I need to store here?  alcohol tolerance?
     tolerance = models.IntegerField('Alcohol tolerance', help_text='Maximum alcohol tolerance (in percent)')
-    
+
     # JMT: DRY violation
     def maxdeltasg(self):
         """ Maximum change in specific gravity based on alcohol tolerance. """
         return Decimal(self.tolerance / 100.0 * 0.75).quantize(Decimal('0.001'))
+
+
+class HoneyItem(models.Model):
+    honey = models.ForeignKey(Honey)
+    mass = models.DecimalField(max_digits=5, decimal_places=3, help_text='Mass of honey in kilograms (1 lb = 0.454 kg)')
+    recipe = models.ForeignKey('Recipe')
+
+    @property
+    def volume(self):
+        return Decimal(self.mass / self.honey.sg).quantize(Decimal('0.001'))
+
+
+class WaterItem(models.Model):
+    water = models.ForeignKey(Water)
+    volume = models.DecimalField(max_digits=5, decimal_places=3, help_text='Volume of water in liters (1 gal = 3.785 L)')
+    recipe = models.ForeignKey('Recipe')
+
+    @property
+    def mass(self):
+        return Decimal(self.volume * self.water.sg).quantize(Decimal('0.001'))
+
+
+class CoolItem(WaterItem):
+    pass
+
+
+class WarmItem(WaterItem):
+    pass
+
+
+class FlavorItem(models.Model):
+    flavor = models.ForeignKey(Flavor)
+    amount = models.FloatField(help_text='Amount of flavor ingredient')
+    recipe = models.ForeignKey('Recipe')
+
+
+class YeastItem(models.Model):
+    yeast = models.ForeignKey(Yeast)
+    recipe = models.ForeignKey('Recipe')
 
 
 class Recipe(models.Model):
@@ -92,55 +124,110 @@ class Recipe(models.Model):
     Recipes are copied to batches, which include actual amounts.
     """
 
-    # A proper implementation would support multiple ingredients:
-    # [(ingredient, amount), ...]
-    # then do the math together at the end!
     title = models.CharField(max_length=40, help_text='Recipe title')
     description = models.TextField(help_text='Description of product.')
-    category = models.ForeignKey(Category)
-    # honey information
-    honey = models.ForeignKey(Honey)
-    honey_mass = models.DecimalField(max_digits=5, decimal_places=3, help_text='Mass of honey in kilograms (1 lb = 0.454 g)')
-    # water information
-    warm_water = models.ForeignKey(Water, related_name='warm_waters')
-    warm_volume = models.DecimalField(max_digits=5, decimal_places=3, help_text='Volume of warm water in liters (1 gal = 3.785 L)')
+    # category = models.ForeignKey(Category)
     warm_temp = models.IntegerField(help_text='Temperature of warm water in degrees Fahrenheit')
-    cool_water = models.ForeignKey(Water, related_name='cool_waters')
-    cool_volume = models.DecimalField(max_digits=5, decimal_places=3, help_text='Volume of cool water in liters (1 gal = 3.785 L)')
     cool_temp = models.IntegerField(help_text='Temperature of cool water in degrees Fahrenheit')
-    # JMT: flavors are optional and have variable amounts -- need some way to handle no-flavor
-    # probably a special flavor of 'None'
-    flavor = models.ForeignKey(Flavor)
-    flavor_amount = models.FloatField(help_text='Amount of flavor ingredient.')
-    yeast = models.ForeignKey(Yeast)
 
+    @property
+    def honey_items(self):
+        return HoneyItem.objects.filter(recipe=self.pk)
+
+    @property
+    def honey_mass(self):
+        return sum([item.mass for item in self.honey_items])
+
+    @property
+    def honey_volume(self):
+        return sum([item.volume for item in self.honey_items])
+
+    @property
+    def honey_sg(self):
+        honey_mass = self.honey_mass
+        return sum([item.honey.sg*(item.mass/honey_mass) for item in self.honey_items])
+
+    @property
+    def honey_sh(self):
+        honey_mass = self.honey_mass
+        return sum([item.honey.sh*(item.mass/honey_mass) for item in self.honey_items])
+
+    @property
+    def cool_items(self):
+        return CoolItem.objects.filter(recipe=self)
+
+    @property
+    def cool_mass(self):
+        return sum([item.mass for item in self.cool_items])
+
+    @property
+    def cool_volume(self):
+        return sum([item.volume for item in self.cool_items])
+
+    @property
+    def cool_sg(self):
+        cool_mass = self.cool_mass
+        return sum([item.water.sg*(item.mass/cool_mass) for item in self.cool_items])
+
+    @property
+    def cool_sh(self):
+        cool_mass = self.cool_mass
+        return sum([item.water.sh*(item.mass/cool_mass) for item in self.cool_items])
+
+    @property
+    def warm_items(self):
+        return WarmItem.objects.filter(recipe=self)
+
+    @property
+    def warm_mass(self):
+        return sum([item.mass for item in self.warm_items])
+
+    @property
+    def warm_volume(self):
+        return sum([item.volume for item in self.warm_items])
+
+    @property
+    def warm_sg(self):
+        warm_mass = self.warm_mass
+        return sum([item.water.sg*(item.mass/warm_mass) for item in self.warm_items])
+
+    @property
+    def warm_sh(self):
+        warm_mass = self.warm_mass
+        return sum([item.water.sh*(item.mass/warm_mass) for item in self.warm_items])
+
+    @property
+    def brew_mass(self):
+        # Total mass of product in kilograms.
+        # JMT: does not consider mass of flavors...
+        return self.honey_mass + self.cool_mass + self.warm_mass
+
+    @property
+    def brew_volume(self):
+        # Total volume of product in liters.
+        # JMT: does not consider volume of flavors...
+        return self.honey_volume + self.cool_volume + self.warm_volume
+
+    @property
+    def brew_sg(self):
+        # SG of total is total mass divided by total volume.
+        return Decimal(self.brew_mass/self.brew_volume).quantize(Decimal('0.001'))
+
+    @property
     def brew_temp(self):
         # Temperatures are converted from Fahrenheit to Celsius and back.
         warm_tempC = Decimal((self.warm_temp-32)/1.8)
         cool_tempC = Decimal((self.cool_temp-32)/1.8)
-        warm_heat = warm_tempC * self.warm_water.mass(self.warm_volume) * self.warm_water.sh
-        cool_heat = cool_tempC * self.cool_water.mass(self.cool_volume) * self.cool_water.sh
+        warm_heat = warm_tempC * self.warm_mass * self.warm_sh
+        cool_heat = cool_tempC * self.cool_mass * self.cool_sh
         # Honey is assumed to be at same temperature as cool water.
-        honey_heat = cool_tempC * self.honey_mass * self.honey.sh
+        honey_heat = cool_tempC * self.honey_mass * self.honey_sh
         # Totals
         total_heat = warm_heat + cool_heat + honey_heat
         total_heat_capacity = warm_heat/warm_tempC + cool_heat/cool_tempC + honey_heat/cool_tempC
         # Final temperature in Celsius.
         brew_tempC = total_heat/total_heat_capacity
         return int((float(brew_tempC)*1.8)+32)
-
-    def brew_mass(self):
-        # Total mass of product in kilograms.
-        return self.warm_water.mass(self.warm_volume) + self.cool_water.mass(self.cool_volume) + self.honey_mass
-
-    def brew_volume(self):
-        # Total volume of product in liters.
-        # JMT: does not consider volume of flavors...
-        return self.warm_volume + self.cool_volume + self.honey.volume(self.honey_mass)
-
-    def brew_sg(self):
-        # SG of total is total mass divided by total volume.
-        return Decimal(self.brew_mass()/self.brew_volume()).quantize(Decimal('0.001'))
 
     def all_natural(self):
         # TRUE if all ingredients are natural

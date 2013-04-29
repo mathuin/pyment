@@ -1,50 +1,7 @@
 from decimal import Decimal
 from django.test import TestCase
-from models import Honey, Water, Flavor, Yeast, Recipe
-
-
-class HoneyTest(TestCase):
-    def setUp(self):
-        self.honey = Honey()
-        self.honey_mass = Decimal('4.540')
-
-    def test_volume(self):
-        """
-        Test conversion from mass to volume.
-        """
-        self.assertEqual(self.honey.volume(self.honey_mass), Decimal('3.193'))
-
-
-class WaterTest(TestCase):
-    def setUp(self):
-        self.water = Water()
-        self.water_volume = Decimal('9.467')
-
-    def test_mass(self):
-        """
-        Test conversion from volume to mass.
-        """
-        self.assertEqual(self.water.mass(self.water_volume), Decimal('9.467'))
-
-
-class FlavorTest(TestCase):
-    def setUp(self):
-        pass
-
-    def test_flavor(self):
-        pass
-
-
-class YeastTest(TestCase):
-    def setUp(self):
-        self.yeast = Yeast()
-        self.yeast.tolerance = 18
-
-    def test_maxdeltasg(self):
-        """
-        Test maximum specific gravity change calculation.
-        """
-        self.assertEqual(self.yeast.maxdeltasg(), Decimal('0.135'))
+from models import Honey, Water, Flavor, Yeast, HoneyItem, CoolItem, WarmItem, FlavorItem, YeastItem, Recipe, Batch, Sample
+from catalog.models import Category
 
 
 class RecipeTest(TestCase):
@@ -58,17 +15,62 @@ class RecipeTest(TestCase):
         no yeast
         """
 
+        self.honey = Honey()
+        self.honey.save()
+
+        self.water = Water()
+        self.water.save()
+
+        self.yeast = Yeast()
+        self.yeast.tolerance = 18
+        self.yeast.save()
+
         self.recipe = Recipe()
-        self.recipe.honey = Honey()
-        self.recipe.honey_mass = Decimal('4.540')
-        self.recipe.warm_water = Water()
-        self.recipe.warm_volume = Decimal('9.467')
         self.recipe.warm_temp = 140
-        self.recipe.cool_water = Water()
-        self.recipe.cool_volume = Decimal('9.467')
         self.recipe.cool_temp = 70
-        self.recipe.flavor = Flavor()
-        self.recipe.yeast = Yeast()
+        self.recipe.save()
+
+        self.honey_item = HoneyItem()
+        self.honey_item.honey = self.honey
+        self.honey_item.mass = Decimal('4.540')
+        self.honey_item.recipe = self.recipe
+        self.honey_item.save()
+
+        self.warm_item = WarmItem()
+        self.warm_item.water = self.water
+        self.warm_item.volume = Decimal('9.467')
+        self.warm_item.recipe = self.recipe
+        self.warm_item.save()
+
+        self.cool_item = CoolItem()
+        self.cool_item.water = self.water
+        self.cool_item.volume = Decimal('9.467')
+        self.cool_item.recipe = self.recipe
+        self.cool_item.save()
+
+    def test_brew_mass(self):
+        """
+        Test brewing volume prediction.
+
+        Standard recipe should produce 23.474 kilograms.
+        """
+        self.assertEqual(self.recipe.brew_mass, Decimal('23.474'))
+
+    def test_brew_volume(self):
+        """
+        Test brewing volume prediction.
+
+        Standard recipe should produce 22.127 liters.
+        """
+        self.assertEqual(self.recipe.brew_volume, Decimal('22.127'))
+
+    def test_brew_sg(self):
+        """
+        Test brewing specific gravity prediction.
+
+        Standard recipe should have a specific gravity of 1.061.
+        """
+        self.assertEqual(self.recipe.brew_sg, Decimal('1.061'))
 
     def test_brew_temp(self):
         """
@@ -77,20 +79,5 @@ class RecipeTest(TestCase):
         Standard recipe should have a brew temperature of 100 deg F.
 
         """
-        self.assertEqual(self.recipe.brew_temp(), 100)
+        self.assertEqual(self.recipe.brew_temp, 100)
 
-    def test_brew_sg(self):
-        """
-        Test brewing specific gravity prediction.
-
-        Standard recipe should have a specific gravity of 1.061.
-        """
-        self.assertEqual(self.recipe.brew_sg(), Decimal('1.061'))
-
-    def test_volume(self):
-        """
-        Test brewing volume prediction.
-
-        Standard recipe should produce 22.127 liters.
-        """
-        self.assertEqual(self.recipe.brew_volume(), Decimal('22.127'))
