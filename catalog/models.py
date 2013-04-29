@@ -71,8 +71,8 @@ class Product(models.Model):
                             help_text='Unique value for product page URL, created from brewname and batchletter.')
     title = models.CharField(max_length=255, help_text='Title of batch (e.g., Chocolate With Mint)')
     # label
-    image = models.ImageField(upload_to='images/products/main')
-    thumbnail = models.ImageField(upload_to='images/products/thumbnails')
+    image = models.ImageField(upload_to='images/products/main', blank=True)
+    thumbnail = models.ImageField(upload_to='images/products/thumbnails', blank=True)
     is_active = models.BooleanField(default=True)
     # popular?
     is_bestseller = models.BooleanField(default=False)

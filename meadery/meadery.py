@@ -1,4 +1,5 @@
 from models import Honey, Water, Flavor, Yeast, HoneyItem, CoolItem, WarmItem, FlavorItem, YeastItem, Recipe, Batch, Sample
+from catalog.models import Product, Category
 
 
 def create_batch_from_recipe(recipe):
@@ -46,7 +47,7 @@ def create_batch_from_recipe(recipe):
 
 def create_recipe_from_batch(batch):
     recipe = Recipe()
-    # JMT: *looks* good...
+    # First copy fields from recipe to batch.
     [setattr(recipe, field.name, getattr(batch, field.name)) for field in Recipe._meta.fields if field.name != 'id']
     recipe.title = '%s %s Recipe' % (batch.brewname, batch.batchletter)
     recipe.save()
@@ -82,3 +83,26 @@ def create_recipe_from_batch(batch):
         new_yeast_item.recipe = recipe
         new_yeast_item.save()
     return recipe
+
+
+def create_product_from_batch(batch):
+    if batch.jars > 0:
+        product = Product()
+        product.brewname = batch.brewname
+        product.batchletter = batch.batchletter
+        product.title = batch.title
+        product.is_active = False
+        product.description = batch.description
+        firstsample = batch.sample_set.order_by('date')[0]
+        lastsample = batch.sample_set.order_by('-date')[0]
+        product.brewed_date = firstsample.date
+        product.brewed_sg = firstsample.corrsg
+        product.bottled_date = lastsample.date
+        product.bottled_sg = lastsample.corrsg
+        product.meta_keywords = 'bogus'
+        product.meta_description = 'bogus'
+        product.category = batch.category
+        product.save()
+        return product
+    else:
+        return None

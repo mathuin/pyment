@@ -2,7 +2,7 @@ from django.contrib import admin
 from utils.buttonadmin import ButtonAdmin
 from .models import Honey, Water, Flavor, Yeast, HoneyItem, CoolItem, WarmItem, FlavorItem, YeastItem, Recipe, Batch, Sample
 from .forms import HoneyAdminForm, WaterAdminForm, FlavorAdminForm, YeastAdminForm, RecipeAdminForm, BatchAdminForm, SampleAdminForm
-from meadery import create_batch_from_recipe, create_recipe_from_batch
+from meadery import create_batch_from_recipe, create_recipe_from_batch, create_product_from_batch
 from django.core.urlresolvers import reverse
 from decimal import Decimal
 from django.utils.safestring import mark_safe
@@ -145,6 +145,16 @@ class BatchAdmin(RecipeAdmin):
             return None
     create_recipe.short_description = 'Create recipe from batch'
 
+    def create_product(self, request, batch=None):
+        if batch is not None:
+            if create_product_from_batch(batch):
+                self.message_user(request, 'One product was created!')
+            else:
+                self.message_user(request, 'No product was created!')
+        else:
+            return None
+    create_product.short_description = 'Create product from batch'
+
     def add_sample(self, request, batch=None):
         if batch is not None:
             return HttpResponseRedirect('%s?batch=%d' % (reverse('admin:meadery_sample_add'), batch.pk))
@@ -152,7 +162,7 @@ class BatchAdmin(RecipeAdmin):
             return None
     add_sample.short_description = 'Add sample'
 
-    change_buttons = [add_sample, create_recipe]
+    change_buttons = [add_sample, create_recipe, create_product]
 
 admin.site.register(Batch, BatchAdmin)
 
