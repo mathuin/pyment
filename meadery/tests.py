@@ -5,6 +5,8 @@ from catalog.models import Category
 
 
 class RecipeTest(TestCase):
+    fixtures = ['catalog']
+
     def setUp(self):
         """ Using standard recipe for testing:
 
@@ -28,6 +30,7 @@ class RecipeTest(TestCase):
         self.recipe = Recipe()
         self.recipe.warm_temp = 140
         self.recipe.cool_temp = 70
+        self.recipe.category = Category.active.all()[0]
         self.recipe.save()
 
         self.honey_item = HoneyItem()

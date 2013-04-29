@@ -11,6 +11,9 @@ class Ingredient(models.Model):
     # JMT: may need to change appellation to a dropdown list
     appellation = models.CharField('Appellation', max_length=20, help_text='Where the ingredient was made (i.e., Oregon, California, Brazil)')
 
+    def __unicode__(self):
+        return u'%s' % self.name
+
     class Meta:
         abstract = True
 
@@ -63,6 +66,7 @@ class Yeast(Ingredient):
     tolerance = models.IntegerField('Alcohol tolerance', help_text='Maximum alcohol tolerance (in percent)')
 
     # JMT: DRY violation
+    @property
     def maxdeltasg(self):
         """ Maximum change in specific gravity based on alcohol tolerance. """
         return Decimal(self.tolerance / 100.0 * 0.75).quantize(Decimal('0.001'))
@@ -104,6 +108,7 @@ class FlavorItem(models.Model):
 
 class YeastItem(models.Model):
     yeast = models.ForeignKey(Yeast)
+    amount = models.IntegerField(help_text='Number of units of yeast')
     recipe = models.ForeignKey('Recipe')
 
 
@@ -126,13 +131,20 @@ class Recipe(models.Model):
 
     title = models.CharField(max_length=40, help_text='Recipe title')
     description = models.TextField(help_text='Description of product.')
-    # category = models.ForeignKey(Category)
+    category = models.ForeignKey(Category)
     warm_temp = models.IntegerField(help_text='Temperature of warm water in degrees Fahrenheit')
     cool_temp = models.IntegerField(help_text='Temperature of cool water in degrees Fahrenheit')
 
     @property
+    def name(self):
+        return self.title
+
+    def __unicode__(self):
+        return u'%s' % self.title
+
+    @property
     def honey_items(self):
-        return HoneyItem.objects.filter(recipe=self.pk)
+        return HoneyItem.objects.filter(recipe=self)
 
     @property
     def honey_mass(self):
@@ -196,6 +208,16 @@ class Recipe(models.Model):
         warm_mass = self.warm_mass
         return sum([item.water.sh*(item.mass/warm_mass) for item in self.warm_items])
 
+    # JMT: for now, flavors and yeast are treated as having zero impact on mass or volume.
+
+    @property
+    def flavor_items(self):
+        return FlavorItem.objects.filter(recipe=self)
+
+    @property
+    def yeast_items(self):
+        return YeastItem.objects.filter(recipe=self)
+
     @property
     def brew_mass(self):
         # Total mass of product in kilograms.
@@ -211,7 +233,10 @@ class Recipe(models.Model):
     @property
     def brew_sg(self):
         # SG of total is total mass divided by total volume.
-        return Decimal(self.brew_mass/self.brew_volume).quantize(Decimal('0.001'))
+        if self.brew_volume > 0:
+            return Decimal(self.brew_mass/self.brew_volume).quantize(Decimal('0.001'))
+        else:
+            return Decimal('0.000')
 
     @property
     def brew_temp(self):
@@ -259,7 +284,12 @@ class Batch(Recipe):
     batchletter = models.CharField('Batch Letter', max_length=1, help_text='Letter corresponding to batch (e.g., A)')
     jars = models.IntegerField(help_text='Number of jars actually produced from this batch.')
 
-    # Batches are created from recipes, and have links back to them.
+    @property
+    def name(self):
+        return '%s %s' % (self.brewname, self.batchletter)
+
+    def __unicode__(self):
+        return u'%s %s' % (self.brewname, self.batchletter)
 
     @property
     def abv(self):
@@ -274,14 +304,9 @@ class Batch(Recipe):
         else:
             return None
 
-    # methods:
-    # creating a new batch:
-    #   copy all values from the source recipe into the real one
-    # save batch as recipe:
-    #   does what it says!
     # admin site edit:
     #   when certain values change, change the dependent read-only
-    #   values after saving!
+    #   values after saving! -- DONE
     #   also do this when adding samples if at all possible.
     # generate a product:
     #   copy all relevant values to the product, with dummy images
