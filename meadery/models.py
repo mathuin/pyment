@@ -4,6 +4,13 @@ from catalog.models import Category
 from decimal import Decimal
 
 
+# Stuff to consider for this app:
+# - consider writing mixins for temperature (conversion, specifically) and specific gravity and specific heat
+# - consider writing something for metric/US/Imperial/whatever
+# - consider making dropdown lists or something similarly sophisticated for appellations
+# - consider writing decorator for honey_mass == 0 checks
+
+
 class Ingredient(models.Model):
     """ Ingredients are found in recipes. """
     name = models.CharField('Ingredient Name', max_length=40, help_text='Ingredient name')
@@ -26,8 +33,6 @@ class Honey(Ingredient):
 
     The units for honey are kilograms.
     """
-    # JMT: should do something about pounds/kilograms
-    # JMT: may need to make specific gravity its own class
     sg = models.DecimalField('Specific Gravity', max_digits=4, decimal_places=3, default=Decimal('1.422'), help_text='Specific gravity of honey (default value should be fine)')
     sh = models.DecimalField('Specific Heat', max_digits=3, decimal_places=2, default=Decimal('0.57'), help_text='Specific heat of honey (default value should be fine)')
 
@@ -40,8 +45,6 @@ class Water(Ingredient):
 
     The units for water are liters.
     """
-    # JMT: should do something about gallons/liters
-    # JMT: may need to make specific gravity its own class
     sg = models.DecimalField('Specific Gravity', max_digits=4, decimal_places=3, default=Decimal('1.000'), help_text='Specific gravity of water (default value should be fine)')
     sh = models.DecimalField('Specific Heat', max_digits=3, decimal_places=2, default=Decimal('1.00'), help_text='Specific heat of water (default value should be fine)')
 
@@ -62,7 +65,6 @@ class Flavor(Ingredient):
 
 class Yeast(Ingredient):
     """ Yeasts are what converts sugars into alcohol. """
-    # JMT: what info do I need to store here?  alcohol tolerance?
     tolerance = models.IntegerField('Alcohol tolerance', help_text='Maximum alcohol tolerance (in percent)')
 
     # JMT: DRY violation
@@ -157,12 +159,18 @@ class Recipe(models.Model):
     @property
     def honey_sg(self):
         honey_mass = self.honey_mass
-        return sum([item.honey.sg*(item.mass/honey_mass) for item in self.honey_items])
+        if honey_mass > 0:
+            return sum([item.honey.sg*(item.mass/honey_mass) for item in self.honey_items])
+        else:
+            return None
 
     @property
     def honey_sh(self):
         honey_mass = self.honey_mass
-        return sum([item.honey.sh*(item.mass/honey_mass) for item in self.honey_items])
+        if honey_mass > 0:
+            return sum([item.honey.sh*(item.mass/honey_mass) for item in self.honey_items])
+        else:
+            return None
 
     @property
     def cool_items(self):
@@ -179,12 +187,18 @@ class Recipe(models.Model):
     @property
     def cool_sg(self):
         cool_mass = self.cool_mass
-        return sum([item.water.sg*(item.mass/cool_mass) for item in self.cool_items])
+        if cool_mass > 0:
+            return sum([item.water.sg*(item.mass/cool_mass) for item in self.cool_items])
+        else:
+            return None
 
     @property
     def cool_sh(self):
         cool_mass = self.cool_mass
-        return sum([item.water.sh*(item.mass/cool_mass) for item in self.cool_items])
+        if cool_mass > 0:
+            return sum([item.water.sh*(item.mass/cool_mass) for item in self.cool_items])
+        else:
+            return None
 
     @property
     def warm_items(self):
@@ -201,12 +215,18 @@ class Recipe(models.Model):
     @property
     def warm_sg(self):
         warm_mass = self.warm_mass
-        return sum([item.water.sg*(item.mass/warm_mass) for item in self.warm_items])
+        if warm_mass > 0:
+            return sum([item.water.sg*(item.mass/warm_mass) for item in self.warm_items])
+        else:
+            return None
 
     @property
     def warm_sh(self):
         warm_mass = self.warm_mass
-        return sum([item.water.sh*(item.mass/warm_mass) for item in self.warm_items])
+        if warm_mass > 0:
+            return sum([item.water.sh*(item.mass/warm_mass) for item in self.warm_items])
+        else:
+            return None
 
     # JMT: for now, flavors and yeast are treated as having zero impact on mass or volume.
 
@@ -220,14 +240,10 @@ class Recipe(models.Model):
 
     @property
     def brew_mass(self):
-        # Total mass of product in kilograms.
-        # JMT: does not consider mass of flavors...
         return self.honey_mass + self.cool_mass + self.warm_mass
 
     @property
     def brew_volume(self):
-        # Total volume of product in liters.
-        # JMT: does not consider volume of flavors...
         return self.honey_volume + self.cool_volume + self.warm_volume
 
     @property
@@ -250,24 +266,32 @@ class Recipe(models.Model):
         # Totals
         total_heat = warm_heat + cool_heat + honey_heat
         total_heat_capacity = warm_heat/warm_tempC + cool_heat/cool_tempC + honey_heat/cool_tempC
-        # Final temperature in Celsius.
-        brew_tempC = total_heat/total_heat_capacity
-        return int((float(brew_tempC)*1.8)+32)
+        if total_heat_capacity > 0:
+            # Final temperature in Celsius.
+            brew_tempC = total_heat/total_heat_capacity
+            return int((float(brew_tempC)*1.8)+32)
+        else:
+            return None
 
     def all_natural(self):
         # TRUE if all ingredients are natural
         # JMT: skipping yeast at the moment
-        # JMT: need to handle the no-flavor case
-        return self.honey.is_natural and self.warm_water.is_natural and self.cool_water.is_natural and self.flavor.is_natural
+        honey_is_natural = all([item.honey.is_natural for item in self.honey_items])
+        cool_is_natural = all([item.water.is_natural for item in self.cool_items])
+        warm_is_natural = all([item.water.is_natural for item in self.warm_items])
+        flavor_is_natural = all([item.flavor.is_natural for item in self.flavor_items])
+        return honey_is_natural and cool_is_natural and warm_is_natural and flavor_is_natural
 
     def appellation(self):
         # Proper implementation of appellation testing is very complex.  See 27 CFR 4.25(b) for more information.
-        # For now, try this:
-        #   if all ingredients have the same appellation, use that appellation
-        #   else None
-        # JMT: need to handle the no-flavor case
-        if self.honey.appellation == self.warm_water.appellation and self.honey.appellation == self.cool_water.appellation and self.honey.appellation == self.flavor.appellation:
-            return self.honey.appellation
+        honey_appellations = list(set([item.honey.appellation for item in self.honey_items]))
+        cool_appellations = list(set([item.water.appellation for item in self.cool_items]))
+        warm_appellations = list(set([item.water.appellation for item in self.warm_items]))
+        flavor_appellations = list(set([item.flavor.appellation for item in self.flavor_items]))
+        
+        total_appellations = list(set(honey_appellations+cool_appellations+warm_appellations+flavor_appellations))
+        if len(total_appellations) == 1:
+            return total_appellations[0]
         else:
             return None
 
@@ -304,10 +328,6 @@ class Batch(Recipe):
         else:
             return None
 
-    # admin site edit:
-    #   when certain values change, change the dependent read-only
-    #   values after saving! -- DONE
-    #   also do this when adding samples if at all possible.
     # generate a product:
     #   copy all relevant values to the product, with dummy images
     #   (or remove the stupid image requirement thing!)
@@ -337,6 +357,6 @@ class Sample(models.Model):
 
     @property
     def corrsg(self):
-        # JMT: convert from Fahrenheit to Celsius to correct SG
+        # Convert temperature from Fahrenheit to Celsius first.
         tempC = int((self.temp-32)/1.8)
         return self.sg + Decimal(Sample.deltasg[tempC])

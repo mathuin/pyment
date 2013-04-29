@@ -5,71 +5,70 @@ from .forms import HoneyAdminForm, WaterAdminForm, FlavorAdminForm, YeastAdminFo
 from meadery import create_batch_from_recipe, create_recipe_from_batch
 from django.core.urlresolvers import reverse
 from decimal import Decimal
+from django.utils.safestring import mark_safe
+from django.http import HttpResponseRedirect
 
 
-class HoneyAdmin(admin.ModelAdmin):
-    form = HoneyAdminForm
-    list_display = ('name', 'is_natural', 'appellation', 'sg', 'sh')
-    list_display_links = ('name',)
+class IngredientAdmin(admin.ModelAdmin):
+    list_display = ('name', 'is_natural', 'appellation', )
+    list_display_links = ('name', )
     list_filter = ('is_natural', 'appellation')
+
+
+class HoneyAdmin(IngredientAdmin):
+    form = HoneyAdminForm
+    list_display = IngredientAdmin.list_display + ('sg', 'sh', )
 
 admin.site.register(Honey, HoneyAdmin)
 
 
-class WaterAdmin(admin.ModelAdmin):
+class WaterAdmin(IngredientAdmin):
     form = WaterAdminForm
-    list_display = ('name', 'is_natural', 'appellation', 'sg', 'sh')
-    list_display_links = ('name',)
-    list_filter = ('is_natural', 'appellation')
+    list_display = IngredientAdmin.list_display + ('sg', 'sh', )
 
 admin.site.register(Water, WaterAdmin)
 
 
-class FlavorAdmin(admin.ModelAdmin):
+class FlavorAdmin(IngredientAdmin):
     form = FlavorAdminForm
-    list_display = ('name', 'is_natural', 'appellation', 'units')
-    list_display_links = ('name',)
-    list_filter = ('is_natural', 'appellation')
+    list_display = IngredientAdmin.list_display + ('units', )
 
 admin.site.register(Flavor, FlavorAdmin)
 
 
-class YeastAdmin(admin.ModelAdmin):
+class YeastAdmin(IngredientAdmin):
     form = YeastAdminForm
-    list_display = ('name', 'is_natural', 'appellation', 'tolerance')
-    list_display_links = ('name',)
-    list_filter = ('is_natural', 'appellation')
+    list_display = IngredientAdmin.list_display + ('tolerance', )
 
 admin.site.register(Yeast, YeastAdmin)
 
 
-class HoneyItemInline(admin.StackedInline):
+class IngredientItemInline(admin.StackedInline):
+    extra = 0
+
+
+class HoneyItemInline(IngredientItemInline):
     model = HoneyItem
-    extra = 0
 
 
-class WarmItemInline(admin.StackedInline):
+class WarmItemInline(IngredientItemInline):
     model = WarmItem
-    extra = 0
 
 
-class CoolItemInline(admin.StackedInline):
+class CoolItemInline(IngredientItemInline):
     model = CoolItem
-    extra = 0
 
 
-class FlavorItemInline(admin.StackedInline):
+class FlavorItemInline(IngredientItemInline):
     model = FlavorItem
-    extra = 0
 
 
-class YeastItemInline(admin.StackedInline):
+class YeastItemInline(IngredientItemInline):
     model = YeastItem
-    extra = 0
 
 
 class RecipeAdmin(ButtonAdmin):
-    list_display = ('title', 'description', 'category', 'brew_volume', 'brew_sg', 'final_sg')
+    list_display = ('title', 'description', 'category', 'all_natural', 'appellation', 'brew_volume', 'brew_sg', 'final_sg')
     list_display_links = ('title', )
     inlines = [HoneyItemInline, WarmItemInline, CoolItemInline, FlavorItemInline, YeastItemInline, ]
 
@@ -101,36 +100,40 @@ class RecipeAdmin(ButtonAdmin):
 admin.site.register(Recipe, RecipeAdmin)
 
 
-class BatchAdmin(ButtonAdmin):
-    list_display = ('name', 'recipe', 'jars', 'brew_sg', 'final_sg', 'firstsg', 'lastsg')
+class BatchAdmin(RecipeAdmin):
+    list_display = ('name', 'recipe', 'all_natural', 'appellation', 'brew_sg', 'final_sg', 'link_samples', 'firstsg', 'lastsg', 'abv', 'jars', )
     list_display_links = ('name', )
-    inlines = [HoneyItemInline, WarmItemInline, CoolItemInline, FlavorItemInline, YeastItemInline, ]
 
-    def brew_sg(self, obj):
-        return obj.brew_sg
-    brew_sg.short_description = 'Projected OG'
-
-    def final_sg(self, obj):
-        if len(obj.yeast_items) > 0:
-            deltasg = max([item.yeast.maxdeltasg for item in obj.yeast_items])
+    def link_samples(self, obj):
+        howmany = obj.sample_set.count()
+        anchor = '%s?batch=%d' % (reverse('admin:meadery_sample_changelist'), obj.pk)
+        if howmany > 0:
+            return mark_safe('%d (<a href="%s">list</a>)' % (howmany, anchor))
         else:
-            deltasg = 0
-        return Decimal(obj.brew_sg - deltasg)
-    final_sg.short_description = 'Projected FG'
+            return howmany
+    link_samples.short_description = 'Samples'
 
     def firstsg(self, obj):
-        if obj.sample_set.count() > 0:
-            return self.sample_set.order_by('date')[0].corrsg
+        # if obj.sample_set.count() > 0:
+        if Sample.objects.filter(batch=obj).exists():
+            return Sample.objects.filter(batch=obj).order_by('date')[0].corrsg
+            # return self.sample_set.order_by('date')[0].corrsg
         else:
             return None
     firstsg.short_description = 'Actual OG'
 
     def lastsg(self, obj):
-        if obj.sample_set.count() > 0:
-            return self.sample_set.order_by('-date')[0].corrsg
+        # if obj.sample_set.count() > 0:
+        if Sample.objects.filter(batch=obj).exists():
+            return Sample.objects.filter(batch=obj).order_by('-date')[0].corrsg
+            # return self.sample_set.order_by('-date')[0].corrsg
         else:
             return None
     lastsg.short_description = 'Actual FG'
+
+    def abv(self, obj):
+        return obj.abv
+    abv.short_description = 'Alc. % by vol.'
 
     def create_recipe(self, request, batch=None):
         if batch is not None:
@@ -142,12 +145,26 @@ class BatchAdmin(ButtonAdmin):
             return None
     create_recipe.short_description = 'Create recipe from batch'
 
-    change_buttons = [create_recipe]
+    def add_sample(self, request, batch=None):
+        if batch is not None:
+            return HttpResponseRedirect('%s?batch=%d' % (reverse('admin:meadery_sample_add'), batch.pk))
+        else:
+            return None
+    add_sample.short_description = 'Add sample'
+
+    change_buttons = [add_sample, create_recipe]
 
 admin.site.register(Batch, BatchAdmin)
 
 
 class SampleAdmin(admin.ModelAdmin):
     form = SampleAdminForm
+    list_display = ('batch', 'date', 'temp', 'sg', 'notes', )
+    list_display_links = ('batch', )
+    list_filter = ['batch', ]
+    ordering = ['batch', 'date']
+
+    def batch(self, obj):
+        return obj.batch.name
 
 admin.site.register(Sample, SampleAdmin)
