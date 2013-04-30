@@ -1,3 +1,4 @@
+from django.core.urlresolvers import reverse
 from django.db import models
 from django.template.defaultfilters import slugify
 from decimal import Decimal
@@ -43,9 +44,8 @@ class Category(models.Model):
         from inventory.models import Jar
         return Jar.instock.filter(product_id__in=Product.active.filter(pk__in=self.products.values_list('id', flat=True)).values_list('id', flat=True)).exists()
 
-    @models.permalink
     def get_absolute_url(self):
-        return ('catalog_category', (), {'category_slug': self.slug})
+        return reverse('catalog_category', kwargs={'category_slug': self.slug})
 
 
 class ActiveProductManager(models.Manager):
@@ -71,8 +71,8 @@ class Product(models.Model):
                             help_text='Unique value for product page URL, created from brewname and batchletter.')
     title = models.CharField(max_length=255, help_text='Title of batch (e.g., Chocolate With Mint)')
     # label
-    image = models.ImageField(upload_to='images/products/main')
-    thumbnail = models.ImageField(upload_to='images/products/thumbnails')
+    image = models.ImageField(upload_to='images/products/main', blank=True)
+    thumbnail = models.ImageField(upload_to='images/products/thumbnails', blank=True)
     is_active = models.BooleanField(default=True)
     # popular?
     is_bestseller = models.BooleanField(default=False)
@@ -129,9 +129,8 @@ class Product(models.Model):
         self.slug = slugify(self.name)
         super(Product, self).save(*args, **kwargs)
 
-    @models.permalink
     def get_absolute_url(self):
-        return ('catalog_product', (), {'product_slug': self.slug})
+        return reverse('catalog_product', kwargs={'product_slug': self.slug})
 
     def cross_sells_hybrid(self):
         from checkout.models import Order, OrderItem

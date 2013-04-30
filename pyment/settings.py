@@ -156,6 +156,7 @@ INSTALLED_APPS = (
     'accounts',
     'search',
     'stats',
+    'meadery',
     # Uncomment the next line to enable the admin:
     'django.contrib.admin',
     # Uncomment the next line to enable admin documentation:

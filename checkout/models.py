@@ -1,3 +1,4 @@
+from django.core.urlresolvers import reverse
 from django.db import models
 from django.contrib.auth.models import User
 from catalog.models import Product
@@ -38,9 +39,8 @@ class Order(BaseOrderInfo):
     def __unicode__(self):
         return u'%s' % (self.name,)
 
-    @models.permalink
     def get_absolute_url(self):
-        return ('order_details', (), {'order_id': self.id})
+        return reverse('order_details', kwargs={'order_id': self.id})
 
     def printstatus(self):
         # FIXME: ugly
@@ -63,7 +63,6 @@ class OrderItem(models.Model):
     def __unicode__(self):
         return self.product.title + ' (' + self.product.name + ')'
 
-    @models.permalink
     def get_absolute_url(self):
         return self.product.get_absolute_url()
 
@@ -91,9 +90,8 @@ class PickList(models.Model):
     def __unicode__(self):
         return u'%s' % (self.name,)
 
-    @models.permalink
     def get_absolute_url(self):
-        return ('picklist_details', (), {'picklist_id': self.id})
+        return reverse('picklist_details', kwargs={'picklist_id': self.id})
 
 
 class PickListItem(models.Model):
@@ -116,6 +114,5 @@ class PickListItem(models.Model):
     def __unicode__(self):
         return self.name
 
-    @models.permalink
     def get_absolute_url(self):
         return self.jar.product.get_absolute_url()
