@@ -10,13 +10,19 @@ Please note that this code is in the beta state!  The database schemas and model
 
 Pyment now runs on Django 1.5.1.  This required minimal changes to the codebase, which is now PEP8-compliant except for line length.  
 
+There is a new meadery app which manages ingredients, recipes, and batches.  My standard recipe template is implied here, with specific ingredients or sets of ingredients included as appropriate.  Individual ingredients can be defined as 'natural' or having a particular appellation.  Batches are created from recipes with the recipe template values copied over.  Recipes can in turn be created from batches as well.  Recipes include projected original and final gravities as well as estimated volumes.  Products can be created from batches, but label printing is not yet supported.
+
 An inventory management system has been implemented, including support for multiple warehouses and picklists.  A number of management commands have been added to facilitate capacity management and to aid in adding new product in bulk.  Drill-down capability is now available on the admin site from warehouse to crate as well as a few other places.
 
 # Requirements
 
 Pyment is my first experience with virtualenv.  I have created a requirements.txt file from the output of 'pip freeze' which should be enough to recreate my environment.  Please let me know if anything is missing!
 
-In addition to the packages listed in the requirements file, pyment requires python 2.6 or greater.
+In addition to the packages listed in the requirements file, pyment requires python 2.6 or greater.  Also, there is an issue with label printing if the label includes an image.  The following error message is displayed:
+
+    IOError: decoder zip not available
+
+I am still working on this problem, and will update the documentation when I have a solution.
 
 # Initial Configuration
 
@@ -35,8 +41,6 @@ Once all the mead has been entered into the database, take another tour of the s
 # Work still to be done
 
 Picklists have been implemented and work from the admin site.  Minor future changes possibly include emailing admins when new orders are placed and that sort of thing.
-
-The meadery app needs to be written.  It will keep track of recipes past and present and document the differences between theory and practice as well as track the buckets and carboys and create jars at bottling time.
 
 # License
 
