@@ -4,6 +4,7 @@ from forms import CheckoutForm
 from django.core import urlresolvers
 from catalog.models import Product
 from django.core.exceptions import ValidationError
+from django.core.mail import mail_managers
 
 
 def get_checkout_url(request):
@@ -42,6 +43,10 @@ def create_order(request):
     if request.user.is_authenticated():
         from accounts import profile
         profile.set(request)
+    # mail the managers
+    mail_subject = 'An order has been placed!'
+    mail_message = '{} has been placed by {}.'.format(order, order.user if order.user else 'anonymous')
+    mail_managers(mail_subject, mail_message)
     # return the new order object
     return order
 

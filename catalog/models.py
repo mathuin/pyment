@@ -5,6 +5,12 @@ from decimal import Decimal
 from django.contrib.auth.models import User
 
 
+# JMT: Category class will be replaced with something much simpler.
+#  * a list of categories like order statuses
+#  * a tool that processes recipes to recommend categories
+#  ... this might mean moving Products into the meadery app
+#      and destroying the catalog app (huge change)
+
 class ActiveCategoryManager(models.Manager):
     def get_query_set(self):
         return super(ActiveCategoryManager, self).get_query_set().filter(is_active=True)
