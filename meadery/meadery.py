@@ -1,5 +1,7 @@
 from models import Honey, Water, Flavor, Yeast, HoneyItem, CoolItem, WarmItem, FlavorItem, YeastItem, Recipe, Batch, Sample
 from catalog.models import Product, Category
+from cStringIO import StringIO
+from labels import Sheet
 
 
 def create_batch_from_recipe(recipe):
@@ -106,3 +108,28 @@ def create_product_from_batch(batch):
         return product
     else:
         return None
+
+
+try:
+    from meadery_local import generate_labels
+except ImportError:
+    from labels import Label
+
+    def generate_labels(batch):
+        return [Label(seq, batch) for seq in xrange(batch.jars)]
+
+
+def make_labels_from_batch(batch):
+    # Create buffer.
+    buffer = StringIO()
+
+    # Build the label objects.
+    labels = generate_labels(batch)
+
+    # Generate label sheets.
+    faux = Sheet(buffer)
+    faux(labels)
+
+    pdf = buffer.getvalue()
+    buffer.close()
+    return pdf

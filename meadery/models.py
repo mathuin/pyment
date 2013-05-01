@@ -33,6 +33,10 @@ class Honey(Ingredient):
 
     The units for honey are kilograms.
     """
+    # JMT: types will be added here too.
+    # honey means ... nothing special
+    # malt means braggot
+    # other means open category
     sg = models.DecimalField('Specific Gravity', max_digits=4, decimal_places=3, default=Decimal('1.422'), help_text='Specific gravity of honey (default value should be fine)')
     sh = models.DecimalField('Specific Heat', max_digits=3, decimal_places=2, default=Decimal('0.57'), help_text='Specific heat of honey (default value should be fine)')
 
@@ -45,6 +49,12 @@ class Water(Ingredient):
 
     The units for water are liters.
     """
+    # JMT: types will be added here too.
+    # water means ... nothing special
+    # apple means cyser
+    # grape means pyment
+    # other fruit means other fruit melomel
+    # other means open category
     sg = models.DecimalField('Specific Gravity', max_digits=4, decimal_places=3, default=Decimal('1.000'), help_text='Specific gravity of water (default value should be fine)')
     sh = models.DecimalField('Specific Heat', max_digits=3, decimal_places=2, default=Decimal('1.00'), help_text='Specific heat of water (default value should be fine)')
 
@@ -60,6 +70,12 @@ class Flavor(Ingredient):
     The units for flavors are specific to each flavor.
 
     """
+    # JMT: Flavor class will be augmented with new fields.
+    # spice means melomel
+    # apple means cyser
+    # grape means pyment
+    # fruit means other fruit melomel
+    # other mean open category
     units = models.CharField('Units', max_length=12, help_text='Units used to measure ingredient')
 
 
@@ -328,10 +344,6 @@ class Batch(Recipe):
         else:
             return None
 
-    # generate a product:
-    #   copy all relevant values to the product, with dummy images
-    #   (or remove the stupid image requirement thing!)
-    #   set product to inactive
     # print labels:
     #   using final SG and description values, checking appellation
 
@@ -360,3 +372,4 @@ class Sample(models.Model):
         # Convert temperature from Fahrenheit to Celsius first.
         tempC = int((self.temp-32)/1.8)
         return self.sg + Decimal(Sample.deltasg[tempC])
+

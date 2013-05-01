@@ -10,7 +10,7 @@ Please note that this code is in the beta state!  The database schemas and model
 
 Pyment now runs on Django 1.5.1.  This required minimal changes to the codebase, which is now PEP8-compliant except for line length.  
 
-There is a new meadery app which manages ingredients, recipes, and batches.  My standard recipe template is implied here, with specific ingredients or sets of ingredients included as appropriate.  Individual ingredients can be defined as 'natural' or having a particular appellation.  Batches are created from recipes with the recipe template values copied over.  Recipes can in turn be created from batches as well.  Recipes include projected original and final gravities as well as estimated volumes.  Products can be created from batches, but label printing is not yet supported.
+There is a new meadery app which manages ingredients, recipes, and batches.  My standard recipe template is implied here, with specific ingredients or sets of ingredients included as appropriate.  Individual ingredients can be defined as 'natural' or having a particular appellation.  Batches are created from recipes with the recipe template values copied over.  Recipes can in turn be created from batches as well.  Recipes include projected original and final gravities as well as estimated volumes.  Products can be created from batches, and labels can be generated from batches.  
 
 An inventory management system has been implemented, including support for multiple warehouses and picklists.  A number of management commands have been added to facilitate capacity management and to aid in adding new product in bulk.  Drill-down capability is now available on the admin site from warehouse to crate as well as a few other places.
 
@@ -18,11 +18,30 @@ An inventory management system has been implemented, including support for multi
 
 Pyment is my first experience with virtualenv.  I have created a requirements.txt file from the output of 'pip freeze' which should be enough to recreate my environment.  Please let me know if anything is missing!
 
-In addition to the packages listed in the requirements file, pyment requires python 2.6 or greater.  Also, there is an issue with label printing if the label includes an image.  The following error message is displayed:
+In addition to the packages listed in the requirements file, pyment requires python 2.6 or greater.
 
-    IOError: decoder zip not available
+# Standard workflow
 
-I am still working on this problem, and will update the documentation when I have a solution.
+## Production
+
+The first step is to create or select a recipe.  The recipes all follow the same pattern:
+
+    1.  Pour some honey into a bucket.
+	2.  Pour some warm water into the bucket, and stir until uniform.
+	3.  Pour some cool water into the bucket, and stir until uniform.
+	4.  (Optional) Add some flavoring to the bucket.
+	5.  Take sample, and record observations.
+	6.  Pitch yeast.
+	
+The information stored in the app focuses on the ingredients.  For instance, multiple types of honey could be used for a particular recipe, or perhaps apple juice instead of water, or maybe some spices for flavor in the case of a melomel.
+
+The next step is to create a batch based on that recipe.  The values for the recipe will be copied into the batch where they can be modified when the mead is actually brewed.  If the batch's ingredients change significantly, a new recipe can be created.  The batch includes space for observations such as temperature, specific gravity, and tasting notes.  These observations will be useful for determining the strength of the mead and the flavor text for the labels among other factors.  As the batch progresses, it will be updated with samples from time to time.
+
+Once the batch is bottled, the final modifications to the batch are made, including the number of jars created.  At this time, the labels can be printed and applied to the jars.  When the jars are labeled, a product can be created from the batch.  The jars can then be placed into the crates, and the database can be updated to reflect the new jars.  That's it!
+
+## Consumption
+
+The site works like a standard e-commerce site, where orders can be placed.  From the checkout admin site, the orders can be examined for errors.  If no errors are found, the orders should be processed into pick lists.  Pick lists identify specific jars in specific locations which must be retrieved to fulfill the order.  Once the entire pick list is completed, it must be marked as processed so the order will be marked delivered.
 
 # Initial Configuration
 
@@ -32,15 +51,15 @@ Sync the database and start the admin site.  Create flatpages for "about" and "c
 
 The cornerstone of the inventory model is the warehouse.  Each warehouse should contain at least one row.  Each row should contain at least one shelf.  Each shelf should contain at least one bin (a section of shelf set aside for one or more crates).  Using the admin site, create the warehouse first, then rows, then shelves, then bins.
 
-The catalog is based on two models: category and product.  The categories are designed around those in the [Beer Judge Certification Program](http://www.bjcp.org/) but need to be populated.  Products have a variety of specific identifying characteristics which may need to be modified to suit your environment.  Again using the admin site, create the categories and then the products.
+The next step is to populate the meadery and catalog apps.  The meadery app stores the ingredients and recipes as well as batches.  At least one recipe must be created as a basis for current and future batches and products.  For batches currently in progress, it may be easiest to create the batch on the meadery admin site and supply the relevant information retroactively.  Similarly, it may be easier to create existing products on the catalog admin site.  However, if the data is available and time permits, it is best to start from recipes and work through products as in the standard workflow.
 
 For each crate in your warehouse, create a crate in the admin site and assign it to a bin.  For each jar in that crate, create a jar in the admin site with the corresponding product data and assign it to that crate.  That's it!
 
 Once all the mead has been entered into the database, take another tour of the site to ensure that everything works as you expect.
 
-# Work still to be done
+## Custom labels
 
-Picklists have been implemented and work from the admin site.  Minor future changes possibly include emailing admins when new orders are placed and that sort of thing.
+Simple labels are created by default.  Custom labels can be produced by creating a file 'meadery\_local.py' in the meadery app which contains a 'generate\_labels(batch)' function, plus any supporting code.  If images are used on labels, they must be copied into the static directory and 'collectstatic' must be run.
 
 # License
 
