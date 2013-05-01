@@ -66,7 +66,7 @@ class Label:
     # absolute constants
     # 27 CFR sec 16.21 Mandatory label information - health warning
     health_warning_text = "<b>GOVERNMENT WARNING:</b>  (1) According to the Surgeon General, women should not drink alcoholic beverages during pregnancy because of the risk of birth defects. (2) Consumption of alcoholic beverages impairs your ability to drive a car or operate machinery, and may cause health problems."
-    bottled_text = 'Bottled by {}, <br /> {}'.format(BREWER_NAME, BREWER_LOCATION)
+    bottled_text = 'Bottled by {0}, <br /> {1}'.format(BREWER_NAME, BREWER_LOCATION)
     flavor_text = "Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat."
     # border
     border_width = 2
@@ -75,7 +75,7 @@ class Label:
 
     # init
     def __init__(self, seq, batch, debug=False):
-        self.seq = '{}{}'.format(batch.batchletter, seq+1)
+        self.seq = '{0}{1}'.format(batch.batchletter, seq+1)
         self.batch = batch
         self.debug = debug
 
