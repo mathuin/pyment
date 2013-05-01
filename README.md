@@ -10,7 +10,7 @@ Please note that this code is in the beta state!  The database schemas and model
 
 Pyment now runs on Django 1.5.1.  This required minimal changes to the codebase, which is now PEP8-compliant except for line length.  
 
-There is a new meadery app which manages ingredients, recipes, and batches.  My standard recipe template is implied here, with specific ingredients or sets of ingredients included as appropriate.  Individual ingredients can be defined as 'natural' or having a particular appellation.  Batches are created from recipes with the recipe template values copied over.  Recipes can in turn be created from batches as well.  Recipes include projected original and final gravities as well as estimated volumes.  Products can be created from batches, and simple labels can be generated from batches.  
+There is a new meadery app which manages ingredients, recipes, and batches.  My standard recipe template is implied here, with specific ingredients or sets of ingredients included as appropriate.  Individual ingredients can be defined as 'natural' or having a particular appellation.  Batches are created from recipes with the recipe template values copied over.  Recipes can in turn be created from batches as well.  Recipes include projected original and final gravities as well as estimated volumes.  Products can be created from batches, and labels can be generated from batches.  
 
 An inventory management system has been implemented, including support for multiple warehouses and picklists.  A number of management commands have been added to facilitate capacity management and to aid in adding new product in bulk.  Drill-down capability is now available on the admin site from warehouse to crate as well as a few other places.
 
@@ -33,6 +33,10 @@ The catalog is based on two models: category and product.  The categories are de
 For each crate in your warehouse, create a crate in the admin site and assign it to a bin.  For each jar in that crate, create a jar in the admin site with the corresponding product data and assign it to that crate.  That's it!
 
 Once all the mead has been entered into the database, take another tour of the site to ensure that everything works as you expect.
+
+# Custom labels
+
+Simple labels are created by default.  Custom labels can be produced by creating a file 'meadery\_local.py' in the meadery app which contains a 'generate\_labels(batch)' function, plus any supporting code.  If images are used on labels, they must be copied into the static directory and 'collectstatic' must be run.
 
 # Work still to be done
 
