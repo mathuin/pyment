@@ -6,14 +6,15 @@ PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), '..').dec
 DEBUG = False
 TEMPLATE_DEBUG = DEBUG
 
+# Defaults for site-specific settings.
 SITE_NAME = 'Pyment'
 META_KEYWORDS = 'mead, cyser, pyment, melomel, metheglin, braggot'
 META_DESCRIPTION = 'Pyment is a small online supplier of high-quality fermented honey wine products.'
 BREWER_NAME = 'Your Name'
 BREWER_EMAIL = 'your_email@example.com'
 BREWER_LOCATION = 'Anywhere, USA'
-DBNAME = 'pyment.sqlite3'
 
+# If the above values are changed, the following two must be updated
 ADMINS = (
     # ('Your Name', 'your_email@example.com'),
     (BREWER_NAME, BREWER_EMAIL),
@@ -31,6 +32,10 @@ DATABASES = {
         'PORT': '',                      # Set to empty string for default. Not used with sqlite3.
     }
 }
+
+# Hosts/domain names that are valid for this site; required if DEBUG is False
+# See https://docs.djangoproject.com/en/1.5/ref/settings/#allowed-hosts
+ALLOWED_HOSTS = []
 
 # Local time zone for this installation. Choices can be found here:
 # http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
@@ -87,6 +92,7 @@ STATICFILES_DIRS = (
 STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.FileSystemFinder',
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
+#    'django.contrib.staticfiles.finders.DefaultStorageFinder',
 )
 
 # Make this unique, and don't share it with anybody.
@@ -96,6 +102,7 @@ SECRET_KEY = '&amp;b_htw&amp;h^-@cd&amp;666#-s49)=h@yijtb1oz+o@(a^!+-5610hcd'
 TEMPLATE_LOADERS = (
     'django.template.loaders.filesystem.Loader',
     'django.template.loaders.app_directories.Loader',
+#     'django.template.loaders.eggs.Loader',
 )
 
 TEMPLATE_CONTEXT_PROCESSORS = (
@@ -195,7 +202,7 @@ LOGGING = {
 # Email!
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 
-# import local settings
+# Import local settings.
 try:
     from settings_local import *
 except ImportError:

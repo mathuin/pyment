@@ -166,10 +166,10 @@ class BatchAdmin(RecipeAdmin):
         if batch is not None:
             pdf = make_labels_from_batch(batch)
             if pdf is not None:
-                self.message_user(request, 'Labels were made for batch {}'.format(batch))
+                self.message_user(request, 'Labels were made for batch {0}'.format(batch))
                 filename = ''.join([batch.brewname, batch.batchletter]).lower().replace(' ', '')
                 response = HttpResponse(content_type='application/pdf')
-                response['Content-Disposition'] = 'attachment; filename="{}.pdf"'.format(filename)
+                response['Content-Disposition'] = 'attachment; filename="{0}.pdf"'.format(filename)
                 response.write(pdf)
                 return response
             else:

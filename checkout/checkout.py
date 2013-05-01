@@ -45,7 +45,7 @@ def create_order(request):
         profile.set(request)
     # mail the managers
     mail_subject = 'An order has been placed!'
-    mail_message = '{} has been placed by {}.'.format(order, order.user if order.user else 'anonymous')
+    mail_message = '{0} has been placed by {1}.'.format(order, order.user if order.user else 'anonymous')
     mail_managers(mail_subject, mail_message)
     # return the new order object
     return order
