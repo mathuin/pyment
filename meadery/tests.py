@@ -83,4 +83,3 @@ class RecipeTest(TestCase):
 
         """
         self.assertEqual(self.recipe.brew_temp, 100)
-

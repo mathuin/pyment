@@ -328,10 +328,6 @@ class Batch(Recipe):
         else:
             return None
 
-    # generate a product:
-    #   copy all relevant values to the product, with dummy images
-    #   (or remove the stupid image requirement thing!)
-    #   set product to inactive
     # print labels:
     #   using final SG and description values, checking appellation
 
@@ -360,3 +356,4 @@ class Sample(models.Model):
         # Convert temperature from Fahrenheit to Celsius first.
         tempC = int((self.temp-32)/1.8)
         return self.sg + Decimal(Sample.deltasg[tempC])
+

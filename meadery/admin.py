@@ -2,11 +2,11 @@ from django.contrib import admin
 from utils.buttonadmin import ButtonAdmin
 from .models import Honey, Water, Flavor, Yeast, HoneyItem, CoolItem, WarmItem, FlavorItem, YeastItem, Recipe, Batch, Sample
 from .forms import HoneyAdminForm, WaterAdminForm, FlavorAdminForm, YeastAdminForm, RecipeAdminForm, BatchAdminForm, SampleAdminForm
-from meadery import create_batch_from_recipe, create_recipe_from_batch, create_product_from_batch
+from meadery import create_batch_from_recipe, create_recipe_from_batch, create_product_from_batch, make_labels_from_batch
 from django.core.urlresolvers import reverse
 from decimal import Decimal
 from django.utils.safestring import mark_safe
-from django.http import HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect
 
 
 class IngredientAdmin(admin.ModelAdmin):
@@ -162,7 +162,23 @@ class BatchAdmin(RecipeAdmin):
             return None
     add_sample.short_description = 'Add sample'
 
-    change_buttons = [add_sample, create_recipe, create_product]
+    def make_labels(self, request, batch=None):
+        if batch is not None:
+            pdf = make_labels_from_batch(batch)
+            if pdf is not None:
+                self.message_user(request, 'Labels were made for batch {}'.format(batch))
+                filename = ''.join([batch.brewname, batch.batchletter]).lower().replace(' ', '')
+                response = HttpResponse(content_type='application/pdf')
+                response['Content-Disposition'] = 'attachment; filename="{}.pdf"'.format(filename)
+                response.write(pdf)
+                return response
+            else:
+                self.message_user(request, 'No labels were made!')
+        else:
+            return None
+    make_labels.short_description = 'Make labels'
+
+    change_buttons = [make_labels, add_sample, create_recipe, create_product]
 
 admin.site.register(Batch, BatchAdmin)
 

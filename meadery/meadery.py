@@ -1,5 +1,7 @@
 from models import Honey, Water, Flavor, Yeast, HoneyItem, CoolItem, WarmItem, FlavorItem, YeastItem, Recipe, Batch, Sample
 from catalog.models import Product, Category
+from cStringIO import StringIO
+from labels import Sheet, Label
 
 
 def create_batch_from_recipe(recipe):
@@ -106,3 +108,23 @@ def create_product_from_batch(batch):
         return product
     else:
         return None
+
+
+def make_labels_from_batch(batch):
+    # Create buffer.
+    buffer = StringIO()
+
+    # Get this from the database.
+    batch_holiday = 'Lughnasadh 2012'
+
+    # Build the label objects.
+    # I need an elegant way to override this.
+    labels = [Label(seq, batch) for seq in xrange(batch.jars)]
+
+    # Generate label sheets.
+    faux = Sheet(buffer)
+    faux(labels)
+
+    pdf = buffer.getvalue()
+    buffer.close()
+    return pdf
