@@ -112,24 +112,41 @@ class Yeast(Ingredient):
         return Decimal(self.tolerance / 100.0 * 0.75).quantize(Decimal('0.001'))
 
 
-class HoneyItem(models.Model):
+class IngredientItem(models.Model):
+    recipe = models.ForeignKey('Recipe')
+
+    class Meta:
+        abstract = True
+
+
+class HoneyItem(IngredientItem):
     honey = models.ForeignKey(Honey)
     mass = models.DecimalField(max_digits=5, decimal_places=3, help_text='Mass of honey in kilograms (1 lb = 0.454 kg)')
-    recipe = models.ForeignKey('Recipe')
+    temp = models.IntegerField(help_text='Temperature of honey in degrees Fahrenheit')
 
     @property
     def volume(self):
         return Decimal(self.mass / self.honey.sg).quantize(Decimal('0.001'))
 
+    # JMT: DRY violation
+    @property
+    def to_c(self):
+        return Decimal((self.temp-32)/1.8)
 
-class WaterItem(models.Model):
+
+class WaterItem(IngredientItem):
     water = models.ForeignKey(Water)
     volume = models.DecimalField(max_digits=5, decimal_places=3, help_text='Volume of water in liters (1 gal = 3.785 L)')
-    recipe = models.ForeignKey('Recipe')
+    temp = models.IntegerField(help_text='Temperature of water in degrees Fahrenheit')
 
     @property
     def mass(self):
         return Decimal(self.volume * self.water.sg).quantize(Decimal('0.001'))
+
+    # JMT: DRY violation
+    @property
+    def to_c(self):
+        return Decimal((self.temp-32)/1.8)
 
 
 class CoolItem(WaterItem):
@@ -140,16 +157,14 @@ class WarmItem(WaterItem):
     pass
 
 
-class FlavorItem(models.Model):
+class FlavorItem(IngredientItem):
     flavor = models.ForeignKey(Flavor)
     amount = models.FloatField(help_text='Amount of flavor ingredient')
-    recipe = models.ForeignKey('Recipe')
 
 
-class YeastItem(models.Model):
+class YeastItem(IngredientItem):
     yeast = models.ForeignKey(Yeast)
     amount = models.IntegerField(help_text='Number of units of yeast')
-    recipe = models.ForeignKey('Recipe')
 
 
 class Recipe(models.Model):
@@ -172,8 +187,6 @@ class Recipe(models.Model):
     title = models.CharField(max_length=40, help_text='Recipe title')
     description = models.TextField(help_text='Description of product.')
     category = models.ForeignKey(Category)
-    warm_temp = models.IntegerField(help_text='Temperature of warm water in degrees Fahrenheit')
-    cool_temp = models.IntegerField(help_text='Temperature of cool water in degrees Fahrenheit')
 
     @property
     def name(self):
@@ -193,6 +206,14 @@ class Recipe(models.Model):
     @property
     def honey_volume(self):
         return sum([item.volume for item in self.honey_items])
+
+    @property
+    def honey_tempC(self):
+        honey_mass = self.honey_mass
+        if honey_mass > 0:
+            return sum([item.to_c*(item.mass/honey_mass) for item in self.honey_items])
+        else:
+            return None
 
     @property
     def honey_sg(self):
@@ -223,6 +244,14 @@ class Recipe(models.Model):
         return sum([item.volume for item in self.cool_items])
 
     @property
+    def cool_tempC(self):
+        cool_mass = self.cool_mass
+        if cool_mass > 0:
+            return sum([item.to_c*(item.mass/cool_mass) for item in self.cool_items])
+        else:
+            return None
+
+    @property
     def cool_sg(self):
         cool_mass = self.cool_mass
         if cool_mass > 0:
@@ -249,6 +278,14 @@ class Recipe(models.Model):
     @property
     def warm_volume(self):
         return sum([item.volume for item in self.warm_items])
+
+    @property
+    def warm_tempC(self):
+        warm_mass = self.warm_mass
+        if warm_mass > 0:
+            return sum([item.to_c*(item.mass/warm_mass) for item in self.warm_items])
+        else:
+            return None
 
     @property
     def warm_sg(self):
@@ -294,16 +331,11 @@ class Recipe(models.Model):
 
     @property
     def brew_temp(self):
-        # Temperatures are converted from Fahrenheit to Celsius and back.
-        warm_tempC = Decimal((self.warm_temp-32)/1.8)
-        cool_tempC = Decimal((self.cool_temp-32)/1.8)
-        warm_heat = warm_tempC * self.warm_mass * self.warm_sh
-        cool_heat = cool_tempC * self.cool_mass * self.cool_sh
-        # Honey is assumed to be at same temperature as cool water.
-        honey_heat = cool_tempC * self.honey_mass * self.honey_sh
-        # Totals
+        warm_heat = self.warm_tempC * self.warm_mass * self.warm_sh
+        cool_heat = self.cool_tempC * self.cool_mass * self.cool_sh
+        honey_heat = self.honey_tempC * self.honey_mass * self.honey_sh
         total_heat = warm_heat + cool_heat + honey_heat
-        total_heat_capacity = warm_heat/warm_tempC + cool_heat/cool_tempC + honey_heat/cool_tempC
+        total_heat_capacity = warm_heat/self.warm_tempC + cool_heat/self.cool_tempC + honey_heat/self.honey_tempC
         if total_heat_capacity > 0:
             # Final temperature in Celsius.
             brew_tempC = total_heat/total_heat_capacity
@@ -326,7 +358,7 @@ class Recipe(models.Model):
         cool_appellations = list(set([item.water.appellation for item in self.cool_items]))
         warm_appellations = list(set([item.water.appellation for item in self.warm_items]))
         flavor_appellations = list(set([item.flavor.appellation for item in self.flavor_items]))
-        
+
         total_appellations = list(set(honey_appellations+cool_appellations+warm_appellations+flavor_appellations))
         if len(total_appellations) == 1:
             return total_appellations[0]
