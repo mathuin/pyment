@@ -1,14 +1,14 @@
 from cart import cart
 from models import Order, OrderItem, PickList, PickListItem
 from forms import CheckoutForm
-from django.core import urlresolvers
 from catalog.models import Product
 from django.core.exceptions import ValidationError
 from django.core.mail import mail_managers
+from django.core.urlresolvers import reverse
 
 
 def get_checkout_url(request):
-    return urlresolvers.reverse('checkout')
+    return reverse('checkout')
 
 
 def process(request):
@@ -45,7 +45,7 @@ def create_order(request):
         profile.set(request)
     # mail the managers
     mail_subject = 'An order has been placed!'
-    mail_message = '{0} has been placed by {1}.'.format(order, order.user if order.user else 'anonymous')
+    mail_message = '{0} has been placed by {1}.\n\nClick here: {2}'.format(order, order.user if order.user else 'anonymous', request.build_absolute_uri(reverse('admin:checkout_order_change', args=(order.pk,))))
     mail_managers(mail_subject, mail_message)
     # return the new order object
     return order
