@@ -51,6 +51,17 @@ def create_order(request):
     return order
 
 
+def cancel_order(self):
+    if self.status == Order.SUBMITTED:
+        # FIXME: test for presence of order
+        OrderItem.objects.filter(order=self.pk).delete()
+        self.status = Order.CANCELLED
+        self.save()
+        return True
+    else:
+        return False
+
+
 def create_picklist(order):
     if order.status == Order.SUBMITTED and all_in_stock(order):
         picklist = PickList()
