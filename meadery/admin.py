@@ -10,9 +10,9 @@ from django.http import HttpResponse, HttpResponseRedirect
 
 
 class IngredientAdmin(admin.ModelAdmin):
-    list_display = ('name', 'is_natural', 'appellation', )
+    list_display = ('name', 'is_natural', 'appellation', 'type')
     list_display_links = ('name', )
-    list_filter = ('is_natural', 'appellation')
+    list_filter = ('is_natural', 'appellation', 'type')
 
 
 class HoneyAdmin(IngredientAdmin):

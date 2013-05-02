@@ -33,12 +33,16 @@ class Honey(Ingredient):
 
     The units for honey are kilograms.
     """
-    # JMT: types will be added here too.
-    # honey means ... nothing special
-    # malt means braggot
-    # other means open category
     sg = models.DecimalField('Specific Gravity', max_digits=4, decimal_places=3, default=Decimal('1.422'), help_text='Specific gravity of honey (default value should be fine)')
     sh = models.DecimalField('Specific Heat', max_digits=3, decimal_places=2, default=Decimal('0.57'), help_text='Specific heat of honey (default value should be fine)')
+    # Individual types of sugar sources.
+    HONEY = 1
+    MALT = 2
+    OTHER = 3
+    HONEY_TYPES = ((HONEY, 'Honey'),
+                   (MALT, 'Malt'),
+                   (OTHER, 'Other'))
+    type = models.IntegerField(choices=HONEY_TYPES, default=HONEY)
 
 
 class Water(Ingredient):
@@ -49,14 +53,20 @@ class Water(Ingredient):
 
     The units for water are liters.
     """
-    # JMT: types will be added here too.
-    # water means ... nothing special
-    # apple means cyser
-    # grape means pyment
-    # other fruit means other fruit melomel
-    # other means open category
     sg = models.DecimalField('Specific Gravity', max_digits=4, decimal_places=3, default=Decimal('1.000'), help_text='Specific gravity of water (default value should be fine)')
     sh = models.DecimalField('Specific Heat', max_digits=3, decimal_places=2, default=Decimal('1.00'), help_text='Specific heat of water (default value should be fine)')
+    # Individual types of solvents.
+    WATER = 1
+    APPLE_JUICE = 2
+    GRAPE_JUICE = 3
+    FRUIT_JUICE = 4
+    OTHER = 5
+    WATER_TYPES = ((WATER, 'Water'),
+                   (APPLE_JUICE, 'Apple Juice'),
+                   (GRAPE_JUICE, 'Grape Juice'),
+                   (FRUIT_JUICE, 'Fruit Juice'),
+                   (OTHER, 'Other'))
+    type = models.IntegerField(choices=WATER_TYPES, default=WATER)
 
 
 class Flavor(Ingredient):
@@ -70,18 +80,30 @@ class Flavor(Ingredient):
     The units for flavors are specific to each flavor.
 
     """
-    # JMT: Flavor class will be augmented with new fields.
-    # spice means melomel
-    # apple means cyser
-    # grape means pyment
-    # fruit means other fruit melomel
-    # other mean open category
     units = models.CharField('Units', max_length=12, help_text='Units used to measure ingredient')
+    # Individual types of flavors.
+    SPICE = 1
+    APPLE = 2
+    GRAPE = 3
+    FRUIT = 4
+    OTHER = 5
+    FLAVOR_TYPES = ((SPICE, 'Spice'),
+                    (APPLE, 'Apple'),
+                    (GRAPE, 'Grape'),
+                    (FRUIT, 'Fruit'),
+                    (OTHER, 'Other'))
+    type = models.IntegerField(choices=FLAVOR_TYPES, default=SPICE)
 
 
 class Yeast(Ingredient):
     """ Yeasts are what converts sugars into alcohol. """
     tolerance = models.IntegerField('Alcohol tolerance', help_text='Maximum alcohol tolerance (in percent)')
+    # Individual types of yeast.
+    DRY = 1
+    WET = 2
+    YEAST_TYPES = ((DRY, 'Dry'),
+                   (WET, 'Wet'))
+    type = models.IntegerField(choices=YEAST_TYPES, default=DRY)
 
     # JMT: DRY violation
     @property
