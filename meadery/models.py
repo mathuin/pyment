@@ -1,6 +1,5 @@
 from __future__ import division
 from django.db import models
-from catalog.models import Category
 from decimal import Decimal
 
 
@@ -139,6 +138,9 @@ class WaterItem(IngredientItem):
     volume = models.DecimalField(max_digits=5, decimal_places=3, help_text='Volume of water in liters (1 gal = 3.785 L)')
     temp = models.IntegerField(help_text='Temperature of water in degrees Fahrenheit')
 
+    class Meta:
+        abstract = True
+
     @property
     def mass(self):
         return Decimal(self.volume * self.water.sg).quantize(Decimal('0.001'))
@@ -183,10 +185,30 @@ class Recipe(models.Model):
 
     Recipes are copied to batches, which include actual amounts.
     """
+    # Individual recipe categories.
+    DRY = 241
+    SEMI_SWEET = 242
+    SWEET = 243
+    CYSER = 251
+    PYMENT = 252
+    OTHER_FRUIT_MELOMEL = 253
+    METHEGLIN = 261
+    BRAGGOT = 262
+    OPEN_CATEGORY = 263
+    # Set of all recipe categories.
+    RECIPE_CATEGORIES = ((DRY, 'Dry'),
+                         (SEMI_SWEET, 'Semi-Sweet'),
+                         (SWEET, 'Sweet'),
+                         (CYSER, 'Cyser'),
+                         (PYMENT, 'Pyment'),
+                         (OTHER_FRUIT_MELOMEL, 'Other Fruit Melomel'),
+                         (METHEGLIN, 'Metheglin'),
+                         (BRAGGOT, 'Braggot'),
+                         (OPEN_CATEGORY, 'Open Category'))
 
     title = models.CharField(max_length=40, help_text='Recipe title')
     description = models.TextField(help_text='Description of product.')
-    category = models.ForeignKey(Category)
+    category = models.IntegerField(choices=RECIPE_CATEGORIES, default=DRY)
 
     @property
     def name(self):
@@ -232,74 +254,38 @@ class Recipe(models.Model):
             return None
 
     @property
-    def cool_items(self):
-        return CoolItem.objects.filter(recipe=self)
+    def water_items(self):
+        return list(CoolItem.objects.filter(recipe=self)) + list(WarmItem.objects.filter(recipe=self))
 
     @property
-    def cool_mass(self):
-        return sum([item.mass for item in self.cool_items])
+    def water_mass(self):
+        return sum([item.mass for item in self.water_items])
 
     @property
-    def cool_volume(self):
-        return sum([item.volume for item in self.cool_items])
+    def water_volume(self):
+        return sum([item.volume for item in self.water_items])
 
     @property
-    def cool_tempC(self):
-        cool_mass = self.cool_mass
-        if cool_mass > 0:
-            return sum([item.to_c*(item.mass/cool_mass) for item in self.cool_items])
+    def water_tempC(self):
+        water_mass = self.water_mass
+        if water_mass > 0:
+            return sum([item.to_c*(item.mass/water_mass) for item in self.water_items])
         else:
             return None
 
     @property
-    def cool_sg(self):
-        cool_mass = self.cool_mass
-        if cool_mass > 0:
-            return sum([item.water.sg*(item.mass/cool_mass) for item in self.cool_items])
+    def water_sg(self):
+        water_mass = self.water_mass
+        if water_mass > 0:
+            return sum([item.water.sg*(item.mass/water_mass) for item in self.water_items])
         else:
             return None
 
     @property
-    def cool_sh(self):
-        cool_mass = self.cool_mass
-        if cool_mass > 0:
-            return sum([item.water.sh*(item.mass/cool_mass) for item in self.cool_items])
-        else:
-            return None
-
-    @property
-    def warm_items(self):
-        return WarmItem.objects.filter(recipe=self)
-
-    @property
-    def warm_mass(self):
-        return sum([item.mass for item in self.warm_items])
-
-    @property
-    def warm_volume(self):
-        return sum([item.volume for item in self.warm_items])
-
-    @property
-    def warm_tempC(self):
-        warm_mass = self.warm_mass
-        if warm_mass > 0:
-            return sum([item.to_c*(item.mass/warm_mass) for item in self.warm_items])
-        else:
-            return None
-
-    @property
-    def warm_sg(self):
-        warm_mass = self.warm_mass
-        if warm_mass > 0:
-            return sum([item.water.sg*(item.mass/warm_mass) for item in self.warm_items])
-        else:
-            return None
-
-    @property
-    def warm_sh(self):
-        warm_mass = self.warm_mass
-        if warm_mass > 0:
-            return sum([item.water.sh*(item.mass/warm_mass) for item in self.warm_items])
+    def water_sh(self):
+        water_mass = self.water_mass
+        if water_mass > 0:
+            return sum([item.water.sh*(item.mass/water_mass) for item in self.water_items])
         else:
             return None
 
@@ -315,11 +301,11 @@ class Recipe(models.Model):
 
     @property
     def brew_mass(self):
-        return self.honey_mass + self.cool_mass + self.warm_mass
+        return self.honey_mass + self.water_mass
 
     @property
     def brew_volume(self):
-        return self.honey_volume + self.cool_volume + self.warm_volume
+        return self.honey_volume + self.water_volume
 
     @property
     def brew_sg(self):
@@ -331,11 +317,10 @@ class Recipe(models.Model):
 
     @property
     def brew_temp(self):
-        warm_heat = self.warm_tempC * self.warm_mass * self.warm_sh
-        cool_heat = self.cool_tempC * self.cool_mass * self.cool_sh
+        water_heat = self.water_tempC * self.water_mass * self.water_sh
         honey_heat = self.honey_tempC * self.honey_mass * self.honey_sh
-        total_heat = warm_heat + cool_heat + honey_heat
-        total_heat_capacity = warm_heat/self.warm_tempC + cool_heat/self.cool_tempC + honey_heat/self.honey_tempC
+        total_heat = water_heat + honey_heat
+        total_heat_capacity = water_heat/self.water_tempC + honey_heat/self.honey_tempC
         if total_heat_capacity > 0:
             # Final temperature in Celsius.
             brew_tempC = total_heat/total_heat_capacity
@@ -347,23 +332,106 @@ class Recipe(models.Model):
         # TRUE if all ingredients are natural
         # JMT: skipping yeast at the moment
         honey_is_natural = all([item.honey.is_natural for item in self.honey_items])
-        cool_is_natural = all([item.water.is_natural for item in self.cool_items])
-        warm_is_natural = all([item.water.is_natural for item in self.warm_items])
+        water_is_natural = all([item.water.is_natural for item in self.water_items])
         flavor_is_natural = all([item.flavor.is_natural for item in self.flavor_items])
-        return honey_is_natural and cool_is_natural and warm_is_natural and flavor_is_natural
+        return honey_is_natural and water_is_natural and flavor_is_natural
 
     def appellation(self):
         # Proper implementation of appellation testing is very complex.  See 27 CFR 4.25(b) for more information.
-        honey_appellations = list(set([item.honey.appellation for item in self.honey_items]))
-        cool_appellations = list(set([item.water.appellation for item in self.cool_items]))
-        warm_appellations = list(set([item.water.appellation for item in self.warm_items]))
-        flavor_appellations = list(set([item.flavor.appellation for item in self.flavor_items]))
+        honey_apps = [item.honey.appellation for item in self.honey_items]
+        water_apps = [item.water.appellation for item in self.water_items]
+        flavor_apps = [item.flavor.appellation for item in self.flavor_items]
 
-        total_appellations = list(set(honey_appellations+cool_appellations+warm_appellations+flavor_appellations))
-        if len(total_appellations) == 1:
-            return total_appellations[0]
+        total_apps = set(honey_apps + water_apps + flavor_apps)
+        if len(total_apps) == 1:
+            return total_apps.pop()
         else:
             return None
+
+    def suggested_category(self):
+        honey_types = set([item.honey.type for item in self.honey_items])
+        water_types = set([item.water.type for item in self.water_items])
+        flavor_types = set([item.flavor.type for item in self.flavor_items])
+
+        # Identify based on honey.
+        mead_type = {}
+        if Honey.HONEY not in honey_types:
+            # Honey is required!
+            return None
+        if len(honey_types) == 1:
+            mead_type['honey'] = Recipe.DRY
+        elif len(honey_types) == 2:
+            if Honey.MALT in honey_types:
+                mead_type['honey'] = Recipe.BRAGGOT
+            elif Honey.OTHER in honey_types:
+                mead_type['honey'] = Recipe.OPEN_CATEGORY
+            else:
+                # Unknown honey type!
+                return None
+        else:
+            mead_type['honey'] = Recipe.OPEN_CATEGORY
+
+        # Identify based on water.
+        if len(water_types) == 1:
+            if Water.WATER in water_types:
+                mead_type['water'] = Recipe.DRY
+            elif Water.APPLE_JUICE in water_types:
+                mead_type['water'] = Recipe.CYSER
+            elif Water.GRAPE_JUICE in water_types:
+                mead_type['water'] = Recipe.PYMENT
+            elif Water.FRUIT_JUICE in water_types:
+                mead_type['water'] = Recipe.OTHER_FRUIT_MELOMEL
+            elif Water.OTHER in water_types:
+                mead_type['water'] = Recipe.OPEN_CATEGORY
+            else:
+                # Unknown water type!
+                return None
+        elif len(water_types) > 1:
+            if Water.WATER in water_types:
+                if Water.APPLE_JUICE in water_types:
+                    mead_type['water'] = Recipe.CYSER
+                elif Water.GRAPE_JUICE in water_types:
+                    mead_type['water'] = Recipe.PYMENT
+                elif Water.FRUIT_JUICE in water_types:
+                    mead_type['water'] = Recipe.OTHER_FRUIT_MELOMEL
+                elif Water.OTHER in water_types:
+                    mead_type['water'] = Recipe.OPEN_CATEGORY
+                else:
+                    # Unknown water type!
+                    return None
+            else:
+                # JMT: no check on unknown water types here
+                mead_type['water'] = Recipe.OPEN_CATEGORY
+        else:
+            # We need a water type!
+            return None
+
+        # Identify based on flavor.
+        if len(flavor_types) == 1:
+            if Flavor.SPICE in flavor_types:
+                mead_type['flavor'] = Recipe.METHEGLIN
+            elif Flavor.APPLE in flavor_types:
+                mead_type['flavor'] = Recipe.CYSER
+            elif Flavor.GRAPE in flavor_types:
+                mead_type['flavor'] = Recipe.PYMENT
+            elif Flavor.FRUIT in flavor_types:
+                mead_type['flavor'] = Recipe.OTHER_FRUIT_MELOMEL
+            elif Flavor.OTHER in flavor_types:
+                mead_type['flavor'] = Recipe.OPEN_CATEGORY
+        elif len(flavor_types) > 1:
+            mead_type['flavor'] = Recipe.OPEN_CATEGORY
+        else:
+            mead_type['flavor'] = Recipe.DRY
+
+        # Identify based on all together.
+        recipe_type = set(mead_type.values())
+        recipe_type.discard(Recipe.DRY)
+        if len(recipe_type) == 0:
+            return Recipe.DRY
+        if len(recipe_type) == 1:
+            return recipe_type.pop()
+        else:
+            return Recipe.OPEN_CATEGORY
 
 
 class Batch(Recipe):
@@ -426,4 +494,3 @@ class Sample(models.Model):
         # Convert temperature from Fahrenheit to Celsius first.
         tempC = int((self.temp-32)/1.8)
         return self.sg + Decimal(Sample.deltasg[tempC])
-
