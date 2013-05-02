@@ -10,9 +10,9 @@ from django.http import HttpResponse, HttpResponseRedirect
 
 
 class IngredientAdmin(admin.ModelAdmin):
-    list_display = ('name', 'is_natural', 'appellation', )
+    list_display = ('name', 'is_natural', 'appellation', 'type')
     list_display_links = ('name', )
-    list_filter = ('is_natural', 'appellation')
+    list_filter = ('is_natural', 'appellation', 'type')
 
 
 class HoneyAdmin(IngredientAdmin):
@@ -82,7 +82,7 @@ class RecipeAdmin(ButtonAdmin):
         else:
             deltasg = 0
         return Decimal(obj.brew_sg - deltasg)
-    final_sg.short_description = 'Projected FG'
+    final_sg.short_description = 'Final FG'
 
     def create_batch(self, request, recipe=None):
         if recipe is not None:
