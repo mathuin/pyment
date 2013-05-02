@@ -82,7 +82,7 @@ class RecipeAdmin(ButtonAdmin):
         else:
             deltasg = 0
         return Decimal(obj.brew_sg - deltasg)
-    final_sg.short_description = 'Projected FG'
+    final_sg.short_description = 'Final FG'
 
     def create_batch(self, request, recipe=None):
         if recipe is not None:
