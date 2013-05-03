@@ -1,5 +1,5 @@
 from models import SearchTerm
-from catalog.models import Product
+from meadery.models import Product
 from django.db.models import Q
 from stats import stats
 

@@ -1,7 +1,7 @@
 from django.contrib import admin
 from utils.buttonadmin import ButtonAdmin
 from models import Order, OrderItem, PickList, PickListItem
-from checkout import create_picklist, all_in_stock, process_picklist, cancel_picklist
+from checkout import create_picklist, all_in_stock, process_picklist, cancel_picklist, cancel_order
 from django.core.urlresolvers import reverse
 from django.utils.safestring import mark_safe
 
@@ -17,7 +17,7 @@ class OrderAdmin(ButtonAdmin):
     search_fields = ('email', 'id')
     inlines = [OrderItemInline, ]
     fieldsets = (('Basics', {'fields': ('status', 'email', 'phone')}),)
-    actions = ['make_processed']
+    actions = ['make_processed', 'make_cancelled']
 
     def make_processed(self, request, queryset):
         orders_processed = 0
@@ -44,7 +44,31 @@ class OrderAdmin(ButtonAdmin):
             return None
     process_one.short_description = 'Process order'
 
-    change_buttons = [process_one]
+    def make_cancelled(self, request, queryset):
+        orders_cancelled = 0
+        for order in queryset:
+            if cancel_order(order):
+                orders_cancelled += 1
+        if orders_cancelled == 0:
+            self.message_user(request, 'No orders were cancelled!')
+        else:
+            if orders_cancelled == 1:
+                self.message_user(request, 'One order was cancelled!')
+            else:
+                self.message_user(request, '%d orders were cancelled!' % orders_cancelled)
+    make_cancelled.short_description = 'Cancel order'
+
+    def cancel_one(self, request, order=None):
+        if order is not None:
+            if cancel_order(order):
+                self.message_user(request, 'One order was cancelled!')
+            else:
+                self.message_user(request, 'No orders were cancelled!')
+        else:
+            return None
+    cancel_one.short_description = 'Cancel order'
+
+    change_buttons = [process_one, cancel_one]
 
     # FIXME: add a manager that excludes cancelled orders?
     def picklist(self, obj):

@@ -1,4 +1,4 @@
-{% extends 'catalog.djhtml' %}
+{% extends 'meadery.djhtml' %}
 
 {% load staticfiles %}
 
@@ -9,7 +9,7 @@
 	<h3>Product</h3>
 	<h4>{{ p.title }} ({{ p.name }})</h4>
 	{% if p.category %}
-	In category: <a href="{{ p.category.get_absolute_url }}">{{ p.category.name }}</a>
+	In category: <a href="{{ curl }}">{{ cname }}</a>
 	{% endif %}
 	<br /><br />
 	<form method="post" action="." class="cart">{% csrf_token %}
@@ -53,7 +53,7 @@
 	<div class="cb"><br /><br /></div>
 	<div id="reviews">
 	{% for review in product_reviews %}
-		{% include 'catalog/product_review.djhtml' %}
+		{% include 'meadery/product_review.djhtml' %}
 	{% empty %}
 		<div id="no_reviews">
 			No product reviews yet.

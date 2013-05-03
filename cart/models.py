@@ -5,7 +5,7 @@ class CartItem(models.Model):
     cart_id = models.CharField(max_length=50)
     date_added = models.DateTimeField(auto_now_add=True)
     quantity = models.IntegerField(default=1)
-    product = models.ForeignKey('catalog.Product', unique=False)
+    product = models.ForeignKey('meadery.Product', unique=False)
 
     class Meta:
         ordering = ['date_added']

@@ -1,7 +1,9 @@
 from __future__ import division
 from django.db import models
-from catalog.models import Category
+from django.template.defaultfilters import slugify
 from decimal import Decimal
+from django.contrib.auth.models import User
+from django.core.urlresolvers import reverse
 
 
 # Stuff to consider for this app:
@@ -29,34 +31,44 @@ class Honey(Ingredient):
     """
     Honey is the source of fermentable sugars.
 
-    Other potential sugar sources include agave nectar.
+    Other potential sugar sources include malted barley and maple syrup.
 
     The units for honey are kilograms.
     """
-    # JMT: types will be added here too.
-    # honey means ... nothing special
-    # malt means braggot
-    # other means open category
     sg = models.DecimalField('Specific Gravity', max_digits=4, decimal_places=3, default=Decimal('1.422'), help_text='Specific gravity of honey (default value should be fine)')
     sh = models.DecimalField('Specific Heat', max_digits=3, decimal_places=2, default=Decimal('0.57'), help_text='Specific heat of honey (default value should be fine)')
+    # Individual types of sugar sources.
+    HONEY = 1
+    MALT = 2
+    OTHER = 3
+    HONEY_TYPES = ((HONEY, 'Honey'),
+                   (MALT, 'Malt'),
+                   (OTHER, 'Other'))
+    type = models.IntegerField(choices=HONEY_TYPES, default=HONEY)
 
 
 class Water(Ingredient):
     """
     Water is the solvent in which the honey is dissolved and fermented.
 
-    Other potential solvents include apple juice.
+    Other potential solvents include apple juice, grape juice, and other fruit juice.
 
     The units for water are liters.
     """
-    # JMT: types will be added here too.
-    # water means ... nothing special
-    # apple means cyser
-    # grape means pyment
-    # other fruit means other fruit melomel
-    # other means open category
     sg = models.DecimalField('Specific Gravity', max_digits=4, decimal_places=3, default=Decimal('1.000'), help_text='Specific gravity of water (default value should be fine)')
     sh = models.DecimalField('Specific Heat', max_digits=3, decimal_places=2, default=Decimal('1.00'), help_text='Specific heat of water (default value should be fine)')
+    # Individual types of solvents.
+    WATER = 1
+    APPLE_JUICE = 2
+    GRAPE_JUICE = 3
+    FRUIT_JUICE = 4
+    OTHER = 5
+    WATER_TYPES = ((WATER, 'Water'),
+                   (APPLE_JUICE, 'Apple Juice'),
+                   (GRAPE_JUICE, 'Grape Juice'),
+                   (FRUIT_JUICE, 'Fruit Juice'),
+                   (OTHER, 'Other'))
+    type = models.IntegerField(choices=WATER_TYPES, default=WATER)
 
 
 class Flavor(Ingredient):
@@ -70,18 +82,30 @@ class Flavor(Ingredient):
     The units for flavors are specific to each flavor.
 
     """
-    # JMT: Flavor class will be augmented with new fields.
-    # spice means melomel
-    # apple means cyser
-    # grape means pyment
-    # fruit means other fruit melomel
-    # other mean open category
     units = models.CharField('Units', max_length=12, help_text='Units used to measure ingredient')
+    # Individual types of flavors.
+    SPICE = 1
+    APPLE = 2
+    GRAPE = 3
+    FRUIT = 4
+    OTHER = 5
+    FLAVOR_TYPES = ((SPICE, 'Spice'),
+                    (APPLE, 'Apple'),
+                    (GRAPE, 'Grape'),
+                    (FRUIT, 'Fruit'),
+                    (OTHER, 'Other'))
+    type = models.IntegerField(choices=FLAVOR_TYPES, default=SPICE)
 
 
 class Yeast(Ingredient):
     """ Yeasts are what converts sugars into alcohol. """
     tolerance = models.IntegerField('Alcohol tolerance', help_text='Maximum alcohol tolerance (in percent)')
+    # Individual types of yeast.
+    DRY = 1
+    WET = 2
+    YEAST_TYPES = ((DRY, 'Dry'),
+                   (WET, 'Wet'))
+    type = models.IntegerField(choices=YEAST_TYPES, default=DRY)
 
     # JMT: DRY violation
     @property
@@ -90,24 +114,44 @@ class Yeast(Ingredient):
         return Decimal(self.tolerance / 100.0 * 0.75).quantize(Decimal('0.001'))
 
 
-class HoneyItem(models.Model):
+class IngredientItem(models.Model):
+    recipe = models.ForeignKey('Recipe')
+
+    class Meta:
+        abstract = True
+
+
+class HoneyItem(IngredientItem):
     honey = models.ForeignKey(Honey)
     mass = models.DecimalField(max_digits=5, decimal_places=3, help_text='Mass of honey in kilograms (1 lb = 0.454 kg)')
-    recipe = models.ForeignKey('Recipe')
+    temp = models.IntegerField(help_text='Temperature of honey in degrees Fahrenheit')
 
     @property
     def volume(self):
         return Decimal(self.mass / self.honey.sg).quantize(Decimal('0.001'))
 
+    # JMT: DRY violation
+    @property
+    def to_c(self):
+        return Decimal((self.temp-32)/1.8)
 
-class WaterItem(models.Model):
+
+class WaterItem(IngredientItem):
     water = models.ForeignKey(Water)
     volume = models.DecimalField(max_digits=5, decimal_places=3, help_text='Volume of water in liters (1 gal = 3.785 L)')
-    recipe = models.ForeignKey('Recipe')
+    temp = models.IntegerField(help_text='Temperature of water in degrees Fahrenheit')
+
+    class Meta:
+        abstract = True
 
     @property
     def mass(self):
         return Decimal(self.volume * self.water.sg).quantize(Decimal('0.001'))
+
+    # JMT: DRY violation
+    @property
+    def to_c(self):
+        return Decimal((self.temp-32)/1.8)
 
 
 class CoolItem(WaterItem):
@@ -118,16 +162,14 @@ class WarmItem(WaterItem):
     pass
 
 
-class FlavorItem(models.Model):
+class FlavorItem(IngredientItem):
     flavor = models.ForeignKey(Flavor)
     amount = models.FloatField(help_text='Amount of flavor ingredient')
-    recipe = models.ForeignKey('Recipe')
 
 
-class YeastItem(models.Model):
+class YeastItem(IngredientItem):
     yeast = models.ForeignKey(Yeast)
     amount = models.IntegerField(help_text='Number of units of yeast')
-    recipe = models.ForeignKey('Recipe')
 
 
 class Recipe(models.Model):
@@ -146,12 +188,39 @@ class Recipe(models.Model):
 
     Recipes are copied to batches, which include actual amounts.
     """
+    # Individual recipe categories.
+    DRY = 241
+    SEMI_SWEET = 242
+    SWEET = 243
+    CYSER = 251
+    PYMENT = 252
+    OTHER_FRUIT_MELOMEL = 253
+    METHEGLIN = 261
+    BRAGGOT = 262
+    OPEN_CATEGORY = 263
+    # Set of all recipe categories.
+    RECIPE_CATEGORIES = ((DRY, 'Dry Mead'),
+                         (SEMI_SWEET, 'Semi-Sweet Mead'),
+                         (SWEET, 'Sweet Mead'),
+                         (CYSER, 'Cyser'),
+                         (PYMENT, 'Pyment'),
+                         (OTHER_FRUIT_MELOMEL, 'Other Fruit Melomel'),
+                         (METHEGLIN, 'Metheglin'),
+                         (BRAGGOT, 'Braggot'),
+                         (OPEN_CATEGORY, 'Open Category Mead'))
+    RECIPE_DESCRIPTIONS = {DRY: 'A traditional mead with subtle honey aroma but no significant aromatics. Minimal residual sweetness with a dry finish, and a light to medium body. Similar to a dry white wine. (Based on BJCP Style Guidelines 2008)',
+                           SEMI_SWEET: 'A traditional mead with noticeable honey aroma and subtle to moderate residual sweetness with a medium-dry finish.  Body is medium-light to medium-full.  Similar to a semi-sweet (or medium-dry) white wine.  (thanks to BJCP Style Guidelines 2008)',
+                           SWEET: 'A traditional mead with dominating honey aroma, often moderately to strongly sweet.  The body is generally medium-full to full, and may seem like a dessert wine.  (thanks to BJCP Style Guidelines 2008)',
+                           CYSER: 'A mead made from honey and apple juice, with a variety of flavors.  (thanks to BJCP Style Guidelines 2008)',
+                           PYMENT: 'A melomel made from grapes or grape juice.  (thanks to BJCP Style Guidelines 2008)',
+                           OTHER_FRUIT_MELOMEL: 'A mead made from honey and fruit (not grapes or apples).  (thanks to BJCP Style Guidelines 2008)',
+                           METHEGLIN: 'A spiced mead.  (thanks to BJCP Style Guidelines 2008)',
+                           BRAGGOT: 'A mead made with malt. (thanks to BJCP Style Guidelines 2008)',
+                           OPEN_CATEGORY: 'A honey-based beverage that either combines ingredients from two or more of the other mead sub-categories, is a historical or indigenous mead (e.g., tej, Polish meads), or is a mead that does not fit into any other category.  Any specialty or experimental mead using additional sources of fermentables (e.g., maple syrup, molasses, brown sugar, or agave nectar), additional ingredients (e.g., vegetables, liquors, smoke, etc.), alternative processes (e.g., icing, oak-aging) or other unusual ingredient, process, or technique would also be appropriate in this category.'}
 
     title = models.CharField(max_length=40, help_text='Recipe title')
     description = models.TextField(help_text='Description of product.')
-    category = models.ForeignKey(Category)
-    warm_temp = models.IntegerField(help_text='Temperature of warm water in degrees Fahrenheit')
-    cool_temp = models.IntegerField(help_text='Temperature of cool water in degrees Fahrenheit')
+    category = models.IntegerField(choices=RECIPE_CATEGORIES, default=DRY)
 
     @property
     def name(self):
@@ -173,6 +242,14 @@ class Recipe(models.Model):
         return sum([item.volume for item in self.honey_items])
 
     @property
+    def honey_tempC(self):
+        honey_mass = self.honey_mass
+        if honey_mass > 0:
+            return sum([item.to_c*(item.mass/honey_mass) for item in self.honey_items])
+        else:
+            return None
+
+    @property
     def honey_sg(self):
         honey_mass = self.honey_mass
         if honey_mass > 0:
@@ -189,58 +266,38 @@ class Recipe(models.Model):
             return None
 
     @property
-    def cool_items(self):
-        return CoolItem.objects.filter(recipe=self)
+    def water_items(self):
+        return list(CoolItem.objects.filter(recipe=self)) + list(WarmItem.objects.filter(recipe=self))
 
     @property
-    def cool_mass(self):
-        return sum([item.mass for item in self.cool_items])
+    def water_mass(self):
+        return sum([item.mass for item in self.water_items])
 
     @property
-    def cool_volume(self):
-        return sum([item.volume for item in self.cool_items])
+    def water_volume(self):
+        return sum([item.volume for item in self.water_items])
 
     @property
-    def cool_sg(self):
-        cool_mass = self.cool_mass
-        if cool_mass > 0:
-            return sum([item.water.sg*(item.mass/cool_mass) for item in self.cool_items])
+    def water_tempC(self):
+        water_mass = self.water_mass
+        if water_mass > 0:
+            return sum([item.to_c*(item.mass/water_mass) for item in self.water_items])
         else:
             return None
 
     @property
-    def cool_sh(self):
-        cool_mass = self.cool_mass
-        if cool_mass > 0:
-            return sum([item.water.sh*(item.mass/cool_mass) for item in self.cool_items])
+    def water_sg(self):
+        water_mass = self.water_mass
+        if water_mass > 0:
+            return sum([item.water.sg*(item.mass/water_mass) for item in self.water_items])
         else:
             return None
 
     @property
-    def warm_items(self):
-        return WarmItem.objects.filter(recipe=self)
-
-    @property
-    def warm_mass(self):
-        return sum([item.mass for item in self.warm_items])
-
-    @property
-    def warm_volume(self):
-        return sum([item.volume for item in self.warm_items])
-
-    @property
-    def warm_sg(self):
-        warm_mass = self.warm_mass
-        if warm_mass > 0:
-            return sum([item.water.sg*(item.mass/warm_mass) for item in self.warm_items])
-        else:
-            return None
-
-    @property
-    def warm_sh(self):
-        warm_mass = self.warm_mass
-        if warm_mass > 0:
-            return sum([item.water.sh*(item.mass/warm_mass) for item in self.warm_items])
+    def water_sh(self):
+        water_mass = self.water_mass
+        if water_mass > 0:
+            return sum([item.water.sh*(item.mass/water_mass) for item in self.water_items])
         else:
             return None
 
@@ -256,11 +313,11 @@ class Recipe(models.Model):
 
     @property
     def brew_mass(self):
-        return self.honey_mass + self.cool_mass + self.warm_mass
+        return self.honey_mass + self.water_mass
 
     @property
     def brew_volume(self):
-        return self.honey_volume + self.cool_volume + self.warm_volume
+        return self.honey_volume + self.water_volume
 
     @property
     def brew_sg(self):
@@ -272,16 +329,10 @@ class Recipe(models.Model):
 
     @property
     def brew_temp(self):
-        # Temperatures are converted from Fahrenheit to Celsius and back.
-        warm_tempC = Decimal((self.warm_temp-32)/1.8)
-        cool_tempC = Decimal((self.cool_temp-32)/1.8)
-        warm_heat = warm_tempC * self.warm_mass * self.warm_sh
-        cool_heat = cool_tempC * self.cool_mass * self.cool_sh
-        # Honey is assumed to be at same temperature as cool water.
-        honey_heat = cool_tempC * self.honey_mass * self.honey_sh
-        # Totals
-        total_heat = warm_heat + cool_heat + honey_heat
-        total_heat_capacity = warm_heat/warm_tempC + cool_heat/cool_tempC + honey_heat/cool_tempC
+        water_heat = self.water_tempC * self.water_mass * self.water_sh
+        honey_heat = self.honey_tempC * self.honey_mass * self.honey_sh
+        total_heat = water_heat + honey_heat
+        total_heat_capacity = water_heat/self.water_tempC + honey_heat/self.honey_tempC
         if total_heat_capacity > 0:
             # Final temperature in Celsius.
             brew_tempC = total_heat/total_heat_capacity
@@ -293,23 +344,106 @@ class Recipe(models.Model):
         # TRUE if all ingredients are natural
         # JMT: skipping yeast at the moment
         honey_is_natural = all([item.honey.is_natural for item in self.honey_items])
-        cool_is_natural = all([item.water.is_natural for item in self.cool_items])
-        warm_is_natural = all([item.water.is_natural for item in self.warm_items])
+        water_is_natural = all([item.water.is_natural for item in self.water_items])
         flavor_is_natural = all([item.flavor.is_natural for item in self.flavor_items])
-        return honey_is_natural and cool_is_natural and warm_is_natural and flavor_is_natural
+        return honey_is_natural and water_is_natural and flavor_is_natural
 
     def appellation(self):
         # Proper implementation of appellation testing is very complex.  See 27 CFR 4.25(b) for more information.
-        honey_appellations = list(set([item.honey.appellation for item in self.honey_items]))
-        cool_appellations = list(set([item.water.appellation for item in self.cool_items]))
-        warm_appellations = list(set([item.water.appellation for item in self.warm_items]))
-        flavor_appellations = list(set([item.flavor.appellation for item in self.flavor_items]))
-        
-        total_appellations = list(set(honey_appellations+cool_appellations+warm_appellations+flavor_appellations))
-        if len(total_appellations) == 1:
-            return total_appellations[0]
+        honey_apps = [item.honey.appellation for item in self.honey_items]
+        water_apps = [item.water.appellation for item in self.water_items]
+        flavor_apps = [item.flavor.appellation for item in self.flavor_items]
+
+        total_apps = set(honey_apps + water_apps + flavor_apps)
+        if len(total_apps) == 1:
+            return total_apps.pop()
         else:
             return None
+
+    def suggested_category(self):
+        honey_types = set([item.honey.type for item in self.honey_items])
+        water_types = set([item.water.type for item in self.water_items])
+        flavor_types = set([item.flavor.type for item in self.flavor_items])
+
+        # Identify based on honey.
+        mead_type = {}
+        if Honey.HONEY not in honey_types:
+            # Honey is required!
+            return None
+        if len(honey_types) == 1:
+            mead_type['honey'] = Recipe.DRY
+        elif len(honey_types) == 2:
+            if Honey.MALT in honey_types:
+                mead_type['honey'] = Recipe.BRAGGOT
+            elif Honey.OTHER in honey_types:
+                mead_type['honey'] = Recipe.OPEN_CATEGORY
+            else:
+                # Unknown honey type!
+                return None
+        else:
+            mead_type['honey'] = Recipe.OPEN_CATEGORY
+
+        # Identify based on water.
+        if len(water_types) == 1:
+            if Water.WATER in water_types:
+                mead_type['water'] = Recipe.DRY
+            elif Water.APPLE_JUICE in water_types:
+                mead_type['water'] = Recipe.CYSER
+            elif Water.GRAPE_JUICE in water_types:
+                mead_type['water'] = Recipe.PYMENT
+            elif Water.FRUIT_JUICE in water_types:
+                mead_type['water'] = Recipe.OTHER_FRUIT_MELOMEL
+            elif Water.OTHER in water_types:
+                mead_type['water'] = Recipe.OPEN_CATEGORY
+            else:
+                # Unknown water type!
+                return None
+        elif len(water_types) > 1:
+            if Water.WATER in water_types:
+                if Water.APPLE_JUICE in water_types:
+                    mead_type['water'] = Recipe.CYSER
+                elif Water.GRAPE_JUICE in water_types:
+                    mead_type['water'] = Recipe.PYMENT
+                elif Water.FRUIT_JUICE in water_types:
+                    mead_type['water'] = Recipe.OTHER_FRUIT_MELOMEL
+                elif Water.OTHER in water_types:
+                    mead_type['water'] = Recipe.OPEN_CATEGORY
+                else:
+                    # Unknown water type!
+                    return None
+            else:
+                # JMT: no check on unknown water types here
+                mead_type['water'] = Recipe.OPEN_CATEGORY
+        else:
+            # We need a water type!
+            return None
+
+        # Identify based on flavor.
+        if len(flavor_types) == 1:
+            if Flavor.SPICE in flavor_types:
+                mead_type['flavor'] = Recipe.METHEGLIN
+            elif Flavor.APPLE in flavor_types:
+                mead_type['flavor'] = Recipe.CYSER
+            elif Flavor.GRAPE in flavor_types:
+                mead_type['flavor'] = Recipe.PYMENT
+            elif Flavor.FRUIT in flavor_types:
+                mead_type['flavor'] = Recipe.OTHER_FRUIT_MELOMEL
+            elif Flavor.OTHER in flavor_types:
+                mead_type['flavor'] = Recipe.OPEN_CATEGORY
+        elif len(flavor_types) > 1:
+            mead_type['flavor'] = Recipe.OPEN_CATEGORY
+        else:
+            mead_type['flavor'] = Recipe.DRY
+
+        # Identify based on all together.
+        recipe_type = set(mead_type.values())
+        recipe_type.discard(Recipe.DRY)
+        if len(recipe_type) == 0:
+            return Recipe.DRY
+        if len(recipe_type) == 1:
+            return recipe_type.pop()
+        else:
+            return Recipe.OPEN_CATEGORY
 
 
 class Batch(Recipe):
@@ -322,6 +456,8 @@ class Batch(Recipe):
     recipe = models.ForeignKey(Recipe, related_name='originals')
     brewname = models.CharField('Brew Name', max_length=8, help_text='Unique value for brew name (e.g., SIP 99)')
     batchletter = models.CharField('Batch Letter', max_length=1, help_text='Letter corresponding to batch (e.g., A)')
+    # Used for labels!
+    event = models.CharField('Brewing event', max_length=20, help_text='Brewing event (e.g., Lughnasadh 2013, Samhain 2012, Imbolc 2011, Beltane 2010)')
     jars = models.IntegerField(help_text='Number of jars actually produced from this batch.')
 
     @property
@@ -343,9 +479,6 @@ class Batch(Recipe):
                 return None
         else:
             return None
-
-    # print labels:
-    #   using final SG and description values, checking appellation
 
 
 class Sample(models.Model):
@@ -372,4 +505,130 @@ class Sample(models.Model):
         # Convert temperature from Fahrenheit to Celsius first.
         tempC = int((self.temp-32)/1.8)
         return self.sg + Decimal(Sample.deltasg[tempC])
+
+
+class ActiveProductManager(models.Manager):
+    def get_query_set(self):
+        return super(ActiveProductManager, self).get_query_set().filter(is_active=True)
+
+
+class FeaturedProductManager(models.Manager):
+    def all(self):
+        return super(FeaturedProductManager, self).all().filter(is_active=True).filter(is_featured=True)
+
+
+class InStockProductManager(models.Manager):
+    def get_query_set(self):
+        return super(InStockProductManager, self).get_query_set().filter(is_active=True, jar__is_active=True, jar__is_available=True).distinct()
+
+
+class Product(Batch):
+    """
+    New base class for products.
+
+    """
+    # brewname in batch
+    # batchletter in batch
+    slug = models.SlugField(max_length=255, blank=True, unique=True,
+                            help_text='Unique value for product page URL, created from brewname and batchletter.')
+    # title in recipe, copied to batch
+    image = models.ImageField(upload_to='images/products/main', blank=True)
+    thumbnail = models.ImageField(upload_to='images/products/thumbnails', blank=True)
+    is_active = models.BooleanField(default=False)
+    is_bestseller = models.BooleanField(default=False)
+    is_featured = models.BooleanField(default=False)
+    # description in recipe copied to batch
+    meta_keywords = models.CharField(max_length=255,
+                                     help_text='Comma-delimited set of SEO keywords for meta tag')
+    meta_description = models.CharField(max_length=255,
+                                        help_text='Content for description meta tag')
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    # category in recipe
+
+    objects = models.Manager()
+    active = ActiveProductManager()
+    featured = FeaturedProductManager()
+    instock = InStockProductManager()
+
+    @property
+    def name(self):
+        return '%s %s' % (self.brewname, self.batchletter)
+
+    def __unicode__(self):
+        return self.name
+
+    class Meta:
+        ordering = ['-is_active', '-created_at']
+
+    @property
+    def brewed_date(self):
+        return self.sample_set.order('date')[0].date
+
+    @property
+    def brewed_sg(self):
+        return self.sample_set.order('date')[0].corrsg
+
+    @property
+    def bottled_date(self):
+        return self.sample_set.order('-date')[0].date
+
+    @property
+    def bottled_sg(self):
+        return self.sample_set.order('-date')[0].corrsg
+
+    # FIXME: these two have the same magic, need to remove duplication
+    def jars_in_stock(self):
+        from inventory.models import Jar
+        return Jar.instock.filter(product_id=self.pk).count()
+
+    def first_available(self):
+        from inventory.models import Jar
+        try:
+            return Jar.instock.filter(product_id=self.pk).order_by('number')[0]
+        except IndexError:
+            return None
+
+    def save(self, *args, **kwargs):
+        self.slug = slugify(self.name)
+        super(Product, self).save(*args, **kwargs)
+
+    def get_absolute_url(self):
+        return reverse('meadery_product', kwargs={'product_slug': self.slug})
+
+    def cross_sells_hybrid(self):
+        from checkout.models import Order, OrderItem
+        from django.db.models import Q
+        orders = Order.objects.filter(orderitem__product=self)
+        users = User.objects.filter(order__orderitem__product=self)
+        items = OrderItem.objects.filter(Q(order__in=orders) |
+                                         Q(order__user__in=users)
+                                         ).exclude(product=self)
+        products = Product.active.filter(orderitem__in=items).distinct()
+        return products
+
+    # abv in batch
+
+
+class ActiveProductReviewManager(models.Manager):
+    def all(self):
+        return super(ActiveProductReviewManager, self).all().filter(is_approved=True)
+
+
+class ProductReview(models.Model):
+    RATINGS = ((5, '5 - Outstanding'),
+               (4, '4 - Excellent'),
+               (3, '3 - Very Good'),
+               (2, '2 - Good'),
+               (1, '1 - Fair'), )
+    product = models.ForeignKey(Product)
+    user = models.ForeignKey(User)
+    title = models.CharField(max_length=50)
+    date = models.DateTimeField(auto_now_add=True)
+    rating = models.PositiveSmallIntegerField(default=5, choices=RATINGS)
+    is_approved = models.BooleanField(default=True)
+    content = models.TextField()
+
+    objects = models.Manager()
+    approved = ActiveProductReviewManager()
 

@@ -1,7 +1,7 @@
 from cart import cart
 from models import Order, OrderItem, PickList, PickListItem
 from forms import CheckoutForm
-from catalog.models import Product
+from meadery.models import Product
 from django.core.exceptions import ValidationError
 from django.core.mail import mail_managers
 from django.core.urlresolvers import reverse
@@ -49,6 +49,17 @@ def create_order(request):
     mail_managers(mail_subject, mail_message)
     # return the new order object
     return order
+
+
+def cancel_order(self):
+    if self.status == Order.SUBMITTED:
+        # FIXME: test for presence of order
+        OrderItem.objects.filter(order=self.pk).delete()
+        self.status = Order.CANCELLED
+        self.save()
+        return True
+    else:
+        return False
 
 
 def create_picklist(order):

@@ -1,5 +1,5 @@
-from models import Honey, Water, Flavor, Yeast, HoneyItem, CoolItem, WarmItem, FlavorItem, YeastItem, Recipe, Batch, Sample
-from catalog.models import Product, Category
+from models import Honey, Water, Flavor, Yeast, HoneyItem, CoolItem, WarmItem, FlavorItem, YeastItem, Recipe, Batch, Sample, Product
+from checkout.models import OrderItem
 from cStringIO import StringIO
 from labels import Sheet
 

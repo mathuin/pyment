@@ -1,7 +1,7 @@
 from django.contrib import admin
 from utils.buttonadmin import ButtonAdmin
-from .models import Honey, Water, Flavor, Yeast, HoneyItem, CoolItem, WarmItem, FlavorItem, YeastItem, Recipe, Batch, Sample
-from .forms import HoneyAdminForm, WaterAdminForm, FlavorAdminForm, YeastAdminForm, RecipeAdminForm, BatchAdminForm, SampleAdminForm
+from .models import Honey, Water, Flavor, Yeast, HoneyItem, CoolItem, WarmItem, FlavorItem, YeastItem, Recipe, Batch, Sample, Product, ProductReview
+from .forms import HoneyAdminForm, WaterAdminForm, FlavorAdminForm, YeastAdminForm, RecipeAdminForm, BatchAdminForm, SampleAdminForm, ProductAdminForm, ProductReviewForm
 from meadery import create_batch_from_recipe, create_recipe_from_batch, create_product_from_batch, make_labels_from_batch
 from django.core.urlresolvers import reverse
 from decimal import Decimal
@@ -10,9 +10,9 @@ from django.http import HttpResponse, HttpResponseRedirect
 
 
 class IngredientAdmin(admin.ModelAdmin):
-    list_display = ('name', 'is_natural', 'appellation', )
+    list_display = ('name', 'is_natural', 'appellation', 'type')
     list_display_links = ('name', )
-    list_filter = ('is_natural', 'appellation')
+    list_filter = ('is_natural', 'appellation', 'type')
 
 
 class HoneyAdmin(IngredientAdmin):
@@ -82,7 +82,7 @@ class RecipeAdmin(ButtonAdmin):
         else:
             deltasg = 0
         return Decimal(obj.brew_sg - deltasg)
-    final_sg.short_description = 'Projected FG'
+    final_sg.short_description = 'Final FG'
 
     def create_batch(self, request, recipe=None):
         if recipe is not None:
@@ -194,3 +194,36 @@ class SampleAdmin(admin.ModelAdmin):
         return obj.batch.name
 
 admin.site.register(Sample, SampleAdmin)
+
+
+class ProductAdmin(admin.ModelAdmin):
+    form = ProductAdminForm
+    # sets values for how the admin site lists your products
+    list_display = ('name', 'title', 'category', 'description', 'link_jars', 'is_active', 'created_at', 'updated_at',)
+    list_display_links = ('name',)
+    list_filter = ('is_active', 'category')
+    # list_per_page = 50
+    ordering = ['-created_at', 'is_active']
+    search_fields = ['name', 'title', 'description', 'meta_keywords', 'meta_description']
+    readonly_fields = ('created_at', 'updated_at',)
+
+    def link_jars(self, obj):
+        howmany = obj.jars_in_stock()
+        anchor = '%s?product__id__exact=%d' % (reverse('admin:inventory_jar_changelist'), obj.pk)
+        if howmany > 0:
+            return mark_safe('%d (<a href="%s">list</a>)' % (howmany, anchor))
+        else:
+            return howmany
+    link_jars.short_description = 'Jars'
+
+admin.site.register(Product, ProductAdmin)
+
+
+class ProductReviewAdmin(admin.ModelAdmin):
+    list_display = ('product', 'user', 'title', 'date', 'rating', 'is_approved')
+    list_per_page = 20
+    list_filter = ('product', 'user', 'is_approved')
+    ordering = ['date']
+    search_fields = ['user', 'content', 'title']
+
+admin.site.register(ProductReview, ProductReviewAdmin)
