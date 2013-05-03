@@ -474,7 +474,7 @@ class Batch(Recipe):
             firstsg = self.sample_set.order_by('date')[0].corrsg
             lastsg = self.sample_set.order_by('-date')[0].corrsg
             if firstsg != zero and lastsg != zero and firstsg > lastsg:
-                return Decimal('100')*(firstsg - lastsg)/Decimal('0.75')
+                return Decimal(Decimal('100')*(firstsg - lastsg)/Decimal('0.75')).quantize(Decimal('0.01'))
             else:
                 return None
         else:
@@ -484,7 +484,7 @@ class Batch(Recipe):
 class Sample(models.Model):
     """ Samples are small collections of data. """
     batch = models.ForeignKey(Batch)
-    date = models.DateTimeField(auto_now_add=True)
+    date = models.DateField()
     temp = models.IntegerField(default=60, help_text='Temperature of mead in degrees Fahrenheit')
     sg = models.DecimalField(max_digits=4, decimal_places=3, default=Decimal('0.000'), help_text='Specific gravity of mead')
     notes = models.TextField(help_text='Tasting notes')
@@ -504,7 +504,7 @@ class Sample(models.Model):
     def corrsg(self):
         # Convert temperature from Fahrenheit to Celsius first.
         tempC = int((self.temp-32)/1.8)
-        return self.sg + Decimal(Sample.deltasg[tempC])
+        return Decimal(self.sg + Decimal(str(Sample.deltasg[tempC]))).quantize(Decimal('0.001'))
 
 
 class ActiveProductManager(models.Manager):
@@ -563,19 +563,19 @@ class Product(Batch):
 
     @property
     def brewed_date(self):
-        return self.sample_set.order('date')[0].date
+        return self.sample_set.order_by('date')[0].date
 
     @property
     def brewed_sg(self):
-        return self.sample_set.order('date')[0].corrsg
+        return self.sample_set.order_by('date')[0].corrsg
 
     @property
     def bottled_date(self):
-        return self.sample_set.order('-date')[0].date
+        return self.sample_set.order_by('-date')[0].date
 
     @property
     def bottled_sg(self):
-        return self.sample_set.order('-date')[0].corrsg
+        return self.sample_set.order_by('-date')[0].corrsg
 
     # FIXME: these two have the same magic, need to remove duplication
     def jars_in_stock(self):
