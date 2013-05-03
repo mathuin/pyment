@@ -10,7 +10,7 @@ from inventory.management.commands import add_new_jars
 
 
 class WarehouseTestCase(TestCase):
-    fixtures = ['inventory', 'catalog']
+    fixtures = ['inventory', 'meadery']
 
     def setUp(self):
         self.warehouse = Warehouse.objects.all()[0]

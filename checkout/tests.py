@@ -6,7 +6,7 @@ from checkout import all_in_stock, create_picklist, process_picklist, cancel_pic
 
 
 class OrderTestCase(TestCase):
-    fixtures = ['catalog', 'inventory', 'checkout']
+    fixtures = ['meadery', 'inventory', 'checkout']
 
     def setUp(self):
         self.order = Order.objects.all()[0]

@@ -1,7 +1,6 @@
 from decimal import Decimal
 from django.test import TestCase
 from models import Honey, Water, Flavor, Yeast, HoneyItem, CoolItem, WarmItem, FlavorItem, YeastItem, Recipe, Batch, Sample
-from catalog.models import Category
 
 
 class RecipeTest(TestCase):

@@ -1,5 +1,4 @@
 from models import Honey, Water, Flavor, Yeast, HoneyItem, CoolItem, WarmItem, FlavorItem, YeastItem, Recipe, Batch, Sample, Product
-from catalog.models import Product as OldProduct
 from checkout.models import OrderItem
 from cStringIO import StringIO
 from labels import Sheet
@@ -134,46 +133,3 @@ def make_labels_from_batch(batch):
     pdf = buffer.getvalue()
     buffer.close()
     return pdf
-
-
-def create_product_from_catalog(oldproduct):
-    # This gets run pretty much once per product!
-    product = Product()
-    product.pk = oldproduct.pk
-    product.recipe = Recipe.objects.all()[0]
-    product.jars = 0
-    product.brewname = oldproduct.brewname
-    product.batchletter = oldproduct.batchletter
-    product.slug = oldproduct.slug
-    product.title = oldproduct.title
-    product.image = oldproduct.image
-    product.thumbnail = oldproduct.thumbnail
-    product.is_active = oldproduct.is_active
-    product.is_bestseller = oldproduct.is_bestseller
-    product.is_featured = oldproduct.is_featured
-    product.description = oldproduct.description
-    product.meta_keywords = oldproduct.meta_keywords
-    product.meta_description = oldproduct.meta_description
-    product.created_at = oldproduct.created_at
-    product.updated_at = oldproduct.updated_at
-    oldbjcptag = oldproduct.category.bjcptag
-    if oldbjcptag == u'24A':
-        product.category = Recipe.DRY
-    if oldbjcptag == u'24B':
-        product.category = Recipe.SEMI_SWEET
-    if oldbjcptag == u'24C':
-        product.category = Recipe.SWEET
-    if oldbjcptag == u'24A':
-        product.category = Recipe.CYSER
-    if oldbjcptag == u'24B':
-        product.category = Recipe.PYMENT
-    if oldbjcptag == u'24C':
-        product.category = Recipe.OTHER_FRUIT_MELOMEL
-    if oldbjcptag == u'26A':
-        product.category = Recipe.METHEGLIN
-    if oldbjcptag == u'26B':
-        product.category = Recipe.BRAGGOT
-    if oldbjcptag == u'26C':
-        product.category = Recipe.OPEN_CATEGORY
-    product.save()
-    return product
