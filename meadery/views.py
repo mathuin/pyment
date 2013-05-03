@@ -1,18 +1,18 @@
 from django.shortcuts import get_object_or_404, render
-from .models import Product, ProductReview
+from .models import Recipe, Product, ProductReview
 from django.core import urlresolvers
 from cart.cart import add_to_cart
 from django.http import HttpResponseRedirect, HttpResponse
 from .forms import ProductAddToCartForm, ProductReviewForm
 from stats import stats
-from pyment.settings import PRODUCTS_PER_ROW
+from pyment.settings import PRODUCTS_PER_ROW, SITE_NAME
 from django.contrib.auth.decorators import login_required
 from django.template.loader import render_to_string
 from django.utils import simplejson
 
 
 def index(request, template_name='meadery/index.djhtml'):
-    page_title = 'Only The Best Fermented Honey Wine'
+    page_title = SITE_NAME
     search_recs = stats.recommended_from_search(request)
     featured = Product.featured.all()[0:PRODUCTS_PER_ROW]
     recently_viewed = stats.get_recently_viewed(request)
@@ -21,8 +21,10 @@ def index(request, template_name='meadery/index.djhtml'):
 
 
 def show_category(request, category_value, template_name='meadery/category.djhtml'):
+    name = [name for (value, name) in Recipe.RECIPE_CATEGORIES if value == int(category_value)][0]
+    description = Recipe.RECIPE_DESCRIPTIONS[int(category_value)]
     products = Product.instock.filter(category=category_value)
-    page_title = [category for category in Recipe.RECIPE_CATEGORIES if category[1] == category_value][0]
+    page_title = name
     return render(request, template_name, locals())
 
 

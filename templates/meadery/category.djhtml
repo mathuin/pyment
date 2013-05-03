@@ -1,8 +1,8 @@
 {% extends 'meadery.djhtml' %}
 
 {% block content %}
-	<h1>{{ c.name }}</h1>
-	{{ c.description }}
+	<h1>{{ name }}</h1>
+	{{ description }}
 	<br /><br />
 	{% for p in products %}
 		{% if p.is_active and p.jars_in_stock > 0 %}

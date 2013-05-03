@@ -199,15 +199,24 @@ class Recipe(models.Model):
     BRAGGOT = 262
     OPEN_CATEGORY = 263
     # Set of all recipe categories.
-    RECIPE_CATEGORIES = ((DRY, 'Dry'),
-                         (SEMI_SWEET, 'Semi-Sweet'),
-                         (SWEET, 'Sweet'),
+    RECIPE_CATEGORIES = ((DRY, 'Dry Mead'),
+                         (SEMI_SWEET, 'Semi-Sweet Mead'),
+                         (SWEET, 'Sweet Mead'),
                          (CYSER, 'Cyser'),
                          (PYMENT, 'Pyment'),
                          (OTHER_FRUIT_MELOMEL, 'Other Fruit Melomel'),
                          (METHEGLIN, 'Metheglin'),
                          (BRAGGOT, 'Braggot'),
-                         (OPEN_CATEGORY, 'Open Category'))
+                         (OPEN_CATEGORY, 'Open Category Mead'))
+    RECIPE_DESCRIPTIONS = {DRY: 'A traditional mead with subtle honey aroma but no significant aromatics. Minimal residual sweetness with a dry finish, and a light to medium body. Similar to a dry white wine. (Based on BJCP Style Guidelines 2008)',
+                           SEMI_SWEET: 'A traditional mead with noticeable honey aroma and subtle to moderate residual sweetness with a medium-dry finish.  Body is medium-light to medium-full.  Similar to a semi-sweet (or medium-dry) white wine.  (thanks to BJCP Style Guidelines 2008)',
+                           SWEET: 'A traditional mead with dominating honey aroma, often moderately to strongly sweet.  The body is generally medium-full to full, and may seem like a dessert wine.  (thanks to BJCP Style Guidelines 2008)',
+                           CYSER: 'A mead made from honey and apple juice, with a variety of flavors.  (thanks to BJCP Style Guidelines 2008)',
+                           PYMENT: 'A melomel made from grapes or grape juice.  (thanks to BJCP Style Guidelines 2008)',
+                           OTHER_FRUIT_MELOMEL: 'A mead made from honey and fruit (not grapes or apples).  (thanks to BJCP Style Guidelines 2008)',
+                           METHEGLIN: 'A spiced mead.  (thanks to BJCP Style Guidelines 2008)',
+                           BRAGGOT: 'A mead made with malt. (thanks to BJCP Style Guidelines 2008)',
+                           OPEN_CATEGORY: 'A honey-based beverage that either combines ingredients from two or more of the other mead sub-categories, is a historical or indigenous mead (e.g., tej, Polish meads), or is a mead that does not fit into any other category.  Any specialty or experimental mead using additional sources of fermentables (e.g., maple syrup, molasses, brown sugar, or agave nectar), additional ingredients (e.g., vegetables, liquors, smoke, etc.), alternative processes (e.g., icing, oak-aging) or other unusual ingredient, process, or technique would also be appropriate in this category.'}
 
     title = models.CharField(max_length=40, help_text='Recipe title')
     description = models.TextField(help_text='Description of product.')

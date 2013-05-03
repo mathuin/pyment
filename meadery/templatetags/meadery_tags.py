@@ -2,6 +2,7 @@ from django import template
 from cart import cart
 from pyment.settings import BREWER_NAME, BREWER_EMAIL, BREWER_LOCATION
 from meadery.models import Recipe, Product
+from django.core.urlresolvers import reverse
 
 register = template.Library()
 
@@ -12,7 +13,6 @@ def cart_box(request):
     return {'cart_item_count': cart_item_count}
 
 
-# JMT: disabled until category stuff is redone!
 @register.inclusion_tag("tags/category_list.djhtml")
 def category_list(request_path):
     # should only return categories that meet the following requirements:
@@ -20,7 +20,7 @@ def category_list(request_path):
     # they have products,
     # and those products have jars
     # there has to be a more django-ish way to do this
-    active_categories = [category[1] for category in Recipe.RECIPE_CATEGORIES if Product.instock.filter(category=category[0]).exists()]
+    active_categories = [(name, reverse('meadery_category', kwargs={'category_value': value})) for (value, name) in Recipe.RECIPE_CATEGORIES if Product.instock.filter(category=value).exists()]
     return {
         'active_categories': active_categories,
         'request_path': request_path
