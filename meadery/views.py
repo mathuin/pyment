@@ -31,6 +31,8 @@ def show_category(request, category_value, template_name='meadery/category.djhtm
 # new product view, with POST vs GET detection
 def show_product(request, product_slug, template_name="meadery/product.djhtml"):
     p = get_object_or_404(Product, slug=product_slug)
+    cname = [name for (value, name) in Recipe.RECIPE_CATEGORIES if value == p.category][0]
+    curl = urlresolvers.reverse('meadery_category', kwargs={'category_value': p.category})
     page_title = p.name
     # need to evaluate the HTTP method
     if request.method == 'POST':
