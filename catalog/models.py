@@ -170,7 +170,7 @@ class ProductReview(models.Model):
                (2, '2 - Good'),
                (1, '1 - Fair'), )
     product = models.ForeignKey(Product)
-    user = models.ForeignKey(User)
+    user = models.ForeignKey(User, related_name='foo')
     title = models.CharField(max_length=50)
     date = models.DateTimeField(auto_now_add=True)
     rating = models.PositiveSmallIntegerField(default=5, choices=RATINGS)

@@ -1,4 +1,4 @@
-{% extends 'catalog.djhtml' %}
+{% extends 'meadery.djhtml' %}
 
 {% block content %}
 <table summary='Your Shopping Cart' id='shopping_cart'>

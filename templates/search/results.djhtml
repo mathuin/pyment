@@ -1,4 +1,4 @@
-{% extends 'catalog.djhtml' %}
+{% extends 'meadery.djhtml' %}
 
 {% load search_tags %}
 

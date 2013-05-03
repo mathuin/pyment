@@ -2,7 +2,7 @@ from django.test import TestCase, Client
 from django.core.management import call_command
 from django.core.management.base import CommandError
 from inventory.models import Warehouse, Row, Shelf, Bin, Crate, Jar
-from catalog.models import Product
+from meadery.models import Product
 from pyment import settings
 from datetime import datetime, timedelta
 from django.utils.timezone import utc

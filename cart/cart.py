@@ -1,5 +1,5 @@
 from models import CartItem
-from catalog.models import Product
+from meadery.models import Product
 from django.shortcuts import get_object_or_404
 import random
 from django.conf import settings

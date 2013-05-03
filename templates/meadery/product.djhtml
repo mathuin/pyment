@@ -1,4 +1,4 @@
-{% extends 'catalog.djhtml' %}
+{% extends 'meadery.djhtml' %}
 
 {% load staticfiles %}
 
@@ -53,7 +53,7 @@
 	<div class="cb"><br /><br /></div>
 	<div id="reviews">
 	{% for review in product_reviews %}
-		{% include 'catalog/product_review.djhtml' %}
+		{% include 'meadery/product_review.djhtml' %}
 	{% empty %}
 		<div id="no_reviews">
 			No product reviews yet.

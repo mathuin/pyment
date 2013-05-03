@@ -1,6 +1,6 @@
 from django.core.management.base import BaseCommand, CommandError
 from inventory.models import Jar, Crate
-from catalog.models import Product
+from meadery.models import Product
 from optparse import make_option
 
 

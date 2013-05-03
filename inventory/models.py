@@ -1,6 +1,6 @@
 from django.core.urlresolvers import reverse
 from django.db import models
-from catalog.models import Product
+from meadery.models import Product
 from django.core.exceptions import ValidationError
 
 
