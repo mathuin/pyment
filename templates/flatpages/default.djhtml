@@ -1,4 +1,4 @@
-{% extends 'catalog.djhtml' %}
+{% extends 'meadery.djhtml' %}
 
 {% block title %}
 	{{ flatpage.title }} - {{ site_name }}

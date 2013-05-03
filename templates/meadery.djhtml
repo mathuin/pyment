@@ -1,6 +1,6 @@
 {% extends 'base.djhtml' %}
 
-{% load catalog_tags %}
+{% load meadery_tags %}
 {% load search_tags %}
 
 {% block site_wrapper %}

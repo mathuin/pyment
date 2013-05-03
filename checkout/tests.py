@@ -1,7 +1,7 @@
 from django.test import TestCase, Client
 import httplib
 from models import Order, PickList
-from catalog.models import Product
+from meadery.models import Product
 from checkout import all_in_stock, create_picklist, process_picklist, cancel_picklist
 
 

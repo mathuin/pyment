@@ -1,4 +1,4 @@
-{% extends 'catalog.html' %}
+{% extends 'meadery.djhtml' %}
 
 {% block content %}
 The page or resource you requested was not found.

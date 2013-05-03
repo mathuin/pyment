@@ -2,7 +2,7 @@ import os
 import base64
 from search.models import SearchTerm
 from pyment.settings import PRODUCTS_PER_ROW
-from catalog.models import Product
+from meadery.models import Product
 from models import ProductView
 
 
@@ -76,13 +76,15 @@ def recommended_from_views(request):
         t_ids = [v['tracking_id'] for v in productviews]
         # if there are other tracking ids, get other products.
         if t_ids:
-            all_viewed = Product.instock.filter(is_active=True).filter(productview__tracking_id__in=t_ids)
+            # was instock
+            all_viewed = Product.active.filter(is_active=True).filter(productview__tracking_id__in=t_ids)
             # if there are other products, get them, excluding the
             # products that the customer has already viewed.
             if all_viewed:
                 other_viewed = ProductView.objects.filter(product__in=all_viewed).exclude(product__in=viewed)
                 if other_viewed:
-                    return Product.instock.filter(is_active=True).filter(productview__in=other_viewed).distinct()
+                    # was instock
+                    return Product.active.filter(is_active=True).filter(productview__in=other_viewed).distinct()
 
 
 def get_recently_viewed(request):

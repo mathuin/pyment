@@ -1,7 +1,7 @@
 from cart import cart
 from models import Order, OrderItem, PickList, PickListItem
 from forms import CheckoutForm
-from catalog.models import Product
+from meadery.models import Product
 from django.core.exceptions import ValidationError
 from django.core.mail import mail_managers
 from django.core.urlresolvers import reverse

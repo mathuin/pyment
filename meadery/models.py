@@ -1,6 +1,9 @@
 from __future__ import division
 from django.db import models
+from django.template.defaultfilters import slugify
 from decimal import Decimal
+from django.contrib.auth.models import User
+from django.core.urlresolvers import reverse
 
 
 # Stuff to consider for this app:
@@ -28,7 +31,7 @@ class Honey(Ingredient):
     """
     Honey is the source of fermentable sugars.
 
-    Other potential sugar sources include agave nectar.
+    Other potential sugar sources include malted barley and maple syrup.
 
     The units for honey are kilograms.
     """
@@ -48,7 +51,7 @@ class Water(Ingredient):
     """
     Water is the solvent in which the honey is dissolved and fermented.
 
-    Other potential solvents include apple juice.
+    Other potential solvents include apple juice, grape juice, and other fruit juice.
 
     The units for water are liters.
     """
@@ -196,15 +199,24 @@ class Recipe(models.Model):
     BRAGGOT = 262
     OPEN_CATEGORY = 263
     # Set of all recipe categories.
-    RECIPE_CATEGORIES = ((DRY, 'Dry'),
-                         (SEMI_SWEET, 'Semi-Sweet'),
-                         (SWEET, 'Sweet'),
+    RECIPE_CATEGORIES = ((DRY, 'Dry Mead'),
+                         (SEMI_SWEET, 'Semi-Sweet Mead'),
+                         (SWEET, 'Sweet Mead'),
                          (CYSER, 'Cyser'),
                          (PYMENT, 'Pyment'),
                          (OTHER_FRUIT_MELOMEL, 'Other Fruit Melomel'),
                          (METHEGLIN, 'Metheglin'),
                          (BRAGGOT, 'Braggot'),
-                         (OPEN_CATEGORY, 'Open Category'))
+                         (OPEN_CATEGORY, 'Open Category Mead'))
+    RECIPE_DESCRIPTIONS = {DRY: 'A traditional mead with subtle honey aroma but no significant aromatics. Minimal residual sweetness with a dry finish, and a light to medium body. Similar to a dry white wine. (Based on BJCP Style Guidelines 2008)',
+                           SEMI_SWEET: 'A traditional mead with noticeable honey aroma and subtle to moderate residual sweetness with a medium-dry finish.  Body is medium-light to medium-full.  Similar to a semi-sweet (or medium-dry) white wine.  (thanks to BJCP Style Guidelines 2008)',
+                           SWEET: 'A traditional mead with dominating honey aroma, often moderately to strongly sweet.  The body is generally medium-full to full, and may seem like a dessert wine.  (thanks to BJCP Style Guidelines 2008)',
+                           CYSER: 'A mead made from honey and apple juice, with a variety of flavors.  (thanks to BJCP Style Guidelines 2008)',
+                           PYMENT: 'A melomel made from grapes or grape juice.  (thanks to BJCP Style Guidelines 2008)',
+                           OTHER_FRUIT_MELOMEL: 'A mead made from honey and fruit (not grapes or apples).  (thanks to BJCP Style Guidelines 2008)',
+                           METHEGLIN: 'A spiced mead.  (thanks to BJCP Style Guidelines 2008)',
+                           BRAGGOT: 'A mead made with malt. (thanks to BJCP Style Guidelines 2008)',
+                           OPEN_CATEGORY: 'A honey-based beverage that either combines ingredients from two or more of the other mead sub-categories, is a historical or indigenous mead (e.g., tej, Polish meads), or is a mead that does not fit into any other category.  Any specialty or experimental mead using additional sources of fermentables (e.g., maple syrup, molasses, brown sugar, or agave nectar), additional ingredients (e.g., vegetables, liquors, smoke, etc.), alternative processes (e.g., icing, oak-aging) or other unusual ingredient, process, or technique would also be appropriate in this category.'}
 
     title = models.CharField(max_length=40, help_text='Recipe title')
     description = models.TextField(help_text='Description of product.')
@@ -444,6 +456,8 @@ class Batch(Recipe):
     recipe = models.ForeignKey(Recipe, related_name='originals')
     brewname = models.CharField('Brew Name', max_length=8, help_text='Unique value for brew name (e.g., SIP 99)')
     batchletter = models.CharField('Batch Letter', max_length=1, help_text='Letter corresponding to batch (e.g., A)')
+    # Used for labels!
+    event = models.CharField('Brewing event', max_length=20, help_text='Brewing event (e.g., Lughnasadh 2013, Samhain 2012, Imbolc 2011, Beltane 2010)')
     jars = models.IntegerField(help_text='Number of jars actually produced from this batch.')
 
     @property
@@ -465,9 +479,6 @@ class Batch(Recipe):
                 return None
         else:
             return None
-
-    # print labels:
-    #   using final SG and description values, checking appellation
 
 
 class Sample(models.Model):
@@ -494,3 +505,130 @@ class Sample(models.Model):
         # Convert temperature from Fahrenheit to Celsius first.
         tempC = int((self.temp-32)/1.8)
         return self.sg + Decimal(Sample.deltasg[tempC])
+
+
+class ActiveProductManager(models.Manager):
+    def get_query_set(self):
+        return super(ActiveProductManager, self).get_query_set().filter(is_active=True)
+
+
+class FeaturedProductManager(models.Manager):
+    def all(self):
+        return super(FeaturedProductManager, self).all().filter(is_active=True).filter(is_featured=True)
+
+
+class InStockProductManager(models.Manager):
+    def get_query_set(self):
+        return super(InStockProductManager, self).get_query_set().filter(is_active=True, jar__is_active=True, jar__is_available=True).distinct()
+
+
+class Product(Batch):
+    """
+    New base class for products.
+
+    """
+    # brewname in batch
+    # batchletter in batch
+    slug = models.SlugField(max_length=255, blank=True, unique=True,
+                            help_text='Unique value for product page URL, created from brewname and batchletter.')
+    # title in recipe, copied to batch
+    image = models.ImageField(upload_to='images/products/main', blank=True)
+    thumbnail = models.ImageField(upload_to='images/products/thumbnails', blank=True)
+    is_active = models.BooleanField(default=False)
+    is_bestseller = models.BooleanField(default=False)
+    is_featured = models.BooleanField(default=False)
+    # description in recipe copied to batch
+    meta_keywords = models.CharField(max_length=255,
+                                     help_text='Comma-delimited set of SEO keywords for meta tag')
+    meta_description = models.CharField(max_length=255,
+                                        help_text='Content for description meta tag')
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    # category in recipe
+
+    objects = models.Manager()
+    active = ActiveProductManager()
+    featured = FeaturedProductManager()
+    instock = InStockProductManager()
+
+    @property
+    def name(self):
+        return '%s %s' % (self.brewname, self.batchletter)
+
+    def __unicode__(self):
+        return self.name
+
+    class Meta:
+        ordering = ['-is_active', '-created_at']
+
+    @property
+    def brewed_date(self):
+        return self.sample_set.order('date')[0].date
+
+    @property
+    def brewed_sg(self):
+        return self.sample_set.order('date')[0].corrsg
+
+    @property
+    def bottled_date(self):
+        return self.sample_set.order('-date')[0].date
+
+    @property
+    def bottled_sg(self):
+        return self.sample_set.order('-date')[0].corrsg
+
+    # FIXME: these two have the same magic, need to remove duplication
+    def jars_in_stock(self):
+        from inventory.models import Jar
+        return Jar.instock.filter(product_id=self.pk).count()
+
+    def first_available(self):
+        from inventory.models import Jar
+        try:
+            return Jar.instock.filter(product_id=self.pk).order_by('number')[0]
+        except IndexError:
+            return None
+
+    def save(self, *args, **kwargs):
+        self.slug = slugify(self.name)
+        super(Product, self).save(*args, **kwargs)
+
+    def get_absolute_url(self):
+        return reverse('meadery_product', kwargs={'product_slug': self.slug})
+
+    def cross_sells_hybrid(self):
+        from checkout.models import Order, OrderItem
+        from django.db.models import Q
+        orders = Order.objects.filter(orderitem__product=self)
+        users = User.objects.filter(order__orderitem__product=self)
+        items = OrderItem.objects.filter(Q(order__in=orders) |
+                                         Q(order__user__in=users)
+                                         ).exclude(product=self)
+        products = Product.active.filter(orderitem__in=items).distinct()
+        return products
+
+    # abv in batch
+
+
+class ActiveProductReviewManager(models.Manager):
+    def all(self):
+        return super(ActiveProductReviewManager, self).all().filter(is_approved=True)
+
+
+class ProductReview(models.Model):
+    RATINGS = ((5, '5 - Outstanding'),
+               (4, '4 - Excellent'),
+               (3, '3 - Very Good'),
+               (2, '2 - Good'),
+               (1, '1 - Fair'), )
+    product = models.ForeignKey(Product)
+    user = models.ForeignKey(User)
+    title = models.CharField(max_length=50)
+    date = models.DateTimeField(auto_now_add=True)
+    rating = models.PositiveSmallIntegerField(default=5, choices=RATINGS)
+    is_approved = models.BooleanField(default=True)
+    content = models.TextField()
+
+    objects = models.Manager()
+    approved = ActiveProductReviewManager()
+

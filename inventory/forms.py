@@ -1,5 +1,5 @@
 from django import forms
-from catalog.models import Product
+from meadery.models import Product
 from inventory.models import Warehouse, Row, Shelf, Bin, Crate, Jar
 
 

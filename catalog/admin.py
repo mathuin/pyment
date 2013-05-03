@@ -3,9 +3,11 @@ from catalog.models import Product, Category, ProductReview
 from catalog.forms import ProductAdminForm
 from django.core.urlresolvers import reverse
 from django.utils.safestring import mark_safe
+from meadery.meadery import create_product_from_catalog
+from utils.buttonadmin import ButtonAdmin
 
 
-class ProductAdmin(admin.ModelAdmin):
+class ProductAdmin(ButtonAdmin):
     form = ProductAdminForm
     # sets values for how the admin site lists your products
     list_display = ('name', 'title', 'category', 'description', 'link_jars', 'is_active', 'created_at', 'updated_at',)
@@ -18,6 +20,21 @@ class ProductAdmin(admin.ModelAdmin):
     # sets up slug to be generated from product name
     # totally lame, must do the hard way
     # prepopulated_fields = {'slug' : ('brewname', 'batchletter',)}
+    actions = ['migrate_to_meadery']
+
+    def migrate_to_meadery(self, request, queryset):
+        products_migrated = 0
+        for oldproduct in queryset:
+            if create_product_from_catalog(oldproduct):
+                products_migrated += 1
+        if products_migrated == 0:
+            self.message_user(request, 'No products were migrated!')
+        else:
+            if products_migrated == 1:
+                self.message_user(request, 'One product was migrated!')
+            else:
+                self.message_user(request, '%d products were migrated!' % products_migrated)
+    migrate_to_meadery.short_description = 'Process product to meadery'
 
     def link_jars(self, obj):
         howmany = obj.jars_in_stock()
