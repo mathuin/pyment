@@ -18,18 +18,21 @@ def create_batch_from_recipe(recipe):
         new_honey_item = HoneyItem()
         new_honey_item.honey = honey_item.honey
         new_honey_item.mass = honey_item.mass
+        new_honey_item.temp = honey_item.temp
         new_honey_item.recipe = batch
         new_honey_item.save()
     for warm_item in recipe.warm_items:
         new_warm_item = WarmItem()
         new_warm_item.water = warm_item.water
         new_warm_item.volume = warm_item.volume
+        new_warm_item.temp = warm_item.temp
         new_warm_item.recipe = batch
         new_warm_item.save()
     for cool_item in recipe.cool_items:
         new_cool_item = CoolItem()
         new_cool_item.water = cool_item.water
         new_cool_item.volume = cool_item.volume
+        new_cool_item.temp = cool_item.temp
         new_cool_item.recipe = batch
         new_cool_item.save()
     for flavor_item in recipe.flavor_items:
@@ -58,18 +61,21 @@ def create_recipe_from_batch(batch):
         new_honey_item = HoneyItem()
         new_honey_item.honey = honey_item.honey
         new_honey_item.mass = honey_item.mass
+        new_honey_item.temp = honey_item.temp
         new_honey_item.recipe = recipe
         new_honey_item.save()
     for warm_item in batch.warm_items:
         new_warm_item = WarmItem()
         new_warm_item.water = warm_item.water
         new_warm_item.volume = warm_item.volume
+        new_warm_item.temp = warm_item.temp
         new_warm_item.recipe = recipe
         new_warm_item.save()
     for cool_item in batch.cool_items:
         new_cool_item = CoolItem()
         new_cool_item.water = cool_item.water
         new_cool_item.volume = cool_item.volume
+        new_cool_item.temp = cool_item.temp
         new_cool_item.recipe = recipe
         new_cool_item.save()
     for flavor_item in batch.flavor_items:
