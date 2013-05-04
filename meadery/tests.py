@@ -1,6 +1,6 @@
 from decimal import Decimal
 from django.test import TestCase
-from models import Honey, Water, Flavor, Yeast, HoneyItem, CoolItem, WarmItem, FlavorItem, YeastItem, Recipe, Batch, Sample
+from models import Honey, Water, Flavor, Yeast, HoneyItem, CoolItem, WarmItem, FlavorItem, YeastItem, Recipe, Batch, Sample, MEAD_CATEGORIES
 
 
 class RecipeTest(TestCase):
@@ -85,10 +85,10 @@ class RecipeTest(TestCase):
         """
         Test brewing categories.
 
-        Standard recipe should be Recipe.DRY.
+        Standard recipe should be MEAD_CATEGORIES['dry'].
 
         """
-        self.assertEqual(self.recipe.suggested_category(), Recipe.DRY)
+        self.assertEqual(self.recipe.suggested_category(), MEAD_CATEGORIES['dry'])
 
         # Now tweak the recipes
         dump_recipe = Recipe()
@@ -103,13 +103,13 @@ class RecipeTest(TestCase):
         new_honey_item.temp = 70
         new_honey_item.recipe = self.recipe
         new_honey_item.save()
-        self.assertEqual(self.recipe.suggested_category(), Recipe.BRAGGOT)
+        self.assertEqual(self.recipe.suggested_category(), MEAD_CATEGORIES['braggot'])
         new_honey.type = Honey.OTHER
         new_honey.save()
-        self.assertEqual(self.recipe.suggested_category(), Recipe.OPEN_CATEGORY)
+        self.assertEqual(self.recipe.suggested_category(), MEAD_CATEGORIES['open_category'])
         new_honey_item.recipe = dump_recipe
         new_honey_item.save()
-        self.assertEqual(self.recipe.suggested_category(), Recipe.DRY)
+        self.assertEqual(self.recipe.suggested_category(), MEAD_CATEGORIES['dry'])
 
         new_water = Water()
         new_water.type = Water.APPLE_JUICE
@@ -120,13 +120,13 @@ class RecipeTest(TestCase):
         new_cool_item.temp = 70
         new_cool_item.recipe = self.recipe
         new_cool_item.save()
-        self.assertEqual(self.recipe.suggested_category(), Recipe.CYSER)
+        self.assertEqual(self.recipe.suggested_category(), MEAD_CATEGORIES['cyser'])
         new_water.type = Water.OTHER
         new_water.save()
-        self.assertEqual(self.recipe.suggested_category(), Recipe.OPEN_CATEGORY)
+        self.assertEqual(self.recipe.suggested_category(), MEAD_CATEGORIES['open_category'])
         new_cool_item.recipe = dump_recipe
         new_cool_item.save()
-        self.assertEqual(self.recipe.suggested_category(), Recipe.DRY)
+        self.assertEqual(self.recipe.suggested_category(), MEAD_CATEGORIES['dry'])
 
         new_flavor = Flavor()
         new_flavor.type = Flavor.FRUIT
@@ -136,10 +136,10 @@ class RecipeTest(TestCase):
         new_flavor_item.amount = 70
         new_flavor_item.recipe = self.recipe
         new_flavor_item.save()
-        self.assertEqual(self.recipe.suggested_category(), Recipe.OTHER_FRUIT_MELOMEL)
+        self.assertEqual(self.recipe.suggested_category(), MEAD_CATEGORIES['other_fruit_melomel'])
         new_flavor.type = Flavor.OTHER
         new_flavor.save()
-        self.assertEqual(self.recipe.suggested_category(), Recipe.OPEN_CATEGORY)
+        self.assertEqual(self.recipe.suggested_category(), MEAD_CATEGORIES['open_category'])
         new_flavor_item.recipe = dump_recipe
         new_flavor_item.save()
-        self.assertEqual(self.recipe.suggested_category(), Recipe.DRY)
+        self.assertEqual(self.recipe.suggested_category(), MEAD_CATEGORIES['dry'])
