@@ -172,6 +172,35 @@ class YeastItem(IngredientItem):
     amount = models.IntegerField(help_text='Number of units of yeast')
 
 
+MEAD_CATEGORIES = {'dry': 241,
+                   'semi_sweet': 242,
+                   'sweet': 243,
+                   'cyser': 251,
+                   'pyment': 252,
+                   'other_fruit_melomel': 253,
+                   'metheglin': 261,
+                   'braggot': 262,
+                   'open_category': 263}
+MEAD_CHOICES = ((MEAD_CATEGORIES['dry'], 'Dry Mead'),
+                (MEAD_CATEGORIES['semi_sweet'], 'Semi-Sweet Mead'),
+                (MEAD_CATEGORIES['sweet'], 'Sweet Mead'),
+                (MEAD_CATEGORIES['cyser'], 'Cyser'),
+                (MEAD_CATEGORIES['pyment'], 'Pyment'),
+                (MEAD_CATEGORIES['other_fruit_melomel'], 'Other Fruit Melomel'),
+                (MEAD_CATEGORIES['metheglin'], 'Metheglin'),
+                (MEAD_CATEGORIES['braggot'], 'Braggot'),
+                (MEAD_CATEGORIES['open_category'], 'Open Category Mead'))
+MEAD_DESCRIPTIONS = {MEAD_CATEGORIES['dry']: 'A traditional mead with subtle honey aroma but no significant aromatics. Minimal residual sweetness with a dry finish, and a light to medium body. Similar to a dry white wine. (Based on BJCP Style Guidelines 2008)',
+                     MEAD_CATEGORIES['semi_sweet']: 'A traditional mead with noticeable honey aroma and subtle to moderate residual sweetness with a medium-dry finish.  Body is medium-light to medium-full.  Similar to a semi-sweet (or medium-dry) white wine.  (thanks to BJCP Style Guidelines 2008)',
+                     MEAD_CATEGORIES['sweet']: 'A traditional mead with dominating honey aroma, often moderately to strongly sweet.  The body is generally medium-full to full, and may seem like a dessert wine.  (thanks to BJCP Style Guidelines 2008)',
+                     MEAD_CATEGORIES['cyser']: 'A mead made from honey and apple juice, with a variety of flavors.  (thanks to BJCP Style Guidelines 2008)',
+                     MEAD_CATEGORIES['pyment']: 'A melomel made from grapes or grape juice.  (thanks to BJCP Style Guidelines 2008)',
+                     MEAD_CATEGORIES['other_fruit_melomel']: 'A mead made from honey and fruit (not grapes or apples).  (thanks to BJCP Style Guidelines 2008)',
+                     MEAD_CATEGORIES['metheglin']: 'A spiced mead.  (thanks to BJCP Style Guidelines 2008)',
+                     MEAD_CATEGORIES['braggot']: 'A mead made with malt. (thanks to BJCP Style Guidelines 2008)',
+                     MEAD_CATEGORIES['open_category']: 'A honey-based beverage that either combines ingredients from two or more of the other mead sub-categories, is a historical or indigenous mead (e.g., tej, Polish meads), or is a mead that does not fit into any other category.  Any specialty or experimental mead using additional sources of fermentables (e.g., maple syrup, molasses, brown sugar, or agave nectar), additional ingredients (e.g., vegetables, liquors, smoke, etc.), alternative processes (e.g., icing, oak-aging) or other unusual ingredient, process, or technique would also be appropriate in this category.'}
+
+
 class Recipe(models.Model):
     """
     Recipes are composed of ingredients and directions.
@@ -188,39 +217,9 @@ class Recipe(models.Model):
 
     Recipes are copied to batches, which include actual amounts.
     """
-    # Individual recipe categories.
-    DRY = 241
-    SEMI_SWEET = 242
-    SWEET = 243
-    CYSER = 251
-    PYMENT = 252
-    OTHER_FRUIT_MELOMEL = 253
-    METHEGLIN = 261
-    BRAGGOT = 262
-    OPEN_CATEGORY = 263
-    # Set of all recipe categories.
-    RECIPE_CATEGORIES = ((DRY, 'Dry Mead'),
-                         (SEMI_SWEET, 'Semi-Sweet Mead'),
-                         (SWEET, 'Sweet Mead'),
-                         (CYSER, 'Cyser'),
-                         (PYMENT, 'Pyment'),
-                         (OTHER_FRUIT_MELOMEL, 'Other Fruit Melomel'),
-                         (METHEGLIN, 'Metheglin'),
-                         (BRAGGOT, 'Braggot'),
-                         (OPEN_CATEGORY, 'Open Category Mead'))
-    RECIPE_DESCRIPTIONS = {DRY: 'A traditional mead with subtle honey aroma but no significant aromatics. Minimal residual sweetness with a dry finish, and a light to medium body. Similar to a dry white wine. (Based on BJCP Style Guidelines 2008)',
-                           SEMI_SWEET: 'A traditional mead with noticeable honey aroma and subtle to moderate residual sweetness with a medium-dry finish.  Body is medium-light to medium-full.  Similar to a semi-sweet (or medium-dry) white wine.  (thanks to BJCP Style Guidelines 2008)',
-                           SWEET: 'A traditional mead with dominating honey aroma, often moderately to strongly sweet.  The body is generally medium-full to full, and may seem like a dessert wine.  (thanks to BJCP Style Guidelines 2008)',
-                           CYSER: 'A mead made from honey and apple juice, with a variety of flavors.  (thanks to BJCP Style Guidelines 2008)',
-                           PYMENT: 'A melomel made from grapes or grape juice.  (thanks to BJCP Style Guidelines 2008)',
-                           OTHER_FRUIT_MELOMEL: 'A mead made from honey and fruit (not grapes or apples).  (thanks to BJCP Style Guidelines 2008)',
-                           METHEGLIN: 'A spiced mead.  (thanks to BJCP Style Guidelines 2008)',
-                           BRAGGOT: 'A mead made with malt. (thanks to BJCP Style Guidelines 2008)',
-                           OPEN_CATEGORY: 'A honey-based beverage that either combines ingredients from two or more of the other mead sub-categories, is a historical or indigenous mead (e.g., tej, Polish meads), or is a mead that does not fit into any other category.  Any specialty or experimental mead using additional sources of fermentables (e.g., maple syrup, molasses, brown sugar, or agave nectar), additional ingredients (e.g., vegetables, liquors, smoke, etc.), alternative processes (e.g., icing, oak-aging) or other unusual ingredient, process, or technique would also be appropriate in this category.'}
-
     title = models.CharField(max_length=40, help_text='Recipe title')
     description = models.TextField(help_text='Description of product.')
-    category = models.IntegerField(choices=RECIPE_CATEGORIES, default=DRY)
+    category = models.IntegerField(choices=MEAD_CHOICES, default=MEAD_CATEGORIES['dry'])
 
     @property
     def name(self):
@@ -371,49 +370,49 @@ class Recipe(models.Model):
             # Honey is required!
             return None
         if len(honey_types) == 1:
-            mead_type['honey'] = Recipe.DRY
+            mead_type['honey'] = MEAD_CATEGORIES['dry']
         elif len(honey_types) == 2:
             if Honey.MALT in honey_types:
-                mead_type['honey'] = Recipe.BRAGGOT
+                mead_type['honey'] = MEAD_CATEGORIES['braggot']
             elif Honey.OTHER in honey_types:
-                mead_type['honey'] = Recipe.OPEN_CATEGORY
+                mead_type['honey'] = MEAD_CATEGORIES['open_category']
             else:
                 # Unknown honey type!
                 return None
         else:
-            mead_type['honey'] = Recipe.OPEN_CATEGORY
+            mead_type['honey'] = MEAD_CATEGORIES['open_category']
 
         # Identify based on water.
         if len(water_types) == 1:
             if Water.WATER in water_types:
-                mead_type['water'] = Recipe.DRY
+                mead_type['water'] = MEAD_CATEGORIES['dry']
             elif Water.APPLE_JUICE in water_types:
-                mead_type['water'] = Recipe.CYSER
+                mead_type['water'] = MEAD_CATEGORIES['cyser']
             elif Water.GRAPE_JUICE in water_types:
-                mead_type['water'] = Recipe.PYMENT
+                mead_type['water'] = MEAD_CATEGORIES['pyment']
             elif Water.FRUIT_JUICE in water_types:
-                mead_type['water'] = Recipe.OTHER_FRUIT_MELOMEL
+                mead_type['water'] = MEAD_CATEGORIES['other_fruit_melomel']
             elif Water.OTHER in water_types:
-                mead_type['water'] = Recipe.OPEN_CATEGORY
+                mead_type['water'] = MEAD_CATEGORIES['open_category']
             else:
                 # Unknown water type!
                 return None
         elif len(water_types) > 1:
             if Water.WATER in water_types:
                 if Water.APPLE_JUICE in water_types:
-                    mead_type['water'] = Recipe.CYSER
+                    mead_type['water'] = MEAD_CATEGORIES['cyser']
                 elif Water.GRAPE_JUICE in water_types:
-                    mead_type['water'] = Recipe.PYMENT
+                    mead_type['water'] = MEAD_CATEGORIES['pyment']
                 elif Water.FRUIT_JUICE in water_types:
-                    mead_type['water'] = Recipe.OTHER_FRUIT_MELOMEL
+                    mead_type['water'] = MEAD_CATEGORIES['other_fruit_melomel']
                 elif Water.OTHER in water_types:
-                    mead_type['water'] = Recipe.OPEN_CATEGORY
+                    mead_type['water'] = MEAD_CATEGORIES['open_category']
                 else:
                     # Unknown water type!
                     return None
             else:
                 # JMT: no check on unknown water types here
-                mead_type['water'] = Recipe.OPEN_CATEGORY
+                mead_type['water'] = MEAD_CATEGORIES['open_category']
         else:
             # We need a water type!
             return None
@@ -421,39 +420,39 @@ class Recipe(models.Model):
         # Identify based on flavor.
         if len(flavor_types) == 1:
             if Flavor.SPICE in flavor_types:
-                mead_type['flavor'] = Recipe.METHEGLIN
+                mead_type['flavor'] = MEAD_CATEGORIES['metheglin']
             elif Flavor.APPLE in flavor_types:
-                mead_type['flavor'] = Recipe.CYSER
+                mead_type['flavor'] = MEAD_CATEGORIES['cyser']
             elif Flavor.GRAPE in flavor_types:
-                mead_type['flavor'] = Recipe.PYMENT
+                mead_type['flavor'] = MEAD_CATEGORIES['pyment']
             elif Flavor.FRUIT in flavor_types:
-                mead_type['flavor'] = Recipe.OTHER_FRUIT_MELOMEL
+                mead_type['flavor'] = MEAD_CATEGORIES['other_fruit_melomel']
             elif Flavor.OTHER in flavor_types:
-                mead_type['flavor'] = Recipe.OPEN_CATEGORY
+                mead_type['flavor'] = MEAD_CATEGORIES['open_category']
         elif len(flavor_types) > 1:
-            mead_type['flavor'] = Recipe.OPEN_CATEGORY
+            mead_type['flavor'] = MEAD_CATEGORIES['open_category']
         else:
-            mead_type['flavor'] = Recipe.DRY
+            mead_type['flavor'] = MEAD_CATEGORIES['dry']
 
         # Identify based on all together.
         recipe_type = set(mead_type.values())
-        recipe_type.discard(Recipe.DRY)
+        recipe_type.discard(MEAD_CATEGORIES['dry'])
         if len(recipe_type) == 0:
-            return Recipe.DRY
+            return MEAD_CATEGORIES['dry']
         if len(recipe_type) == 1:
             return recipe_type.pop()
         else:
-            return Recipe.OPEN_CATEGORY
+            return MEAD_CATEGORIES['open_category']
 
 
-class Batch(Recipe):
+class Batch(models.Model):
     """
     Batches are actual implementations of recipes.
 
     Products can be created from batches.
     """
 
-    recipe = models.ForeignKey(Recipe, related_name='originals')
+    recipe = models.ForeignKey(Recipe, related_name='neworiginals')
     brewname = models.CharField('Brew Name', max_length=8, help_text='Unique value for brew name (e.g., SIP 99)')
     batchletter = models.CharField('Batch Letter', max_length=1, help_text='Letter corresponding to batch (e.g., A)')
     # Used for labels!
@@ -466,6 +465,26 @@ class Batch(Recipe):
 
     def __unicode__(self):
         return u'%s %s' % (self.brewname, self.batchletter)
+
+    def all_natural(self):
+        # TRUE if all ingredients are natural
+        # JMT: skipping yeast at the moment
+        honey_is_natural = all([item.honey.is_natural for item in self.honey_items])
+        water_is_natural = all([item.water.is_natural for item in self.water_items])
+        flavor_is_natural = all([item.flavor.is_natural for item in self.flavor_items])
+        return honey_is_natural and water_is_natural and flavor_is_natural
+
+    def appellation(self):
+        # Proper implementation of appellation testing is very complex.  See 27 CFR 4.25(b) for more information.
+        honey_apps = [item.honey.appellation for item in self.honey_items]
+        water_apps = [item.water.appellation for item in self.water_items]
+        flavor_apps = [item.flavor.appellation for item in self.flavor_items]
+
+        total_apps = set(honey_apps + water_apps + flavor_apps)
+        if len(total_apps) == 1:
+            return total_apps.pop()
+        else:
+            return None
 
     @property
     def abv(self):
@@ -522,29 +541,37 @@ class InStockProductManager(models.Manager):
         return super(InStockProductManager, self).get_query_set().filter(is_active=True, jar__is_active=True, jar__is_available=True).distinct()
 
 
-class Product(Batch):
+class Product(models.Model):
     """
-    New base class for products.
+     base class for products.
 
     """
-    # brewname in batch
-    # batchletter in batch
+    brewname = models.CharField('Brew Name', max_length=8, help_text='Unique value for brew name (e.g., SIP 99)')
+    batchletter = models.CharField('Batch Letter', max_length=1, help_text='Letter corresponding to batch (e.g., A)')
     slug = models.SlugField(max_length=255, blank=True, unique=True,
                             help_text='Unique value for product page URL, created from brewname and batchletter.')
-    # title in recipe, copied to batch
+    title = models.CharField(max_length=40, help_text='Recipe title')
+    description = models.TextField(help_text='Description of product.')
+    category = models.IntegerField(choices=MEAD_CHOICES, default=MEAD_CATEGORIES['dry'])
     image = models.ImageField(upload_to='images/products/main', blank=True)
     thumbnail = models.ImageField(upload_to='images/products/thumbnails', blank=True)
     is_active = models.BooleanField(default=False)
     is_bestseller = models.BooleanField(default=False)
     is_featured = models.BooleanField(default=False)
-    # description in recipe copied to batch
     meta_keywords = models.CharField(max_length=255,
                                      help_text='Comma-delimited set of SEO keywords for meta tag')
     meta_description = models.CharField(max_length=255,
                                         help_text='Content for description meta tag')
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
-    # category in recipe
+
+    brewed_date = models.DateField()
+    brewed_sg = models.DecimalField(max_digits=4, decimal_places=3, default=Decimal('0.000'))
+
+    bottled_date = models.DateField()
+    bottled_sg = models.DecimalField(max_digits=4, decimal_places=3, default=Decimal('0.000'))
+
+    abv = models.DecimalField(max_digits=4, decimal_places=2, default=Decimal('00.00'))
 
     objects = models.Manager()
     active = ActiveProductManager()
@@ -560,22 +587,6 @@ class Product(Batch):
 
     class Meta:
         ordering = ['-is_active', '-created_at']
-
-    @property
-    def brewed_date(self):
-        return self.sample_set.order_by('date')[0].date
-
-    @property
-    def brewed_sg(self):
-        return self.sample_set.order_by('date')[0].corrsg
-
-    @property
-    def bottled_date(self):
-        return self.sample_set.order_by('-date')[0].date
-
-    @property
-    def bottled_sg(self):
-        return self.sample_set.order_by('-date')[0].corrsg
 
     # FIXME: these two have the same magic, need to remove duplication
     def jars_in_stock(self):
@@ -607,8 +618,6 @@ class Product(Batch):
         products = Product.active.filter(orderitem__in=items).distinct()
         return products
 
-    # abv in batch
-
 
 class ActiveProductReviewManager(models.Manager):
     def all(self):
@@ -631,4 +640,3 @@ class ProductReview(models.Model):
 
     objects = models.Manager()
     approved = ActiveProductReviewManager()
-
