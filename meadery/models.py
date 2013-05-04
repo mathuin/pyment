@@ -111,7 +111,7 @@ class Yeast(Ingredient):
     @property
     def maxdeltasg(self):
         """ Maximum change in specific gravity based on alcohol tolerance. """
-        return Decimal(self.tolerance / 100.0 * 0.75).quantize(Decimal('0.001'))
+        return Decimal(self.tolerance / Decimal('100.0') * Decimal('0.75')).quantize(Decimal('0.001'))
 
 
 class IngredientItem(models.Model):
@@ -265,8 +265,16 @@ class Recipe(models.Model):
             return None
 
     @property
+    def warm_items(self):
+        return WarmItem.objects.filter(recipe=self)
+
+    @property
+    def cool_items(self):
+        return CoolItem.objects.filter(recipe=self)
+
+    @property
     def water_items(self):
-        return list(CoolItem.objects.filter(recipe=self)) + list(WarmItem.objects.filter(recipe=self))
+        return list(self.warm_items) + list(self.cool_items)
 
     @property
     def water_mass(self):
@@ -344,7 +352,10 @@ class Recipe(models.Model):
         # JMT: skipping yeast at the moment
         honey_is_natural = all([item.honey.is_natural for item in self.honey_items])
         water_is_natural = all([item.water.is_natural for item in self.water_items])
-        flavor_is_natural = all([item.flavor.is_natural for item in self.flavor_items])
+        if len(self.flavor_items) > 0:
+            flavor_is_natural = all([item.flavor.is_natural for item in self.flavor_items])
+        else:
+            flavor_is_natural = True
         return honey_is_natural and water_is_natural and flavor_is_natural
 
     def appellation(self):
@@ -445,14 +456,14 @@ class Recipe(models.Model):
             return MEAD_CATEGORIES['open_category']
 
 
-class Batch(models.Model):
+class Batch(Recipe):
     """
     Batches are actual implementations of recipes.
 
     Products can be created from batches.
     """
 
-    recipe = models.ForeignKey(Recipe, related_name='neworiginals')
+    recipe = models.ForeignKey(Recipe, related_name='source', null=True, on_delete=models.SET_NULL)
     brewname = models.CharField('Brew Name', max_length=8, help_text='Unique value for brew name (e.g., SIP 99)')
     batchletter = models.CharField('Batch Letter', max_length=1, help_text='Letter corresponding to batch (e.g., A)')
     # Used for labels!
@@ -465,26 +476,6 @@ class Batch(models.Model):
 
     def __unicode__(self):
         return u'%s %s' % (self.brewname, self.batchletter)
-
-    def all_natural(self):
-        # TRUE if all ingredients are natural
-        # JMT: skipping yeast at the moment
-        honey_is_natural = all([item.honey.is_natural for item in self.honey_items])
-        water_is_natural = all([item.water.is_natural for item in self.water_items])
-        flavor_is_natural = all([item.flavor.is_natural for item in self.flavor_items])
-        return honey_is_natural and water_is_natural and flavor_is_natural
-
-    def appellation(self):
-        # Proper implementation of appellation testing is very complex.  See 27 CFR 4.25(b) for more information.
-        honey_apps = [item.honey.appellation for item in self.honey_items]
-        water_apps = [item.water.appellation for item in self.water_items]
-        flavor_apps = [item.flavor.appellation for item in self.flavor_items]
-
-        total_apps = set(honey_apps + water_apps + flavor_apps)
-        if len(total_apps) == 1:
-            return total_apps.pop()
-        else:
-            return None
 
     @property
     def abv(self):
