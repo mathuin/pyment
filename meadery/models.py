@@ -111,7 +111,7 @@ class Yeast(Ingredient):
     @property
     def maxdeltasg(self):
         """ Maximum change in specific gravity based on alcohol tolerance. """
-        return Decimal(self.tolerance / 100.0 * 0.75).quantize(Decimal('0.001'))
+        return Decimal(self.tolerance / Decimal('100.0') * Decimal('0.75')).quantize(Decimal('0.001'))
 
 
 class IngredientItem(models.Model):
@@ -344,7 +344,10 @@ class Recipe(models.Model):
         # JMT: skipping yeast at the moment
         honey_is_natural = all([item.honey.is_natural for item in self.honey_items])
         water_is_natural = all([item.water.is_natural for item in self.water_items])
-        flavor_is_natural = all([item.flavor.is_natural for item in self.flavor_items])
+        if len(self.flavor_items) > 0:
+      	    flavor_is_natural = all([item.flavor.is_natural for item in self.flavor_items])
+        else:
+	    flavor_is_natural = True
         return honey_is_natural and water_is_natural and flavor_is_natural
 
     def appellation(self):
@@ -471,7 +474,10 @@ class Batch(models.Model):
         # JMT: skipping yeast at the moment
         honey_is_natural = all([item.honey.is_natural for item in self.honey_items])
         water_is_natural = all([item.water.is_natural for item in self.water_items])
-        flavor_is_natural = all([item.flavor.is_natural for item in self.flavor_items])
+        if len(self.flavor_items) > 0:
+      	    flavor_is_natural = all([item.flavor.is_natural for item in self.flavor_items])
+        else:
+	    flavor_is_natural = True
         return honey_is_natural and water_is_natural and flavor_is_natural
 
     def appellation(self):
