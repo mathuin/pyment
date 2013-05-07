@@ -185,13 +185,10 @@ admin.site.register(Batch, BatchAdmin)
 
 class SampleAdmin(admin.ModelAdmin):
     form = SampleAdminForm
-    list_display = ('batch', 'date', 'temp', 'sg', 'notes', )
-    list_display_links = ('batch', )
-    list_filter = ['batch', ]
-    ordering = ['batch', 'date']
-
-    def batch(self, obj):
-        return obj.batch.name
+    list_display = ('__unicode__', 'batch', 'date', 'temp', 'sg', 'notes', )
+    list_display_links = ('__unicode__', )
+    list_filter = ('batch', 'date')
+    ordering = ['-date', 'batch']
 
 admin.site.register(Sample, SampleAdmin)
 

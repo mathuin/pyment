@@ -510,6 +510,9 @@ class Sample(models.Model):
                0.0069,  0.0073,  0.0077,  0.0081,  0.0085,
                0.0089,  0.0093,  0.0097,  0.0102,  0.0106]
 
+    def __unicode__(self):
+        return u'Sample #{0}'.format(self.pk)
+
     @property
     def corrsg(self):
         # Convert temperature from Fahrenheit to Celsius first.
