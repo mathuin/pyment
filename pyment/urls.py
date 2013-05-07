@@ -21,4 +21,4 @@ urlpatterns = patterns('',
 
                        url(r'^admin/', include(admin.site.urls)), )
 
-handler404 = 'views.file_not_found_404'
+handler404 = 'pyment.views.file_not_found_404'
