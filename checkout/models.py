@@ -99,6 +99,12 @@ class PickListItem(models.Model):
     picklist = models.ForeignKey(PickList)
     jar = models.ForeignKey(Jar)
 
+    class Meta:
+        ordering = ['jar__crate__bin__shelf__row__warehouse__number',
+                    'jar__crate__bin__shelf__row__number',
+                    'jar__crate__bin__shelf__number',
+                    'jar__crate__bin__number', ]
+
     @property
     def name(self):
         return self.jar.name
