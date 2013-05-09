@@ -23,7 +23,7 @@ class IngredientItemInline(admin.StackedInline):
     extra = 0
 
 
-class RecipeAdmin(admin.ModelAdmin):
+class RecipeAdmin(ButtonAdmin):
     form = RecipeAdminForm
     list_display = ('title', 'description', 'category', 'all_natural', 'appellation', 'total_cost')
     list_display_links = ('title', )
@@ -31,7 +31,7 @@ class RecipeAdmin(admin.ModelAdmin):
     readonly_fields = ('category', )
 
     def total_cost(self, obj):
-        return Decimal(sum([(item.amount * item.ingredient.cpu) for item in obj.items])).quantize(Decimal('0.01'))
+        return Decimal(sum([(item.amount * item.ingredient.cpu) for item in obj.items()])).quantize(Decimal('0.01'))
 
     # JMT: disabled temporarily
     def brew_sg(self, obj):
@@ -41,7 +41,7 @@ class RecipeAdmin(admin.ModelAdmin):
     # JMT: disabled temporarily
     def final_sg(self, obj):
         if len(obj.yeast_items) > 0:
-            deltasg = max([item.yeast.maxdeltasg for item in obj.yeast_items])
+            deltasg = max([item.yeast.maxdeltasg for item in obj.items(Ingredient.TYPE_YEAST)])
         else:
             deltasg = 0
         return Decimal(obj.brew_sg - deltasg)
@@ -64,7 +64,8 @@ admin.site.register(Recipe, RecipeAdmin)
 
 
 class BatchAdmin(RecipeAdmin):
-    list_display = ('name', 'recipe', 'all_natural', 'appellation', 'brew_sg', 'final_sg', 'link_samples', 'firstsg', 'lastsg', 'abv', 'jars', )
+    # list_display = ('name', 'recipe', 'all_natural', 'appellation', 'brew_sg', 'final_sg', 'link_samples', 'firstsg', 'lastsg', 'abv', 'jars', )
+    list_display = ('name', 'recipe', 'all_natural', 'appellation', 'link_samples', 'firstsg', 'lastsg', 'abv', 'jars', )
     list_display_links = ('name', )
 
     def link_samples(self, obj):

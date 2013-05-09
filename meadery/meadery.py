@@ -13,8 +13,8 @@ def create_batch_from_recipe(recipe):
     [setattr(batch, field.name, getattr(recipe, field.name)) for field in Recipe._meta.fields if field.name != 'id']
     batch.jars = 0
     batch.save()
-    for item in recipe.items:
-        new_item = IngredientItem.objects.get(pk=item)
+    for item in IngredientItem.objects.filter(recipe=recipe):
+        new_item = item
         new_item.pk = None
         new_item.recipe = batch
         new_item.save()
@@ -28,8 +28,8 @@ def create_recipe_from_batch(batch):
     recipe.title = '%s %s Recipe' % (batch.brewname, batch.batchletter)
     recipe.save()
     # Now copy separate items.
-    for item in batch.items:
-        new_item = IngredientItem.objects.get(pk=item)
+    for item in IngredientItem.objects.filter(recipe=batch):
+        new_item = item
         new_item.pk = None
         new_item.recipe = recipe
         new_item.save()

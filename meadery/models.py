@@ -171,37 +171,23 @@ class Recipe(models.Model):
     def __unicode__(self):
         return u'%s' % self.title
 
-    @property
-    def items(self):
-        return IngredientItem.objects.filter(recipe=self)
-
-    @property
-    def sugar_items(self):
-        return list([item for item in self.items if item.ingredient.type == Ingredient.TYPE_SUGAR])
-
-    @property
-    def solvent_items(self):
-        return list([item for item in self.items if item.ingredient.type == Ingredient.TYPE_SOLVENT])
-
-    @property
-    def flavor_items(self):
-        return list([item for item in self.items if item.ingredient.type == Ingredient.TYPE_FLAVOR])
-
-    @property
-    def yeast_items(self):
-        return list([item for item in self.items if item.ingredient.type == Ingredient.TYPE_YEAST])
+    def items(self, type=None):
+        if type is None:
+            return IngredientItem.objects.filter(recipe=self)
+        else:
+            return IngredientItem.objects.filter(recipe=self, ingredient__type=type)
 
     @property
     def all_natural(self):
         # JMT: skipping yeast
-        return all([item.ingredient.is_natural for item in self.sugar_items + self.solvent_items + self.flavor_items])
+        return all([item.ingredient.is_natural for item in self.items((Ingredient.TYPE_SUGAR | Ingredient.TYPE_SOLVENT | Ingredient.TYPE_FLAVOR))])
 
     @property
     def appellation(self):
         # Proper implementation of appellation testing is very complex.
         # See 27 CFR 4.25(b) for more information.
         # JMT: skipping yeast
-        total_appellations = set([item.ingredient.appellation for item in self.sugar_items + self.solvent_items + self.flavor_items])
+        total_appellations = set([item.ingredient.appellation for item in self.items((Ingredient.TYPE_SUGAR | Ingredient.TYPE_SOLVENT | Ingredient.TYPE_FLAVOR))])
         if len(total_appellations) == 1:
             return total_appellations.pop()
         else:
@@ -209,9 +195,9 @@ class Recipe(models.Model):
 
     @property
     def suggested_category(self):
-        sugar_types = set([item.ingredient.subtype for item in self.sugar_items])
-        solvent_types = set([item.ingredient.subtype for item in self.solvent_items])
-        flavor_types = set([item.ingredient.subtype for item in self.flavor_items])
+        sugar_types = set([item.ingredient.subtype for item in self.items(Ingredient.TYPE_SUGAR)])
+        solvent_types = set([item.ingredient.subtype for item in self.items(Ingredient.TYPE_SOLVENT)])
+        flavor_types = set([item.ingredient.subtype for item in self.items(Ingredient.TYPE_FLAVOR)])
 
         # Identify based on sugar.
         mead_type = {}

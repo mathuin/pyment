@@ -27,11 +27,10 @@ class RecipeAdminForm(forms.ModelForm):
     # It's something to do with the fact that the related fields aren't yet saved.
     def noclean(self):
         cleaned_data = super(RecipeAdminForm, self).clean()
-        sugar_types = set([item.ingredient.subtype for item in self.sugar_items])
-        solvent_types = set([item.ingredient.subtype for item in self.solvent_items])
-        solvent_temps = set([item.temp for item in self.solvent_items])
-        flavor_types = set([item.ingredient.subtype for item in self.flavor_items])
-        yeast_types = set([item.ingredient.subtype for item in self.yeast_items])
+        sugar_types = set([item.ingredient.subtype for item in self.items(Ingredient.TYPE_SUGAR)])
+        solvent_types = set([item.ingredient.subtype for item in self.items(Ingredient.TYPE_SOLVENT)])
+        solvent_temps = set([item.temp for item in self.items(Ingredient.TYPE_SOLVENT)])
+        flavor_types = set([item.ingredient.subtype for item in self.items(Ingredient.TYPE_FLAVOR)])
 
         # Ingredient subtype checks.
         if len(sugar_types) == 0:
