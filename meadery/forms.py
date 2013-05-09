@@ -1,30 +1,61 @@
 from django import forms
-from .models import Honey, Water, Flavor, Yeast, Recipe, Batch, Sample, Product, ProductReview
+from django.core.exceptions import ValidationError
+from .models import Ingredient, Recipe, Batch, Sample, Product, ProductReview
 
 
-class HoneyAdminForm(forms.ModelForm):
+class IngredientAdminForm(forms.ModelForm):
     class Meta:
-        model = Honey
+        model = Ingredient
 
-
-class WaterAdminForm(forms.ModelForm):
-    class Meta:
-        model = Water
-
-
-class FlavorAdminForm(forms.ModelForm):
-    class Meta:
-        model = Flavor
-
-
-class YeastAdminForm(forms.ModelForm):
-    class Meta:
-        model = Yeast
+    def clean(self):
+        cleaned_data = super(IngredientAdminForm, self).clean()
+        cleaned_type = cleaned_data.get('type')
+        cleaned_subtype = cleaned_data.get('subtype')
+        cleaned_state = cleaned_data.get('state')
+        if cleaned_type not in [type for (type, subtypes) in Ingredient.INGREDIENT_SUBTYPES if cleaned_subtype in [subtype for (subtype, name) in subtypes]]:
+            raise ValidationError('Ingredient type and subtype must match.')
+        if cleaned_state not in [state for (state, types) in Ingredient.STATE_TYPES if cleaned_type in types]:
+            raise ValidationError('Ingredient state does not match type.')
+        return cleaned_data
 
 
 class RecipeAdminForm(forms.ModelForm):
     class Meta:
         model = Recipe
+
+    # JMT: this is not yet working.
+    # It's something to do with the fact that the related fields aren't yet saved.
+    def noclean(self):
+        cleaned_data = super(RecipeAdminForm, self).clean()
+        sugar_types = set([item.ingredient.subtype for item in self.sugar_items])
+        solvent_types = set([item.ingredient.subtype for item in self.solvent_items])
+        solvent_temps = set([item.temp for item in self.solvent_items])
+        flavor_types = set([item.ingredient.subtype for item in self.flavor_items])
+        yeast_types = set([item.ingredient.subtype for item in self.yeast_items])
+
+        # Ingredient subtype checks.
+        if len(sugar_types) == 0:
+            raise ValidationError('At least one sugar source is required.')
+        if Ingredient.SUGAR_HONEY not in sugar_types:
+            raise ValidationError('At least one sugar source must be honey.')
+        if not sugar_types.issubset(set(a for (a, b) in Ingredient.SUGAR_TYPES)):
+            raise ValidationError('Unknown sugar type found -- check ingredients!')
+
+        if len(solvent_types) == 0:
+            raise ValidationError('At least one solvent source is required.')
+        if len(solvent_temps) < 1:
+            raise ValidationError('At least two solvents with different temperatures are required.')
+        if not solvent_types.issubset(set(a for (a, b) in Ingredient.SOLVENT_TYPES)):
+            raise ValidationError('Unknown solvent type found -- check ingredients!')
+
+        if not flavor_types.issubset(set(a for (a, b) in Ingredient.FLAVOR_TYPES)):
+            raise ValidationError('Unknown flavor type found -- check ingredients!')
+
+        if len(self.yeast_items) == 0:
+            raise ValidationError('At least one yeast is required.')
+
+        cleaned_data['category'] = self.suggested_category
+        return cleaned_data
 
 
 class BatchAdminForm(forms.ModelForm):
