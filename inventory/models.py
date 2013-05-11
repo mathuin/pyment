@@ -1,6 +1,6 @@
 from django.core.urlresolvers import reverse
 from django.db import models
-from meadery.models import Product
+from meadery.models import Product, NewProduct
 from django.core.exceptions import ValidationError
 
 
@@ -265,6 +265,44 @@ class Jar(models.Model):
         super(Jar, self).save(*args, **kwargs)
         self.slug = str(self.product.slug) + str(self.number)
         super(Jar, self).save(*args, **kwargs)
+
+    def get_absolute_url(self):
+        return reverse('inventory_jar', kwargs={'jar_slug': self.slug})
+
+
+class NewJar(models.Model):
+    product = models.ForeignKey(NewProduct)
+    number = models.IntegerField()
+    slug = models.SlugField(max_length=13, unique=True, blank=True)
+    # volume in liters
+    volume = models.IntegerField(default=1)
+    crate = models.ForeignKey(Crate)
+    # is_active = not yet sold
+    is_active = models.BooleanField(default=True)
+    # is_available = considered 'in stock'
+    is_available = models.BooleanField(default=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    objects = models.Manager()
+    instock = InStockJarManager()
+
+    class Meta:
+        ordering = ['created_at']
+        unique_together = ('product', 'number')
+
+    @property
+    def name(self):
+        return u"%s%d" % (self.product, self.number)
+
+    def __unicode__(self):
+        return self.name
+
+    def save(self, *args, **kwargs):
+        self.slug = str(self.product.slug)
+        super(NewJar, self).save(*args, **kwargs)
+        self.slug = str(self.product.slug) + str(self.number)
+        super(NewJar, self).save(*args, **kwargs)
 
     def get_absolute_url(self):
         return reverse('inventory_jar', kwargs={'jar_slug': self.slug})

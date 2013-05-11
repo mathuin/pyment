@@ -1,8 +1,8 @@
 from django.core.urlresolvers import reverse
 from django.db import models
 from django.contrib.auth.models import User
-from meadery.models import Product
-from inventory.models import Jar
+from meadery.models import Product, NewProduct
+from inventory.models import Jar, NewJar
 
 
 class BaseOrderInfo(models.Model):
@@ -49,6 +49,26 @@ class Order(BaseOrderInfo):
 
 class OrderItem(models.Model):
     product = models.ForeignKey(Product)
+    quantity = models.IntegerField(default=1)
+    order = models.ForeignKey(Order)
+
+    @property
+    def name(self):
+        return self.product.name
+
+    @property
+    def title(self):
+        return self.product.title
+
+    def __unicode__(self):
+        return self.product.title + ' (' + self.product.name + ')'
+
+    def get_absolute_url(self):
+        return self.product.get_absolute_url()
+
+
+class NewOrderItem(models.Model):
+    product = models.ForeignKey(NewProduct)
     quantity = models.IntegerField(default=1)
     order = models.ForeignKey(Order)
 

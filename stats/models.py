@@ -1,6 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
-from meadery.models import Product
+from meadery.models import Product, NewProduct
 
 
 class PageView(models.Model):
@@ -15,3 +15,7 @@ class PageView(models.Model):
 
 class ProductView(PageView):
     product = models.ForeignKey(Product)
+
+
+class NewProductView(PageView):
+    product = models.ForeignKey(NewProduct)

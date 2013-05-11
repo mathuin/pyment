@@ -85,45 +85,20 @@ def make_labels_from_batch(batch):
 
 
 # JMT: temporary location for code that migrates old products to new products
-from models import NewProduct, NewBatch, NewRecipe, NewIngredientItem
+from models import NewProduct
+from inventory.models import NewJar, Jar
+from cart.models import NewCartItem, CartItem
+from checkout.models import NewOrderItem, OrderItem
+from stats.models import NewProductView, ProductView
 
 
 def move_to_new_world():
-    for recipe in Recipe.objects.all():
-        # Parent stuff.
-        newrecipe = NewRecipe()
-        newrecipe.title = recipe.title
-        newrecipe.description = recipe.description
-        newrecipe.category = recipe.category
-        newrecipe.save()
-        for item in IngredientItem.objects.filter(recipe=recipe):
-            newitem = NewIngredientItem()
-            newitem.parent = newrecipe
-            newitem.ingredient = item.ingredient
-            newitem.amount = item.amount
-            newitem.temp = item.temp
-            newitem.save()
-    for batch in Batch.objects.all():
-        # Parent stuff.
-        newbatch = NewBatch()
-        newbatch.title = batch.title
-        newbatch.description = batch.description
-        newbatch.category = batch.category
-        # SIP stuff.
-        newbatch.brewname = batch.brewname
-        newbatch.batchletter = batch.batchletter
-        # Batch stuff.
-        newbatch.recipe = batch.recipe
-        newbatch.event = batch.event
-        newbatch.jars = batch.jars
-        newbatch.save()
-        for item in IngredientItem.objects.filter(recipe=batch):
-            newitem = NewIngredientItem()
-            newitem.parent = newbatch
-            newitem.ingredient = item.ingredient
-            newitem.amount = item.amount
-            newitem.temp = item.temp
-            newitem.save()
+    # first nuke new world
+    NewProduct.objects.all().delete()
+    NewJar.objects.all().delete()
+    NewCartItem.objects.all().delete()
+    NewOrderItem.objects.all().delete()
+    NewProductView.objects.all().delete()
     for product in Product.objects.all():
         # Parent stuff.
         newproduct = NewProduct()
@@ -150,6 +125,7 @@ def move_to_new_world():
         newproduct.bottled_sg = product.bottled_sg
         newproduct.abv = product.abv
         newproduct.save()
+        # Related objects.
         for item in IngredientItem.objects.filter(recipe=product):
             newitem = NewIngredientItem()
             newitem.parent = newproduct
@@ -157,9 +133,36 @@ def move_to_new_world():
             newitem.amount = item.amount
             newitem.temp = item.temp
             newitem.save()
-
-
-def nuke_new_world():
-    NewRecipe.objects.all().delete()
-    NewBatch.objects.all().delete()
-    NewProduct.objects.all().delete()
+        for jar in Jar.objects.filter(product=product):
+            newjar = NewJar()
+            newjar.product = newproduct
+            newjar.number = jar.number
+            newjar.slub = jar.slug
+            newjar.volume = jar.volume
+            newjar.crate = jar.crate
+            newjar.is_active = jar.is_active
+            newjar.is_available = jar.is_available
+            newjar.created_at = jar.created_at
+            newjar.updated_at = jar.updated_at
+            newjar.save()
+        for cartitem in CartItem.objects.filter(product=product):
+            newcartitem = NewCartItem()
+            newcartitem.product = newproduct
+            newcartitem.date_added = cartitem.date_added
+            newcartitem.cart_id = cartitem.cart_id
+            newcartitem.quantity = cartitem.quantity
+            newcartitem.save()
+        for orderitem in OrderItem.objects.filter(product=product):
+            neworderitem = NewOrderItem()
+            neworderitem.product = newproduct
+            neworderitem.quantity = orderitem.quantity
+            neworderitem.order = orderitem.order
+            neworderitem.save()
+        for productview in ProductView.objects.filter(product=product):
+            newproductview = NewProductView()
+            newproductview.product = newproduct
+            newproductview.date = productview.date
+            newproductview.ip_address = productview.ip_address
+            newproductview.user = productview.user
+            newproductview.tracking_id = productview.tracking_id
+            newproductview.save()

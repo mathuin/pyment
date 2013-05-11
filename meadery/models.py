@@ -707,13 +707,13 @@ class NewProduct(SIPParent):
 
     # FIXME: these two have the same magic, need to remove duplication
     def jars_in_stock(self):
-        from inventory.models import Jar
-        return Jar.instock.filter(product_id=self.pk).count()
+        from inventory.models import NewJar
+        return NewJar.instock.filter(product_id=self.pk).count()
 
     def first_available(self):
-        from inventory.models import Jar
+        from inventory.models import NewJar
         try:
-            return Jar.instock.filter(product_id=self.pk).order_by('number')[0]
+            return NewJar.instock.filter(product_id=self.pk).order_by('number')[0]
         except IndexError:
             return None
 
