@@ -82,3 +82,84 @@ def make_labels_from_batch(batch):
     pdf = buffer.getvalue()
     buffer.close()
     return pdf
+
+
+# JMT: temporary location for code that migrates old products to new products
+from models import NewProduct, NewBatch, NewRecipe, NewIngredientItem
+
+
+def move_to_new_world():
+    for recipe in Recipe.objects.all():
+        # Parent stuff.
+        newrecipe = NewRecipe()
+        newrecipe.title = recipe.title
+        newrecipe.description = recipe.description
+        newrecipe.category = recipe.category
+        newrecipe.save()
+        for item in IngredientItem.objects.filter(recipe=recipe):
+            newitem = NewIngredientItem()
+            newitem.parent = newrecipe
+            newitem.ingredient = item.ingredient
+            newitem.amount = item.amount
+            newitem.temp = item.temp
+            newitem.save()
+    for batch in Batch.objects.all():
+        # Parent stuff.
+        newbatch = NewBatch()
+        newbatch.title = batch.title
+        newbatch.description = batch.description
+        newbatch.category = batch.category
+        # SIP stuff.
+        newbatch.brewname = batch.brewname
+        newbatch.batchletter = batch.batchletter
+        # Batch stuff.
+        newbatch.recipe = batch.recipe
+        newbatch.event = batch.event
+        newbatch.jars = batch.jars
+        newbatch.save()
+        for item in IngredientItem.objects.filter(recipe=batch):
+            newitem = NewIngredientItem()
+            newitem.parent = newbatch
+            newitem.ingredient = item.ingredient
+            newitem.amount = item.amount
+            newitem.temp = item.temp
+            newitem.save()
+    for product in Product.objects.all():
+        # Parent stuff.
+        newproduct = NewProduct()
+        newproduct.title = product.title
+        newproduct.description = product.description
+        newproduct.category = product.category
+        # SIP stuff.
+        newproduct.brewname = product.brewname
+        newproduct.batchletter = product.batchletter
+        newproduct.is_active = product.is_active
+        newproduct.created_at = product.created_at
+        newproduct.updated_at = product.updated_at
+        # Product stuff.
+        newproduct.slug = product.slug
+        newproduct.image = product.image
+        newproduct.thumbnail = product.thumbnail
+        newproduct.is_bestseller = product.is_bestseller
+        newproduct.is_featured = product.is_featured
+        newproduct.meta_keywords = product.meta_keywords
+        newproduct.meta_description = product.meta_description
+        newproduct.brewed_date = product.brewed_date
+        newproduct.brewed_sg = product.brewed_sg
+        newproduct.bottled_date = product.bottled_date
+        newproduct.bottled_sg = product.bottled_sg
+        newproduct.abv = product.abv
+        newproduct.save()
+        for item in IngredientItem.objects.filter(recipe=product):
+            newitem = NewIngredientItem()
+            newitem.parent = newproduct
+            newitem.ingredient = item.ingredient
+            newitem.amount = item.amount
+            newitem.temp = item.temp
+            newitem.save()
+
+
+def nuke_new_world():
+    NewRecipe.objects.all().delete()
+    NewBatch.objects.all().delete()
+    NewProduct.objects.all().delete()
