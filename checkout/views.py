@@ -3,7 +3,7 @@ from django.core import urlresolvers
 from django.http import HttpResponseRedirect
 
 from forms import CheckoutForm
-from models import Order, OrderItem
+from models import Order, NewOrderItem
 import checkout
 from cart import cart
 from accounts import profile
@@ -40,7 +40,7 @@ def receipt(request, template_name='checkout/receipt.djhtml'):
     order_number = request.session.get('order_number', '')
     if order_number:
         order = Order.objects.filter(id=order_number)[0]
-        order_items = OrderItem.objects.filter(order=order)
+        order_items = NewOrderItem.objects.filter(order=order)
         del request.session['order_number']
     else:
         cart_url = urlresolvers.reverse('show_cart')

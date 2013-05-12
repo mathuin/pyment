@@ -1,6 +1,6 @@
 from django import forms
-from meadery.models import Product
-from inventory.models import Warehouse, Row, Shelf, Bin, Crate, Jar
+from meadery.models import NewProduct
+from inventory.models import Warehouse, Row, Shelf, Bin, Crate, NewJar
 
 
 class WarehouseAdminForm(forms.ModelForm):
@@ -36,9 +36,8 @@ class CrateAdminForm(forms.ModelForm):
         model = Crate
 
 
-# jars will likely be created en masse by the brewery!
-class JarAdminForm(forms.ModelForm):
-    product = forms.ModelChoiceField(queryset=Product.active)
+class NewJarAdminForm(forms.ModelForm):
+    product = forms.ModelChoiceField(queryset=NewProduct.active)
 
     class Meta:
-        model = Jar
+        model = NewJar

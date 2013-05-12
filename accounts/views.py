@@ -1,7 +1,7 @@
 from django.shortcuts import render, get_object_or_404
 from django.core import urlresolvers
 from django.http import HttpResponseRedirect
-from checkout.models import Order, OrderItem
+from checkout.models import Order, NewOrderItem
 from django.contrib.auth.decorators import login_required
 from accounts.forms import UserProfileForm, RegistrationForm
 from accounts import profile
@@ -41,7 +41,7 @@ def my_account(request, template_name="registration/my_account.djhtml"):
 def order_details(request, order_id, template_name="registration/order_details.djhtml"):
     order = get_object_or_404(Order, id=order_id, user=request.user)
     page_title = 'Order Details for Order #' + order_id
-    order_items = OrderItem.objects.filter(order=order)
+    order_items = NewOrderItem.objects.filter(order=order)
     return render(request, template_name, locals())
 
 

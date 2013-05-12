@@ -1,6 +1,6 @@
 from django import forms
 from django.core.exceptions import ValidationError
-from .models import Ingredient, Recipe, Batch, Sample, Product, ProductReview
+from .models import Ingredient, NewRecipe, NewBatch, Sample, NewProduct, ProductReview
 
 
 class IngredientAdminForm(forms.ModelForm):
@@ -19,18 +19,18 @@ class IngredientAdminForm(forms.ModelForm):
         return cleaned_data
 
 
-class RecipeAdminForm(forms.ModelForm):
+class NewRecipeAdminForm(forms.ModelForm):
     class Meta:
-        model = Recipe
+        model = NewRecipe
 
     # JMT: this is not yet working.
     # It's something to do with the fact that the related fields aren't yet saved.
-    def noclean(self):
-        cleaned_data = super(RecipeAdminForm, self).clean()
-        sugar_types = set([item.ingredient.subtype for item in self.items(Ingredient.TYPE_SUGAR)])
-        solvent_types = set([item.ingredient.subtype for item in self.items(Ingredient.TYPE_SOLVENT)])
-        solvent_temps = set([item.temp for item in self.items(Ingredient.TYPE_SOLVENT)])
-        flavor_types = set([item.ingredient.subtype for item in self.items(Ingredient.TYPE_FLAVOR)])
+    def clean(self):
+        cleaned_data = super(NewRecipeAdminForm, self).clean()
+        sugar_types = set([item.ingredient.subtype for item in self.instance.items(Ingredient.TYPE_SUGAR)])
+        solvent_types = set([item.ingredient.subtype for item in self.instance.items(Ingredient.TYPE_SOLVENT)])
+        solvent_temps = set([item.temp for item in self.instance.items(Ingredient.TYPE_SOLVENT)])
+        flavor_types = set([item.ingredient.subtype for item in self.instance.items(Ingredient.TYPE_FLAVOR)])
 
         # Ingredient subtype checks.
         if len(sugar_types) == 0:
@@ -50,16 +50,16 @@ class RecipeAdminForm(forms.ModelForm):
         if not flavor_types.issubset(set(a for (a, b) in Ingredient.FLAVOR_TYPES)):
             raise ValidationError('Unknown flavor type found -- check ingredients!')
 
-        if len(self.yeast_items) == 0:
+        if len(self.instance.items(Ingredient.TYPE_YEAST)) == 0:
             raise ValidationError('At least one yeast is required.')
 
-        cleaned_data['category'] = self.suggested_category
+        cleaned_data['category'] = self.instance.suggested_category
         return cleaned_data
 
 
-class BatchAdminForm(forms.ModelForm):
+class NewBatchAdminForm(forms.ModelForm):
     class Meta:
-        model = Batch
+        model = NewBatch
 
 
 class SampleAdminForm(forms.ModelForm):
@@ -67,9 +67,9 @@ class SampleAdminForm(forms.ModelForm):
         model = Sample
 
 
-class ProductAdminForm(forms.ModelForm):
+class NewProductAdminForm(forms.ModelForm):
     class Meta:
-        model = Product
+        model = NewProduct
 
 
 class ProductAddToCartForm(forms.Form):

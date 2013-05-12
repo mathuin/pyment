@@ -1,5 +1,5 @@
 from django.shortcuts import get_object_or_404, render
-from .models import Product, ProductReview, MEAD_CHOICES, MEAD_DESCRIPTIONS
+from .models import NewProduct, ProductReview
 from django.core import urlresolvers
 from cart.cart import add_to_cart
 from django.http import HttpResponseRedirect, HttpResponse
@@ -14,24 +14,24 @@ from django.utils import simplejson
 def index(request, template_name='meadery/index.djhtml'):
     page_title = SITE_NAME
     search_recs = stats.recommended_from_search(request)
-    featured = Product.featured.all()[0:PRODUCTS_PER_ROW]
+    featured = NewProduct.featured.all()[0:PRODUCTS_PER_ROW]
     recently_viewed = stats.get_recently_viewed(request)
     view_recs = stats.recommended_from_views(request)
     return render(request, template_name, locals())
 
 
 def show_category(request, category_value, template_name='meadery/category.djhtml'):
-    name = [name for (value, name) in MEAD_CHOICES if value == int(category_value)][0]
-    description = MEAD_DESCRIPTIONS[int(category_value)]
-    products = Product.instock.filter(category=category_value)
+    name = [name for (value, name) in NewProduct.MEAD_CHOICES if value == int(category_value)][0]
+    description = NewProduct.MEAD_DESCRIPTIONS[int(category_value)]
+    products = NewProduct.instock.filter(category=category_value)
     page_title = name
     return render(request, template_name, locals())
 
 
 # new product view, with POST vs GET detection
 def show_product(request, product_slug, template_name="meadery/product.djhtml"):
-    p = get_object_or_404(Product, slug=product_slug)
-    cname = [name for (value, name) in MEAD_CHOICES if value == p.category][0]
+    p = get_object_or_404(NewProduct, slug=product_slug)
+    cname = [name for (value, name) in NewProduct.MEAD_CHOICES if value == p.category][0]
     curl = urlresolvers.reverse('meadery_category', kwargs={'category_value': p.category})
     page_title = p.name
     # need to evaluate the HTTP method
@@ -69,7 +69,7 @@ def add_review(request):
     if request.method == 'POST':
         form = ProductReviewForm(request.POST)
         slug = request.POST.get('slug')
-        product = Product.active.get(slug=slug)
+        product = NewProduct.active.get(slug=slug)
 
         if form.is_valid():
             review = form.save(commit=False)

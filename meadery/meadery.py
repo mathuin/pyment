@@ -1,19 +1,19 @@
-from models import Ingredient, IngredientItem, Recipe, Batch, Sample, Product
-from checkout.models import OrderItem
+from models import Ingredient, NewIngredientItem, NewRecipe, NewBatch, Sample, NewProduct
+from checkout.models import NewOrderItem
 from cStringIO import StringIO
 from labels import Sheet
 
 
 def create_batch_from_recipe(recipe):
-    batch = Batch()
+    batch = NewBatch()
     batch.brewname = 'CHANGEME'
     batch.batchletter = 'A'
     batch.recipe = recipe
     # First copy fields from recipe to batch.
-    [setattr(batch, field.name, getattr(recipe, field.name)) for field in Recipe._meta.fields if field.name != 'id']
+    [setattr(batch, field.name, getattr(recipe, field.name)) for field in NewRecipe._meta.fields if field.name != 'id']
     batch.jars = 0
     batch.save()
-    for item in IngredientItem.objects.filter(recipe=recipe):
+    for item in NewIngredientItem.objects.filter(parent=recipe):
         new_item = item
         new_item.pk = None
         new_item.recipe = batch
@@ -22,13 +22,13 @@ def create_batch_from_recipe(recipe):
 
 
 def create_recipe_from_batch(batch):
-    recipe = Recipe()
+    recipe = NewRecipe()
     # First copy fields from recipe to batch.
-    [setattr(recipe, field.name, getattr(batch, field.name)) for field in Recipe._meta.fields if field.name != 'id']
-    recipe.title = '%s %s Recipe' % (batch.brewname, batch.batchletter)
+    [setattr(recipe, field.name, getattr(batch, field.name)) for field in NewRecipe._meta.fields if field.name != 'id']
+    recipe.title = '%s Recipe' % batch.name
     recipe.save()
     # Now copy separate items.
-    for item in IngredientItem.objects.filter(recipe=batch):
+    for item in NewIngredientItem.objects.filter(parent=batch):
         new_item = item
         new_item.pk = None
         new_item.recipe = recipe
@@ -38,7 +38,7 @@ def create_recipe_from_batch(batch):
 
 def create_product_from_batch(batch):
     if batch.jars > 0:
-        product = Product()
+        product = NewProduct()
         product.brewname = batch.brewname
         product.batchletter = batch.batchletter
         product.title = batch.title
@@ -85,11 +85,11 @@ def make_labels_from_batch(batch):
 
 
 # JMT: temporary location for code that migrates old products to new products
-from models import NewProduct
-from inventory.models import NewJar, Jar
-from cart.models import NewCartItem, CartItem
-from checkout.models import NewOrderItem, OrderItem
-from stats.models import NewProductView, ProductView
+# from models import NewProduct
+# from inventory.models import NewJar, Jar
+# from cart.models import NewCartItem, CartItem
+# from checkout.models import NewOrderItem, OrderItem
+# from stats.models import NewProductView, ProductView
 
 
 def move_to_new_world():

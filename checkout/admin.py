@@ -1,13 +1,13 @@
 from django.contrib import admin
 from utils.buttonadmin import ButtonAdmin
-from models import Order, OrderItem, PickList, PickListItem
+from models import Order, NewOrderItem, PickList, PickListItem
 from checkout import create_picklist, all_in_stock, process_picklist, cancel_picklist, cancel_order
 from django.core.urlresolvers import reverse
 from django.utils.safestring import mark_safe
 
 
-class OrderItemInline(admin.StackedInline):
-    model = OrderItem
+class NewOrderItemInline(admin.StackedInline):
+    model = NewOrderItem
     extra = 0
 
 
@@ -15,7 +15,7 @@ class OrderAdmin(ButtonAdmin):
     list_display = ('__unicode__', 'picklist', 'date', 'status', 'user')
     list_filter = ('status', 'date')
     search_fields = ('email', 'id')
-    inlines = [OrderItemInline, ]
+    inlines = [NewOrderItemInline, ]
     fieldsets = (('Basics', {'fields': ('status', 'email', 'phone')}),)
     actions = ['make_processed', 'make_cancelled']
 

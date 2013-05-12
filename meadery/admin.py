@@ -1,7 +1,7 @@
 from django.contrib import admin
 from utils.buttonadmin import ButtonAdmin
-from .models import Ingredient, IngredientItem, Recipe, Batch, Sample, Product, ProductReview
-from .forms import IngredientAdminForm, RecipeAdminForm, BatchAdminForm, SampleAdminForm, ProductAdminForm, ProductReviewForm
+from .models import Ingredient, NewIngredientItem, NewRecipe, NewBatch, Sample, NewProduct, ProductReview
+from .forms import IngredientAdminForm, NewRecipeAdminForm, NewBatchAdminForm, SampleAdminForm, NewProductAdminForm, ProductReviewForm
 from meadery import create_batch_from_recipe, create_recipe_from_batch, create_product_from_batch, make_labels_from_batch
 from django.core.urlresolvers import reverse
 from decimal import Decimal
@@ -18,16 +18,16 @@ class IngredientAdmin(admin.ModelAdmin):
 admin.site.register(Ingredient, IngredientAdmin)
 
 
-class IngredientItemInline(admin.StackedInline):
-    model = IngredientItem
+class NewIngredientItemInline(admin.StackedInline):
+    model = NewIngredientItem
     extra = 0
 
 
-class RecipeAdmin(ButtonAdmin):
-    form = RecipeAdminForm
+class NewRecipeAdmin(ButtonAdmin):
+    form = NewRecipeAdminForm
     list_display = ('title', 'description', 'category', 'all_natural', 'appellation', 'total_cost')
     list_display_links = ('title', )
-    inlines = [IngredientItemInline, ]
+    inlines = [NewIngredientItemInline, ]
     readonly_fields = ('category', )
 
     def total_cost(self, obj):
@@ -60,10 +60,11 @@ class RecipeAdmin(ButtonAdmin):
     change_buttons = [create_batch]
 
 
-admin.site.register(Recipe, RecipeAdmin)
+admin.site.register(NewRecipe, NewRecipeAdmin)
 
 
-class BatchAdmin(RecipeAdmin):
+class NewBatchAdmin(ButtonAdmin):
+    form = NewBatchAdminForm
     # list_display = ('name', 'recipe', 'all_natural', 'appellation', 'brew_sg', 'final_sg', 'link_samples', 'firstsg', 'lastsg', 'abv', 'jars', )
     list_display = ('name', 'recipe', 'all_natural', 'appellation', 'link_samples', 'firstsg', 'lastsg', 'abv', 'jars', )
     list_display_links = ('name', )
@@ -144,7 +145,7 @@ class BatchAdmin(RecipeAdmin):
 
     change_buttons = [make_labels, add_sample, create_recipe, create_product]
 
-admin.site.register(Batch, BatchAdmin)
+admin.site.register(NewBatch, NewBatchAdmin)
 
 
 class SampleAdmin(admin.ModelAdmin):
@@ -157,8 +158,8 @@ class SampleAdmin(admin.ModelAdmin):
 admin.site.register(Sample, SampleAdmin)
 
 
-class ProductAdmin(admin.ModelAdmin):
-    form = ProductAdminForm
+class NewProductAdmin(admin.ModelAdmin):
+    form = NewProductAdminForm
     # sets values for how the admin site lists your products
     list_display = ('name', 'title', 'category', 'description', 'link_jars', 'is_active', 'created_at', 'updated_at',)
     list_display_links = ('name',)
@@ -170,14 +171,14 @@ class ProductAdmin(admin.ModelAdmin):
 
     def link_jars(self, obj):
         howmany = obj.jars_in_stock()
-        anchor = '%s?product__id__exact=%d' % (reverse('admin:inventory_jar_changelist'), obj.pk)
+        anchor = '%s?product__id__exact=%d' % (reverse('admin:inventory_newjar_changelist'), obj.pk)
         if howmany > 0:
             return mark_safe('%d (<a href="%s">list</a>)' % (howmany, anchor))
         else:
             return howmany
     link_jars.short_description = 'Jars'
 
-admin.site.register(Product, ProductAdmin)
+admin.site.register(NewProduct, NewProductAdmin)
 
 
 class ProductReviewAdmin(admin.ModelAdmin):

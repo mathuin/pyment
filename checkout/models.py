@@ -1,8 +1,8 @@
 from django.core.urlresolvers import reverse
 from django.db import models
 from django.contrib.auth.models import User
-from meadery.models import Product, NewProduct
-from inventory.models import Jar, NewJar
+from meadery.models import NewProduct
+from inventory.models import NewJar
 
 
 class BaseOrderInfo(models.Model):
@@ -45,26 +45,6 @@ class Order(BaseOrderInfo):
     def printstatus(self):
         # FIXME: ugly
         return [mystr for (val, mystr) in self.ORDER_STATUSES if val == self.status][0]
-
-
-class OrderItem(models.Model):
-    product = models.ForeignKey(Product)
-    quantity = models.IntegerField(default=1)
-    order = models.ForeignKey(Order)
-
-    @property
-    def name(self):
-        return self.product.name
-
-    @property
-    def title(self):
-        return self.product.title
-
-    def __unicode__(self):
-        return self.product.title + ' (' + self.product.name + ')'
-
-    def get_absolute_url(self):
-        return self.product.get_absolute_url()
 
 
 class NewOrderItem(models.Model):
@@ -117,7 +97,7 @@ class PickList(models.Model):
 class PickListItem(models.Model):
     """A picklist item consists of the jar that is being picked.  The jar contains its name and location."""
     picklist = models.ForeignKey(PickList)
-    jar = models.ForeignKey(Jar)
+    jar = models.ForeignKey(NewJar)
 
     class Meta:
         ordering = ['jar__crate__bin__shelf__row__warehouse__number',

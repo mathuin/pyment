@@ -1,7 +1,7 @@
 from django import template
 from cart import cart
 from pyment.settings import BREWER_NAME, BREWER_EMAIL, BREWER_LOCATION
-from meadery.models import Recipe, Product, MEAD_CHOICES
+from meadery.models import NewProduct
 from django.core.urlresolvers import reverse
 
 register = template.Library()
@@ -20,7 +20,7 @@ def category_list(request_path):
     # they have products,
     # and those products have jars
     # there has to be a more django-ish way to do this
-    active_categories = [(name, reverse('meadery_category', kwargs={'category_value': value})) for (value, name) in MEAD_CHOICES if Product.instock.filter(category=value).exists()]
+    active_categories = [(name, reverse('meadery_category', kwargs={'category_value': value})) for (value, name) in NewProduct.MEAD_CHOICES if NewProduct.instock.filter(category=value).exists()]
     return {
         'active_categories': active_categories,
         'request_path': request_path

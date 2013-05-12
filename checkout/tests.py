@@ -1,7 +1,7 @@
 from django.test import TestCase, Client
 import httplib
 from models import Order, PickList
-from meadery.models import Product
+from meadery.models import NewProduct
 from checkout import all_in_stock, create_picklist, process_picklist, cancel_picklist
 
 
@@ -44,7 +44,7 @@ class OrderTestCase(TestCase):
 
     def test_create_picklist(self):
         # confirm both jars are marked active and available
-        sip1a = Product.active.get(slug='sip-1-a')
+        sip1a = NewProduct.active.get(slug='sip-1-a')
         self.assertEqual(sip1a.jar_set.filter(is_active=True).count(), 2)
         self.assertEqual(sip1a.jar_set.filter(is_available=True).count(), 2)
         # generate valid picklist from order #1
@@ -65,7 +65,7 @@ class OrderTestCase(TestCase):
     # FIXME: check process_picklist
     def test_process_picklist(self):
         # confirm both jars are marked available and active
-        sip1a = Product.active.get(slug='sip-1-a')
+        sip1a = NewProduct.active.get(slug='sip-1-a')
         self.assertEqual(sip1a.jar_set.filter(is_active=True).count(), 2)
         self.assertEqual(sip1a.jar_set.filter(is_available=True).count(), 2)
         # generate valid picklist from order #1
@@ -86,7 +86,7 @@ class OrderTestCase(TestCase):
     # FIXME: check cancel_picklist
     def test_cancel_picklist(self):
         # confirm both jars are marked available and active
-        sip1a = Product.active.get(slug='sip-1-a')
+        sip1a = NewProduct.active.get(slug='sip-1-a')
         self.assertEqual(sip1a.jar_set.filter(is_active=True).count(), 2)
         self.assertEqual(sip1a.jar_set.filter(is_available=True).count(), 2)
         # generate valid picklist from order #1
