@@ -1,4 +1,5 @@
 from django.contrib import admin
+from utils.modeladmin import SmarterModelAdmin
 from inventory.models import Warehouse, Row, Shelf, Bin, Crate, Jar
 from inventory.forms import WarehouseAdminForm, RowAdminForm, ShelfAdminForm, BinAdminForm, CrateAdminForm, JarAdminForm
 from django.core.urlresolvers import reverse
@@ -112,7 +113,8 @@ class CrateAdmin(admin.ModelAdmin):
 admin.site.register(Crate, CrateAdmin)
 
 
-class JarAdmin(admin.ModelAdmin):
+class JarAdmin(SmarterModelAdmin):
+    valid_lookups = ('product',)
     form = JarAdminForm
     list_display = ('product', 'number', 'is_active', 'is_available', 'crate',)
     list_display_links = ('number',)
