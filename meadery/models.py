@@ -156,6 +156,8 @@ class Parent(models.Model):
                           (CATEGORY_MELOMEL, MELOMEL_CATEGORIES),
                           (CATEGORY_OTHER, OTHER_CATEGORIES))
     MEAD_CHOICES = tuple((b, d) for ((a, b), (c, d)) in zip(MEAD_CATEGORIES, MEAD_SUBCATEGORIES))
+    # JMT: it would be awesome to redo categories to support two levels!
+    MEAD_VIEWS = reduce(lambda t1, t2: t1+t2, [categories for (topvalue, categories) in MEAD_CHOICES])
     MEAD_DESCRIPTIONS = {TRADITIONAL_DRY: 'A traditional mead with subtle honey aroma but no significant aromatics. Minimal residual sweetness with a dry finish, and a light to medium body. Similar to a dry white wine. (Based on BJCP Style Guidelines 2008)',
                          TRADITIONAL_SEMI_SWEET: 'A traditional mead with noticeable honey aroma and subtle to moderate residual sweetness with a medium-dry finish.  Body is medium-light to medium-full.  Similar to a semi-sweet (or medium-dry) white wine.  (thanks to BJCP Style Guidelines 2008)',
                          TRADITIONAL_SWEET: 'A traditional mead with dominating honey aroma, often moderately to strongly sweet.  The body is generally medium-full to full, and may seem like a dessert wine.  (thanks to BJCP Style Guidelines 2008)',
@@ -300,7 +302,7 @@ class SIPParent(Parent):
 
 
 class Batch(SIPParent):
-    recipe = models.ForeignKey(Recipe, null=True, on_delete=models.SET_NULL)
+    recipe = models.ForeignKey(Recipe, blank=True, null=True, on_delete=models.SET_NULL)
     # Used for labels!
     event = models.CharField('Brewing event', max_length=20, help_text='Brewing event (e.g., Lughnasadh 2013, Samhain 2012, Imbolc 2011, Beltane 2010)')
     jars = models.IntegerField(help_text='Number of jars actually produced from this batch.')
