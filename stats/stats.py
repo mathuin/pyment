@@ -2,8 +2,8 @@ import os
 import base64
 from search.models import SearchTerm
 from pyment.settings import PRODUCTS_PER_ROW
-from meadery.models import NewProduct
-from models import NewProductView
+from meadery.models import Product
+from models import ProductView
 
 
 def tracking_id(request):
@@ -50,10 +50,10 @@ def sort_words_by_frequency(some_string):
 def log_product_view(request, product):
     t_id = tracking_id(request)
     try:
-        v = NewProductView.objects.get(tracking_id=t_id, product=product)
+        v = ProductView.objects.get(tracking_id=t_id, product=product)
         v.save()
-    except NewProductView.DoesNotExist:
-        v = NewProductView()
+    except ProductView.DoesNotExist:
+        v = ProductView()
         v.product = product
         v.ip_address = request.META.get('REMOTE_ADDR')
         if not request.META.get('REMOTE_ADDR'):
@@ -72,23 +72,23 @@ def recommended_from_views(request):
     # if there are previously viewed products, get other tracking ids that have
     # viewed those products also
     if viewed:
-        productviews = NewProductView.objects.filter(product__in=viewed).values('tracking_id')
+        productviews = ProductView.objects.filter(product__in=viewed).values('tracking_id')
         t_ids = [v['tracking_id'] for v in productviews]
         # if there are other tracking ids, get other products.
         if t_ids:
             # was instock
-            all_viewed = NewProduct.active.filter(is_active=True).filter(productview__tracking_id__in=t_ids)
+            all_viewed = Product.active.filter(is_active=True).filter(productview__tracking_id__in=t_ids)
             # if there are other products, get them, excluding the
             # products that the customer has already viewed.
             if all_viewed:
-                other_viewed = NewProductView.objects.filter(product__in=all_viewed).exclude(product__in=viewed)
+                other_viewed = ProductView.objects.filter(product__in=all_viewed).exclude(product__in=viewed)
                 if other_viewed:
                     # was instock
-                    return NewProduct.active.filter(is_active=True).filter(productview__in=other_viewed).distinct()
+                    return Product.active.filter(is_active=True).filter(productview__in=other_viewed).distinct()
 
 
 def get_recently_viewed(request):
     t_id = tracking_id(request)
-    views = NewProductView.objects.filter(tracking_id=t_id).values('product_id').order_by('-date')[0:PRODUCTS_PER_ROW]
+    views = ProductView.objects.filter(tracking_id=t_id).values('product_id').order_by('-date')[0:PRODUCTS_PER_ROW]
     product_ids = [v['product_id'] for v in views]
-    return NewProduct.active.filter(id__in=product_ids)
+    return Product.active.filter(id__in=product_ids)

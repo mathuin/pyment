@@ -1,5 +1,5 @@
-from models import NewCartItem
-from meadery.models import NewProduct
+from models import CartItem
+from meadery.models import Product
 from django.shortcuts import get_object_or_404
 import random
 from django.conf import settings
@@ -28,7 +28,7 @@ def _generate_cart_id():
 
 # return all items from the current user's cart
 def get_cart_items(request):
-    return NewCartItem.objects.filter(cart_id=_cart_id(request))
+    return CartItem.objects.filter(cart_id=_cart_id(request))
 
 
 # add an item to the cart
@@ -39,7 +39,7 @@ def add_to_cart(request):
     # get quantity added, return 1 if empty
     quantity = postdata.get('quantity', 1)
     # fetch the product or return a missing page error
-    p = get_object_or_404(NewProduct, slug=product_slug)
+    p = get_object_or_404(Product, slug=product_slug)
     #get products in cart
     cart_products = get_cart_items(request)
     product_in_cart = False
@@ -51,7 +51,7 @@ def add_to_cart(request):
             product_in_cart = True
     if not product_in_cart:
         # create and save a new cart item
-        ci = NewCartItem()
+        ci = CartItem()
         ci.product = p
         ci.quantity = quantity
         ci.cart_id = _cart_id(request)
@@ -64,7 +64,7 @@ def cart_distinct_item_count(request):
 
 
 def get_single_item(request, item_id):
-    return get_object_or_404(NewCartItem, id=item_id, cart_id=_cart_id(request))
+    return get_object_or_404(CartItem, id=item_id, cart_id=_cart_id(request))
 
 
 # update quantity for single item
@@ -104,11 +104,11 @@ def remove_old_cart_items():
     # calculate date of SESSION_AGE_DAYS days ago
     remove_before = datetime.now() + timedelta(days=-settings.SESSION_AGE_DAYS)
     cart_ids = []
-    old_items = NewCartItem.objects.values('cart_id').annotate(last_change=Max('date_added')).filter(last_change__lt=remove_before).order_by()
+    old_items = CartItem.objects.values('cart_id').annotate(last_change=Max('date_added')).filter(last_change__lt=remove_before).order_by()
     # create a list of cart IDs that haven't been modified
     for item in old_items:
         cart_ids.append(item['cart_id'])
-    to_remove = NewCartItem.objects.filter(cart_id__in=cart_ids)
+    to_remove = CartItem.objects.filter(cart_id__in=cart_ids)
     # delete those CartItem instances
     to_remove.delete()
     print str(len(cart_ids)) + " carts were removed"

@@ -1,6 +1,6 @@
 from django.core.management.base import BaseCommand, CommandError
 from inventory.models import Jar, Crate
-from meadery.models import NewProduct
+from meadery.models import Product
 from optparse import make_option
 
 
@@ -20,8 +20,8 @@ class Command(BaseCommand):
             raise CommandError('Wrong number of arguments')
         product_name = args[0]
         brewname, batchletter = product_name.rsplit(' ', 1)
-        if NewProduct.objects.filter(brewname=brewname, batchletter=batchletter).exists():
-            product = NewProduct.objects.get(brewname=brewname, batchletter=batchletter)
+        if Product.objects.filter(brewname=brewname, batchletter=batchletter).exists():
+            product = Product.objects.get(brewname=brewname, batchletter=batchletter)
         else:
             raise CommandError('Not a valid product: %s' % product_name)
         # check that jar arguments are valid

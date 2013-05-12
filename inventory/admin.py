@@ -1,6 +1,6 @@
 from django.contrib import admin
-from inventory.models import Warehouse, Row, Shelf, Bin, Crate, NewJar
-from inventory.forms import WarehouseAdminForm, RowAdminForm, ShelfAdminForm, BinAdminForm, CrateAdminForm, NewJarAdminForm
+from inventory.models import Warehouse, Row, Shelf, Bin, Crate, Jar
+from inventory.forms import WarehouseAdminForm, RowAdminForm, ShelfAdminForm, BinAdminForm, CrateAdminForm, JarAdminForm
 from django.core.urlresolvers import reverse
 from django.utils.safestring import mark_safe
 
@@ -112,8 +112,8 @@ class CrateAdmin(admin.ModelAdmin):
 admin.site.register(Crate, CrateAdmin)
 
 
-class NewJarAdmin(admin.ModelAdmin):
-    form = NewJarAdminForm
+class JarAdmin(admin.ModelAdmin):
+    form = JarAdminForm
     list_display = ('product', 'number', 'is_active', 'is_available', 'crate',)
     list_display_links = ('number',)
     list_filter = ('product', 'crate', 'is_active')
@@ -122,4 +122,4 @@ class NewJarAdmin(admin.ModelAdmin):
     search_fields = ['product', 'crate']
     readonly_fields = ('created_at', 'updated_at',)
 
-admin.site.register(NewJar, NewJarAdmin)
+admin.site.register(Jar, JarAdmin)

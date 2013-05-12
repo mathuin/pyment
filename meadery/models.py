@@ -96,7 +96,7 @@ class Ingredient(models.Model):
     #     super(Ingredient, self).clean()
 
 
-class NewIngredientItem(models.Model):
+class IngredientItem(models.Model):
     parent = models.ForeignKey('Parent')
     ingredient = models.ForeignKey(Ingredient)
     amount = models.DecimalField(max_digits=5, decimal_places=3, help_text='Amount of ingredient (kilograms if solid, liters if liquid, units if other)')
@@ -181,9 +181,9 @@ class Parent(models.Model):
 
     def items(self, type=None):
         if type is None:
-            return NewIngredientItem.objects.filter(parent=self)
+            return IngredientItem.objects.filter(parent=self)
         else:
-            return NewIngredientItem.objects.filter(parent=self, ingredient__type=type)
+            return IngredientItem.objects.filter(parent=self, ingredient__type=type)
 
     @property
     def all_natural(self):
@@ -276,7 +276,7 @@ class Parent(models.Model):
             return OTHER_OPEN_CATEGORY
 
 
-class NewRecipe(Parent):
+class Recipe(Parent):
     pass
 
 
@@ -299,8 +299,8 @@ class SIPParent(Parent):
         return self.name
 
 
-class NewBatch(SIPParent):
-    recipe = models.ForeignKey(NewRecipe, null=True, on_delete=models.SET_NULL)
+class Batch(SIPParent):
+    recipe = models.ForeignKey(Recipe, null=True, on_delete=models.SET_NULL)
     # Used for labels!
     event = models.CharField('Brewing event', max_length=20, help_text='Brewing event (e.g., Lughnasadh 2013, Samhain 2012, Imbolc 2011, Beltane 2010)')
     jars = models.IntegerField(help_text='Number of jars actually produced from this batch.')
@@ -321,7 +321,7 @@ class NewBatch(SIPParent):
 
 class Sample(models.Model):
     """ Samples are small collections of data. """
-    batch = models.ForeignKey(NewBatch)
+    batch = models.ForeignKey(Batch)
     date = models.DateField()
     temp = models.IntegerField(default=60, help_text='Temperature of mead in degrees Fahrenheit')
     sg = models.DecimalField(max_digits=4, decimal_places=3, default=Decimal('0.000'), help_text='Specific gravity of mead')
@@ -363,7 +363,7 @@ class InStockProductManager(models.Manager):
         return super(InStockProductManager, self).get_query_set().filter(is_active=True, jar__is_active=True, jar__is_available=True).distinct()
 
 
-class NewProduct(SIPParent):
+class Product(SIPParent):
     slug = models.SlugField(max_length=255, blank=True, unique=True,
                             help_text='Unique value for product page URL, created from brewname and batchletter.')
     image = models.ImageField(upload_to='images/products/main', blank=True)
@@ -390,19 +390,19 @@ class NewProduct(SIPParent):
 
     # FIXME: these two have the same magic, need to remove duplication
     def jars_in_stock(self):
-        from inventory.models import NewJar
-        return NewJar.instock.filter(product_id=self.pk).count()
+        from inventory.models import Jar
+        return Jar.instock.filter(product_id=self.pk).count()
 
     def first_available(self):
-        from inventory.models import NewJar
+        from inventory.models import Jar
         try:
-            return NewJar.instock.filter(product_id=self.pk).order_by('number')[0]
+            return Jar.instock.filter(product_id=self.pk).order_by('number')[0]
         except IndexError:
             return None
 
     def save(self, *args, **kwargs):
         self.slug = slugify(self.name)
-        super(NewProduct, self).save(*args, **kwargs)
+        super(Product, self).save(*args, **kwargs)
 
     def get_absolute_url(self):
         return reverse('meadery_product', kwargs={'product_slug': self.slug})
@@ -415,7 +415,7 @@ class NewProduct(SIPParent):
         items = OrderItem.objects.filter(Q(order__in=orders) |
                                          Q(order__user__in=users)
                                          ).exclude(product=self)
-        products = NewProduct.active.filter(orderitem__in=items).distinct()
+        products = Product.active.filter(orderitem__in=items).distinct()
         return products
 
 
@@ -430,7 +430,7 @@ class ProductReview(models.Model):
                (3, '3 - Very Good'),
                (2, '2 - Good'),
                (1, '1 - Fair'), )
-    product = models.ForeignKey(NewProduct)
+    product = models.ForeignKey(Product)
     user = models.ForeignKey(User)
     title = models.CharField(max_length=50)
     date = models.DateTimeField(auto_now_add=True)

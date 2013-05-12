@@ -1,6 +1,6 @@
 from django import forms
 from django.core.exceptions import ValidationError
-from .models import Ingredient, NewRecipe, NewBatch, Sample, NewProduct, ProductReview
+from .models import Ingredient, Recipe, Batch, Sample, Product, ProductReview
 
 
 class IngredientAdminForm(forms.ModelForm):
@@ -19,14 +19,14 @@ class IngredientAdminForm(forms.ModelForm):
         return cleaned_data
 
 
-class NewRecipeAdminForm(forms.ModelForm):
+class RecipeAdminForm(forms.ModelForm):
     class Meta:
-        model = NewRecipe
+        model = Recipe
 
     # JMT: this is not yet working.
     # It's something to do with the fact that the related fields aren't yet saved.
     def clean(self):
-        cleaned_data = super(NewRecipeAdminForm, self).clean()
+        cleaned_data = super(RecipeAdminForm, self).clean()
         sugar_types = set([item.ingredient.subtype for item in self.instance.items(Ingredient.TYPE_SUGAR)])
         solvent_types = set([item.ingredient.subtype for item in self.instance.items(Ingredient.TYPE_SOLVENT)])
         solvent_temps = set([item.temp for item in self.instance.items(Ingredient.TYPE_SOLVENT)])
@@ -57,9 +57,9 @@ class NewRecipeAdminForm(forms.ModelForm):
         return cleaned_data
 
 
-class NewBatchAdminForm(forms.ModelForm):
+class BatchAdminForm(forms.ModelForm):
     class Meta:
-        model = NewBatch
+        model = Batch
 
 
 class SampleAdminForm(forms.ModelForm):
@@ -67,9 +67,9 @@ class SampleAdminForm(forms.ModelForm):
         model = Sample
 
 
-class NewProductAdminForm(forms.ModelForm):
+class ProductAdminForm(forms.ModelForm):
     class Meta:
-        model = NewProduct
+        model = Product
 
 
 class ProductAddToCartForm(forms.Form):

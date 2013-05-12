@@ -1,5 +1,5 @@
 from models import SearchTerm
-from meadery.models import NewProduct
+from meadery.models import Product
 from django.db.models import Q
 from stats import stats
 
@@ -23,7 +23,7 @@ def store(request, q):
 # get products matching the search text
 def products(search_text):
     words = _prepare_words(search_text)
-    products = NewProduct.active.all()
+    products = Product.active.all()
     results = {}
     results['products'] = []
     # iterate through keywords

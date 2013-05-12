@@ -2,7 +2,7 @@ from django.test import TestCase, Client
 from django.core.management import call_command
 from django.core.management.base import CommandError
 from inventory.models import Warehouse, Row, Shelf, Bin, Crate, Jar
-from meadery.models import NewProduct
+from meadery.models import Product
 from pyment import settings
 from datetime import datetime, timedelta
 from django.utils.timezone import utc
@@ -88,7 +88,7 @@ class JarTestCase(TestCase):
         self.assertEqual(Jar.objects.all().count(), remaining_count)
 
     def test_add_new_jars(self):
-        good_product = NewProduct.objects.all()[0]
+        good_product = Product.objects.all()[0]
         good_product_name = good_product.name
         bad_product_name = good_product.name + 'A'
         good_crate = Crate.objects.all()[0]

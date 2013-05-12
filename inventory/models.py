@@ -1,6 +1,6 @@
 from django.core.urlresolvers import reverse
 from django.db import models
-from meadery.models import NewProduct
+from meadery.models import Product
 from django.core.exceptions import ValidationError
 
 
@@ -232,8 +232,8 @@ class InStockJarManager(models.Manager):
         return super(InStockJarManager, self).get_query_set().filter(is_active=True, is_available=True)
 
 
-class NewJar(models.Model):
-    product = models.ForeignKey(NewProduct)
+class Jar(models.Model):
+    product = models.ForeignKey(Product)
     number = models.IntegerField()
     slug = models.SlugField(max_length=13, unique=True, blank=True)
     # volume in liters
@@ -262,9 +262,9 @@ class NewJar(models.Model):
 
     def save(self, *args, **kwargs):
         self.slug = str(self.product.slug)
-        super(NewJar, self).save(*args, **kwargs)
+        super(Jar, self).save(*args, **kwargs)
         self.slug = str(self.product.slug) + str(self.number)
-        super(NewJar, self).save(*args, **kwargs)
+        super(Jar, self).save(*args, **kwargs)
 
     def get_absolute_url(self):
         return reverse('inventory_jar', kwargs={'jar_slug': self.slug})

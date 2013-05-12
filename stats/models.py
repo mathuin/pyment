@@ -1,6 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
-from meadery.models import NewProduct
+from meadery.models import Product
 
 
 class PageView(models.Model):
@@ -13,5 +13,5 @@ class PageView(models.Model):
     tracking_id = models.CharField(max_length=50, default='')
 
 
-class NewProductView(PageView):
-    product = models.ForeignKey(NewProduct)
+class ProductView(PageView):
+    product = models.ForeignKey(Product)

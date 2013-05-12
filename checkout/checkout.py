@@ -1,7 +1,7 @@
 from cart import cart
-from models import Order, NewOrderItem, PickList, PickListItem
+from models import Order, OrderItem, PickList, PickListItem
 from forms import CheckoutForm
-from meadery.models import NewProduct
+from meadery.models import Product
 from django.core.exceptions import ValidationError
 from django.core.mail import mail_managers
 from django.core.urlresolvers import reverse
@@ -32,7 +32,7 @@ def create_order(request):
         cart_items = cart.get_cart_items(request)
         for ci in cart_items:
             # create order item for each cart item
-            oi = NewOrderItem()
+            oi = OrderItem()
             oi.order = order
             oi.quantity = ci.quantity
             oi.product = ci.product
@@ -54,7 +54,7 @@ def create_order(request):
 def cancel_order(self):
     if self.status == Order.SUBMITTED:
         # FIXME: test for presence of order
-        NewOrderItem.objects.filter(order=self.pk).delete()
+        OrderItem.objects.filter(order=self.pk).delete()
         self.status = Order.CANCELLED
         self.save()
         return True
@@ -69,7 +69,7 @@ def create_picklist(order):
         picklist.status = PickList.SUBMITTED
         picklist.save()
         if picklist.pk:
-            order_items = NewOrderItem.objects.filter(order=order)
+            order_items = OrderItem.objects.filter(order=order)
             for oi in order_items:
                 for _ in range(oi.quantity):
                     # create picklist item for each individual order item
@@ -89,10 +89,10 @@ def create_picklist(order):
 
 
 def all_in_stock(order):
-    order_items = NewOrderItem.objects.filter(order=order)
+    order_items = OrderItem.objects.filter(order=order)
     try:
         for oi in order_items:
-            if NewProduct.objects.get(id=oi.product_id).jars_in_stock() < oi.quantity:
+            if Product.objects.get(id=oi.product_id).jars_in_stock() < oi.quantity:
                 raise ValidationError('Insufficient product in stock - please select another product')
     except ValidationError:
         return None

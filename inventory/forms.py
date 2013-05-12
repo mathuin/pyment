@@ -1,6 +1,6 @@
 from django import forms
-from meadery.models import NewProduct
-from inventory.models import Warehouse, Row, Shelf, Bin, Crate, NewJar
+from meadery.models import Product
+from inventory.models import Warehouse, Row, Shelf, Bin, Crate, Jar
 
 
 class WarehouseAdminForm(forms.ModelForm):
@@ -36,8 +36,8 @@ class CrateAdminForm(forms.ModelForm):
         model = Crate
 
 
-class NewJarAdminForm(forms.ModelForm):
-    product = forms.ModelChoiceField(queryset=NewProduct.active)
+class JarAdminForm(forms.ModelForm):
+    product = forms.ModelChoiceField(queryset=Product.active)
 
     class Meta:
-        model = NewJar
+        model = Jar
