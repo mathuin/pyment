@@ -1,4 +1,4 @@
-from models import Honey, Water, Flavor, Yeast, HoneyItem, CoolItem, WarmItem, FlavorItem, YeastItem, Recipe, Batch, Sample, Product
+from models import Ingredient, IngredientItem, Recipe, Batch, Sample, Product
 from checkout.models import OrderItem
 from cStringIO import StringIO
 from labels import Sheet
@@ -13,40 +13,11 @@ def create_batch_from_recipe(recipe):
     [setattr(batch, field.name, getattr(recipe, field.name)) for field in Recipe._meta.fields if field.name != 'id']
     batch.jars = 0
     batch.save()
-    # Now copy separate items.
-    for honey_item in recipe.honey_items:
-        new_honey_item = HoneyItem()
-        new_honey_item.honey = honey_item.honey
-        new_honey_item.mass = honey_item.mass
-        new_honey_item.temp = honey_item.temp
-        new_honey_item.recipe = batch
-        new_honey_item.save()
-    for warm_item in recipe.warm_items:
-        new_warm_item = WarmItem()
-        new_warm_item.water = warm_item.water
-        new_warm_item.volume = warm_item.volume
-        new_warm_item.temp = warm_item.temp
-        new_warm_item.recipe = batch
-        new_warm_item.save()
-    for cool_item in recipe.cool_items:
-        new_cool_item = CoolItem()
-        new_cool_item.water = cool_item.water
-        new_cool_item.volume = cool_item.volume
-        new_cool_item.temp = cool_item.temp
-        new_cool_item.recipe = batch
-        new_cool_item.save()
-    for flavor_item in recipe.flavor_items:
-        new_flavor_item = FlavorItem()
-        new_flavor_item.flavor = flavor_item.flavor
-        new_flavor_item.amount = flavor_item.amount
-        new_flavor_item.recipe = batch
-        new_flavor_item.save()
-    for yeast_item in recipe.yeast_items:
-        new_yeast_item = YeastItem()
-        new_yeast_item.yeast = yeast_item.yeast
-        new_yeast_item.amount = yeast_item.amount
-        new_yeast_item.recipe = batch
-        new_yeast_item.save()
+    for item in IngredientItem.objects.filter(parent=recipe):
+        new_item = item
+        new_item.pk = None
+        new_item.recipe = batch
+        new_item.save()
     return batch
 
 
@@ -54,42 +25,14 @@ def create_recipe_from_batch(batch):
     recipe = Recipe()
     # First copy fields from recipe to batch.
     [setattr(recipe, field.name, getattr(batch, field.name)) for field in Recipe._meta.fields if field.name != 'id']
-    recipe.title = '%s %s Recipe' % (batch.brewname, batch.batchletter)
+    recipe.title = '%s Recipe' % batch.name
     recipe.save()
     # Now copy separate items.
-    for honey_item in batch.honey_items:
-        new_honey_item = HoneyItem()
-        new_honey_item.honey = honey_item.honey
-        new_honey_item.mass = honey_item.mass
-        new_honey_item.temp = honey_item.temp
-        new_honey_item.recipe = recipe
-        new_honey_item.save()
-    for warm_item in batch.warm_items:
-        new_warm_item = WarmItem()
-        new_warm_item.water = warm_item.water
-        new_warm_item.volume = warm_item.volume
-        new_warm_item.temp = warm_item.temp
-        new_warm_item.recipe = recipe
-        new_warm_item.save()
-    for cool_item in batch.cool_items:
-        new_cool_item = CoolItem()
-        new_cool_item.water = cool_item.water
-        new_cool_item.volume = cool_item.volume
-        new_cool_item.temp = cool_item.temp
-        new_cool_item.recipe = recipe
-        new_cool_item.save()
-    for flavor_item in batch.flavor_items:
-        new_flavor_item = FlavorItem()
-        new_flavor_item.flavor = flavor_item.flavor
-        new_flavor_item.amount = flavor_item.amount
-        new_flavor_item.recipe = recipe
-        new_flavor_item.save()
-    for yeast_item in batch.yeast_items:
-        new_yeast_item = YeastItem()
-        new_yeast_item.yeast = yeast_item.yeast
-        new_yeast_item.amount = yeast_item.amount
-        new_yeast_item.recipe = recipe
-        new_yeast_item.save()
+    for item in IngredientItem.objects.filter(parent=batch):
+        new_item = item
+        new_item.pk = None
+        new_item.recipe = recipe
+        new_item.save()
     return recipe
 
 
@@ -139,3 +82,87 @@ def make_labels_from_batch(batch):
     pdf = buffer.getvalue()
     buffer.close()
     return pdf
+
+
+# JMT: temporary location for code that migrates old products to new products
+# from models import NewProduct
+# from inventory.models import NewJar, Jar
+# from cart.models import NewCartItem, CartItem
+# from checkout.models import NewOrderItem, OrderItem
+# from stats.models import NewProductView, ProductView
+
+
+# def move_to_new_world():
+#     # first nuke new world
+#     NewProduct.objects.all().delete()
+#     NewJar.objects.all().delete()
+#     NewCartItem.objects.all().delete()
+#     NewOrderItem.objects.all().delete()
+#     NewProductView.objects.all().delete()
+#     for product in Product.objects.all():
+#         # Parent stuff.
+#         newproduct = NewProduct()
+#         newproduct.title = product.title
+#         newproduct.description = product.description
+#         newproduct.category = product.category
+#         # SIP stuff.
+#         newproduct.brewname = product.brewname
+#         newproduct.batchletter = product.batchletter
+#         newproduct.is_active = product.is_active
+#         newproduct.created_at = product.created_at
+#         newproduct.updated_at = product.updated_at
+#         # Product stuff.
+#         newproduct.slug = product.slug
+#         newproduct.image = product.image
+#         newproduct.thumbnail = product.thumbnail
+#         newproduct.is_bestseller = product.is_bestseller
+#         newproduct.is_featured = product.is_featured
+#         newproduct.meta_keywords = product.meta_keywords
+#         newproduct.meta_description = product.meta_description
+#         newproduct.brewed_date = product.brewed_date
+#         newproduct.brewed_sg = product.brewed_sg
+#         newproduct.bottled_date = product.bottled_date
+#         newproduct.bottled_sg = product.bottled_sg
+#         newproduct.abv = product.abv
+#         newproduct.save()
+#         # Related objects.
+#         for item in IngredientItem.objects.filter(recipe=product):
+#             newitem = NewIngredientItem()
+#             newitem.parent = newproduct
+#             newitem.ingredient = item.ingredient
+#             newitem.amount = item.amount
+#             newitem.temp = item.temp
+#             newitem.save()
+#         for jar in Jar.objects.filter(product=product):
+#             newjar = NewJar()
+#             newjar.product = newproduct
+#             newjar.number = jar.number
+#             newjar.slub = jar.slug
+#             newjar.volume = jar.volume
+#             newjar.crate = jar.crate
+#             newjar.is_active = jar.is_active
+#             newjar.is_available = jar.is_available
+#             newjar.created_at = jar.created_at
+#             newjar.updated_at = jar.updated_at
+#             newjar.save()
+#         for cartitem in CartItem.objects.filter(product=product):
+#             newcartitem = NewCartItem()
+#             newcartitem.product = newproduct
+#             newcartitem.date_added = cartitem.date_added
+#             newcartitem.cart_id = cartitem.cart_id
+#             newcartitem.quantity = cartitem.quantity
+#             newcartitem.save()
+#         for orderitem in OrderItem.objects.filter(product=product):
+#             neworderitem = NewOrderItem()
+#             neworderitem.product = newproduct
+#             neworderitem.quantity = orderitem.quantity
+#             neworderitem.order = orderitem.order
+#             neworderitem.save()
+#         for productview in ProductView.objects.filter(product=product):
+#             newproductview = NewProductView()
+#             newproductview.product = newproduct
+#             newproductview.date = productview.date
+#             newproductview.ip_address = productview.ip_address
+#             newproductview.user = productview.user
+#             newproductview.tracking_id = productview.tracking_id
+#             newproductview.save()

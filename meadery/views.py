@@ -1,5 +1,5 @@
 from django.shortcuts import get_object_or_404, render
-from .models import Product, ProductReview, MEAD_CHOICES, MEAD_DESCRIPTIONS
+from .models import Product, ProductReview
 from django.core import urlresolvers
 from cart.cart import add_to_cart
 from django.http import HttpResponseRedirect, HttpResponse
@@ -21,8 +21,8 @@ def index(request, template_name='meadery/index.djhtml'):
 
 
 def show_category(request, category_value, template_name='meadery/category.djhtml'):
-    name = [name for (value, name) in MEAD_CHOICES if value == int(category_value)][0]
-    description = MEAD_DESCRIPTIONS[int(category_value)]
+    name = [name for (value, name) in Product.MEAD_VIEWS if value == int(category_value)][0]
+    description = Product.MEAD_DESCRIPTIONS[int(category_value)]
     products = Product.instock.filter(category=category_value)
     page_title = name
     return render(request, template_name, locals())
@@ -31,7 +31,7 @@ def show_category(request, category_value, template_name='meadery/category.djhtm
 # new product view, with POST vs GET detection
 def show_product(request, product_slug, template_name="meadery/product.djhtml"):
     p = get_object_or_404(Product, slug=product_slug)
-    cname = [name for (value, name) in MEAD_CHOICES if value == p.category][0]
+    cname = [name for (value, name) in Product.MEAD_VIEWS if value == p.category][0]
     curl = urlresolvers.reverse('meadery_category', kwargs={'category_value': p.category})
     page_title = p.name
     # need to evaluate the HTTP method

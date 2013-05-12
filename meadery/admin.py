@@ -1,7 +1,7 @@
 from django.contrib import admin
 from utils.buttonadmin import ButtonAdmin
-from .models import Honey, Water, Flavor, Yeast, HoneyItem, CoolItem, WarmItem, FlavorItem, YeastItem, Recipe, Batch, Sample, Product, ProductReview
-from .forms import HoneyAdminForm, WaterAdminForm, FlavorAdminForm, YeastAdminForm, RecipeAdminForm, BatchAdminForm, SampleAdminForm, ProductAdminForm, ProductReviewForm
+from .models import Ingredient, IngredientItem, Recipe, Batch, Sample, Product, ProductReview
+from .forms import IngredientAdminForm, RecipeAdminForm, BatchAdminForm, SampleAdminForm, ProductAdminForm, ProductReviewForm
 from meadery import create_batch_from_recipe, create_recipe_from_batch, create_product_from_batch, make_labels_from_batch
 from django.core.urlresolvers import reverse
 from decimal import Decimal
@@ -10,79 +10,41 @@ from django.http import HttpResponse, HttpResponseRedirect
 
 
 class IngredientAdmin(admin.ModelAdmin):
-    list_display = ('name', 'is_natural', 'appellation', 'type')
+    form = IngredientAdminForm
+    list_display = ('name', 'is_natural', 'appellation', 'type', 'subtype', 'state', 'sg', 'sh', 'tolerance', 'cpu')
     list_display_links = ('name', )
     list_filter = ('is_natural', 'appellation', 'type')
 
-
-class HoneyAdmin(IngredientAdmin):
-    form = HoneyAdminForm
-    list_display = IngredientAdmin.list_display + ('sg', 'sh', )
-
-admin.site.register(Honey, HoneyAdmin)
-
-
-class WaterAdmin(IngredientAdmin):
-    form = WaterAdminForm
-    list_display = IngredientAdmin.list_display + ('sg', 'sh', )
-
-admin.site.register(Water, WaterAdmin)
-
-
-class FlavorAdmin(IngredientAdmin):
-    form = FlavorAdminForm
-    list_display = IngredientAdmin.list_display + ('units', )
-
-admin.site.register(Flavor, FlavorAdmin)
-
-
-class YeastAdmin(IngredientAdmin):
-    form = YeastAdminForm
-    list_display = IngredientAdmin.list_display + ('tolerance', )
-
-admin.site.register(Yeast, YeastAdmin)
+admin.site.register(Ingredient, IngredientAdmin)
 
 
 class IngredientItemInline(admin.StackedInline):
-    extra = 0
-
-
-class HoneyItemInline(IngredientItemInline):
-    model = HoneyItem
-
-
-class WarmItemInline(IngredientItemInline):
-    model = WarmItem
-
-
-class CoolItemInline(IngredientItemInline):
-    model = CoolItem
-
-
-class FlavorItemInline(IngredientItemInline):
-    model = FlavorItem
-
-
-class YeastItemInline(IngredientItemInline):
-    model = YeastItem
+    model = IngredientItem
 
 
 class RecipeAdmin(ButtonAdmin):
-    list_display = ('title', 'description', 'category', 'all_natural', 'appellation', 'brew_volume', 'brew_sg', 'final_sg')
+    form = RecipeAdminForm
+    list_display = ('title', 'description', 'category', 'all_natural', 'appellation', 'total_cost')
     list_display_links = ('title', )
-    inlines = [HoneyItemInline, WarmItemInline, CoolItemInline, FlavorItemInline, YeastItemInline, ]
+    inlines = [IngredientItemInline, ]
+    readonly_fields = ('category', )
 
+    def total_cost(self, obj):
+        return Decimal(sum([(item.amount * item.ingredient.cpu) for item in obj.items()])).quantize(Decimal('0.01'))
+
+    # JMT: disabled temporarily
     def brew_sg(self, obj):
         return obj.brew_sg
     brew_sg.short_description = 'Projected OG'
 
+    # JMT: disabled temporarily
     def final_sg(self, obj):
         if len(obj.yeast_items) > 0:
-            deltasg = max([item.yeast.maxdeltasg for item in obj.yeast_items])
+            deltasg = max([item.yeast.maxdeltasg for item in obj.items(Ingredient.TYPE_YEAST)])
         else:
             deltasg = 0
         return Decimal(obj.brew_sg - deltasg)
-    final_sg.short_description = 'Final FG'
+    final_sg.short_description = 'Projected FG'
 
     def create_batch(self, request, recipe=None):
         if recipe is not None:
@@ -100,8 +62,10 @@ class RecipeAdmin(ButtonAdmin):
 admin.site.register(Recipe, RecipeAdmin)
 
 
-class BatchAdmin(RecipeAdmin):
-    list_display = ('name', 'recipe', 'all_natural', 'appellation', 'brew_sg', 'final_sg', 'link_samples', 'firstsg', 'lastsg', 'abv', 'jars', )
+class BatchAdmin(ButtonAdmin):
+    form = BatchAdminForm
+    # list_display = ('name', 'recipe', 'all_natural', 'appellation', 'brew_sg', 'final_sg', 'link_samples', 'firstsg', 'lastsg', 'abv', 'jars', )
+    list_display = ('name', 'recipe', 'all_natural', 'appellation', 'link_samples', 'firstsg', 'lastsg', 'abv', 'jars', )
     list_display_links = ('name', )
 
     def link_samples(self, obj):
@@ -185,13 +149,10 @@ admin.site.register(Batch, BatchAdmin)
 
 class SampleAdmin(admin.ModelAdmin):
     form = SampleAdminForm
-    list_display = ('batch', 'date', 'temp', 'sg', 'notes', )
-    list_display_links = ('batch', )
-    list_filter = ['batch', ]
-    ordering = ['batch', 'date']
-
-    def batch(self, obj):
-        return obj.batch.name
+    list_display = ('__unicode__', 'batch', 'date', 'temp', 'sg', 'notes', )
+    list_display_links = ('__unicode__', )
+    list_filter = ('batch', 'date')
+    ordering = ['-date', 'batch']
 
 admin.site.register(Sample, SampleAdmin)
 
