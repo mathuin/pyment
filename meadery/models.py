@@ -291,7 +291,7 @@ class SIPParent(Parent):
 
     class Meta:
         abstract = True
-        ordering = ['-is_active', '-created_at']
+        ordering = ['is_active', '-created_at']
 
     @property
     def name(self):
