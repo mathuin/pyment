@@ -2,7 +2,6 @@ from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from reportlab.platypus import BaseDocTemplate, Paragraph, Frame, PageTemplate, FrameBreak, Table, Image
 from pyment.settings import SITE_NAME, BREWER_NAME, BREWER_LOCATION
 from cStringIO import StringIO
-from .models import Batch
 from django.http import HttpResponse
 
 
