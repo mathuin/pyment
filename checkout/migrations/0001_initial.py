@@ -120,7 +120,7 @@ class Migration(SchemaMigration):
             'status': ('django.db.models.fields.IntegerField', [], {'default': '1'})
         },
         u'checkout.picklistitem': {
-            'Meta': {'object_name': 'PickListItem'},
+            'Meta': {'ordering': "['jar__crate__bin__shelf__row__warehouse__number', 'jar__crate__bin__shelf__row__number', 'jar__crate__bin__shelf__number', 'jar__crate__bin__number']", 'object_name': 'PickListItem'},
             u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'jar': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['inventory.Jar']"}),
             'picklist': ('django.db.models.fields.related.ForeignKey', [], {'to': u"orm['checkout.PickList']"})
@@ -192,6 +192,13 @@ class Migration(SchemaMigration):
             'slug': ('django.db.models.fields.SlugField', [], {'unique': 'True', 'max_length': '50'}),
             'updated_at': ('django.db.models.fields.DateTimeField', [], {'auto_now': 'True', 'blank': 'True'})
         },
+        u'meadery.parent': {
+            'Meta': {'object_name': 'Parent'},
+            'category': ('django.db.models.fields.IntegerField', [], {'default': '241'}),
+            'description': ('django.db.models.fields.TextField', [], {}),
+            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'title': ('django.db.models.fields.CharField', [], {'max_length': '40'})
+        },
         u'meadery.product': {
             'Meta': {'ordering': "['-is_active', '-created_at']", 'object_name': 'Product'},
             'abv': ('django.db.models.fields.DecimalField', [], {'default': "'0.00'", 'max_digits': '4', 'decimal_places': '2'}),
@@ -201,19 +208,16 @@ class Migration(SchemaMigration):
             'brewed_date': ('django.db.models.fields.DateField', [], {}),
             'brewed_sg': ('django.db.models.fields.DecimalField', [], {'default': "'0.000'", 'max_digits': '4', 'decimal_places': '3'}),
             'brewname': ('django.db.models.fields.CharField', [], {'max_length': '8'}),
-            'category': ('django.db.models.fields.IntegerField', [], {'default': '241'}),
             'created_at': ('django.db.models.fields.DateTimeField', [], {'auto_now_add': 'True', 'blank': 'True'}),
-            'description': ('django.db.models.fields.TextField', [], {}),
-            u'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'image': ('django.db.models.fields.files.ImageField', [], {'max_length': '100', 'blank': 'True'}),
             'is_active': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'is_bestseller': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'is_featured': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'meta_description': ('django.db.models.fields.CharField', [], {'max_length': '255'}),
             'meta_keywords': ('django.db.models.fields.CharField', [], {'max_length': '255'}),
+            u'parent_ptr': ('django.db.models.fields.related.OneToOneField', [], {'to': u"orm['meadery.Parent']", 'unique': 'True', 'primary_key': 'True'}),
             'slug': ('django.db.models.fields.SlugField', [], {'unique': 'True', 'max_length': '255', 'blank': 'True'}),
             'thumbnail': ('django.db.models.fields.files.ImageField', [], {'max_length': '100', 'blank': 'True'}),
-            'title': ('django.db.models.fields.CharField', [], {'max_length': '40'}),
             'updated_at': ('django.db.models.fields.DateTimeField', [], {'auto_now': 'True', 'blank': 'True'})
         }
     }

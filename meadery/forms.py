@@ -1,6 +1,6 @@
 from django import forms
 from django.core.exceptions import ValidationError
-from .models import Ingredient, Recipe, Batch, Sample, Product, ProductReview
+from .models import Ingredient, IngredientItem, Recipe, Batch, Sample, Product, ProductReview
 
 
 class IngredientAdminForm(forms.ModelForm):
@@ -25,7 +25,7 @@ class RecipeAdminForm(forms.ModelForm):
 
     # JMT: this is not yet working.
     # It's something to do with the fact that the related fields aren't yet saved.
-    def clean(self):
+    def noclean(self):
         cleaned_data = super(RecipeAdminForm, self).clean()
         sugar_types = set([item.ingredient.subtype for item in self.instance.items(Ingredient.TYPE_SUGAR)])
         solvent_types = set([item.ingredient.subtype for item in self.instance.items(Ingredient.TYPE_SOLVENT)])

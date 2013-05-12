@@ -20,7 +20,6 @@ admin.site.register(Ingredient, IngredientAdmin)
 
 class IngredientItemInline(admin.StackedInline):
     model = IngredientItem
-    extra = 0
 
 
 class RecipeAdmin(ButtonAdmin):
