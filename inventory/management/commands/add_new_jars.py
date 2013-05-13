@@ -20,9 +20,9 @@ class Command(BaseCommand):
             raise CommandError('Wrong number of arguments')
         product_name = args[0]
         brewname, batchletter = product_name.rsplit(' ', 1)
-        if Product.objects.filter(brewname=brewname, batchletter=batchletter).exists():
+        try:
             product = Product.objects.get(brewname=brewname, batchletter=batchletter)
-        else:
+        except Product.DoesNotExist:
             raise CommandError('Not a valid product: %s' % product_name)
         # check that jar arguments are valid
         try:
@@ -40,12 +40,12 @@ class Command(BaseCommand):
         if Jar.objects.filter(product=product, number__in=jar_list).exists():
             raise CommandError('Jars already exist in this product within this range')
         try:
-            crate_number = args[3]
+            crate_number = int(args[3])
         except ValueError:
             raise CommandError('Crate is not an int: %s' % args[3])
-        if Crate.objects.filter(number=crate_number).exists():
+        try:
             crate = Crate.objects.get(number=crate_number)
-        else:
+        except Crate.DoesNotExist:
             raise CommandError('Not a valid crate: %d' % crate_number)
         if (crate.jars + len(jar_list)) > crate.capacity:
             raise CommandError('Crate capacity would be exceeded: %d > %d' % (crate.jars + len(jar_list), crate.capacity))

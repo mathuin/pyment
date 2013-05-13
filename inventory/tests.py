@@ -21,7 +21,7 @@ class WarehouseTestCase(TestCase):
 
 
 class RowTestCase(TestCase):
-    fixtures = ['inventory', 'catalog']
+    fixtures = ['inventory', 'meadery']
 
     def setUp(self):
         self.row = Row.objects.all()[0]
@@ -32,7 +32,7 @@ class RowTestCase(TestCase):
 
 
 class ShelfTestCase(TestCase):
-    fixtures = ['inventory', 'catalog']
+    fixtures = ['inventory', 'meadery']
 
     def setUp(self):
         self.shelf = Shelf.objects.all()[0]
@@ -43,7 +43,7 @@ class ShelfTestCase(TestCase):
 
 
 class BinTestCase(TestCase):
-    fixtures = ['inventory', 'catalog']
+    fixtures = ['inventory', 'meadery']
 
     def setUp(self):
         self.bin = Bin.objects.all()[0]
@@ -56,7 +56,7 @@ class BinTestCase(TestCase):
 
 
 class CrateTestCase(TestCase):
-    fixtures = ['inventory', 'catalog']
+    fixtures = ['inventory', 'meadery']
 
     def setUp(self):
         self.crate = Crate.objects.all()[0]
@@ -70,7 +70,7 @@ class CrateTestCase(TestCase):
 
 
 class JarTestCase(TestCase):
-    fixtures = ['inventory', 'catalog']
+    fixtures = ['inventory', 'meadery']
 
     def setUp(self):
         self.jar = Jar.objects.all()[0]
@@ -88,23 +88,23 @@ class JarTestCase(TestCase):
         self.assertEqual(Jar.objects.all().count(), remaining_count)
 
     def test_add_new_jars(self):
-        good_product = Product.objects.all()[0]
+        good_product = Product.objects.all()[1]
         good_product_name = good_product.name
         bad_product_name = good_product.name + 'A'
-        good_crate = Crate.objects.all()[0]
-        good_crate_name = good_crate.name
-        bad_crate_name = good_crate.name + '1'
+        good_crate = Crate.objects.all()[1]
+        good_crate_number = good_crate.number
+        bad_crate_number = good_crate.number + 1
         num_jars = 2
         start_jar = 4
         end_jar = start_jar + num_jars - 1
         good_crate_jars = good_crate.jars
         # try to add two jars of existing product to imaginary crate
         # CommandError expected
-        self.assertRaises(SystemExit, call_command, 'add_new_jars', good_product_name, start_jar, end_jar, bad_crate_name)
+        self.assertRaises(CommandError, call_command, 'add_new_jars', good_product_name, start_jar, end_jar, bad_crate_number)
         # try to add two jars of imaginary product to existing crate
         # CommandError expected
-        self.assertRaises(SystemExit, call_command, 'add_new_jars', bad_product_name, start_jar, end_jar, good_crate_name)
-        call_command('add_new_jars', good_product_name, start_jar, end_jar, good_crate_name)
+        self.assertRaises(CommandError, call_command, 'add_new_jars', bad_product_name, start_jar, end_jar, good_crate_number)
+        call_command('add_new_jars', good_product_name, start_jar, end_jar, good_crate_number)
         # number of jars in existing crate should go up by two
         self.assertEqual(good_crate.jars, good_crate_jars + num_jars)
         # optional - confirm that new jars are the correct jars

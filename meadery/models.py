@@ -205,7 +205,6 @@ class Parent(models.Model):
 
     @property
     def suggested_category(self):
-        print 'new world'
         sugar_types = set([item.ingredient.subtype for item in self.items(Ingredient.TYPE_SUGAR)])
         solvent_types = set([item.ingredient.subtype for item in self.items(Ingredient.TYPE_SOLVENT)])
         flavor_types = set([item.ingredient.subtype for item in self.items(Ingredient.TYPE_FLAVOR)])
@@ -213,69 +212,69 @@ class Parent(models.Model):
         # Identify based on sugar.
         mead_type = {}
         if len(sugar_types) == 1:
-            mead_type['sugar'] = TRADITIONAL_DRY
+            mead_type['sugar'] = Parent.TRADITIONAL_DRY
         elif len(sugar_types) == 2:
             if Ingredient.SUGAR_MALT in sugar_types:
-                mead_type['sugar'] = OTHER_BRAGGOT
+                mead_type['sugar'] = Parent.OTHER_BRAGGOT
             else:
-                mead_type['sugar'] = OTHER_OPEN_CATEGORY
+                mead_type['sugar'] = Parent.OTHER_OPEN_CATEGORY
         else:
-            mead_type['sugar'] = OTHER_OPEN_CATEGORY
+            mead_type['sugar'] = Parent.OTHER_OPEN_CATEGORY
 
         # Identify based on solvent.
         if len(solvent_types) == 1:
             if Ingredient.SOLVENT_WATER in solvent_types:
-                mead_type['solvent'] = TRADITIONAL_DRY
+                mead_type['solvent'] = Parent.TRADITIONAL_DRY
             elif Ingredient.SOLVENT_APPLE in solvent_types:
-                mead_type['solvent'] = MELOMEL_CYSER
+                mead_type['solvent'] = Parent.MELOMEL_CYSER
             elif Ingredient.SOLVENT_GRAPE in solvent_types:
-                mead_type['solvent'] = MELOMEL_PYMENT
+                mead_type['solvent'] = Parent.MELOMEL_PYMENT
             elif Ingredient.SOLVENT_FRUIT in solvent_types:
-                mead_type['solvent'] = MELOMEL_OTHER
+                mead_type['solvent'] = Parent.MELOMEL_OTHER
             else:
-                mead_type['solvent'] = OTHER_OPEN_CATEGORY
+                mead_type['solvent'] = Parent.OTHER_OPEN_CATEGORY
         elif len(solvent_types) == 2:
             if Ingredient.SOLVENT_WATER in solvent_types:
                 if Ingredient.SOLVENT_APPLE in solvent_types:
-                    mead_type['solvent'] = MELOMEL_CYSER
+                    mead_type['solvent'] = Parent.MELOMEL_CYSER
                 elif Ingredient.SOLVENT_GRAPE in solvent_types:
-                    mead_type['solvent'] = MELOMEL_PYMENT
+                    mead_type['solvent'] = Parent.MELOMEL_PYMENT
                 elif Ingredient.SOLVENT_FRUIT in solvent_types:
-                    mead_type['solvent'] = MELOMEL_OTHER
+                    mead_type['solvent'] = Parent.MELOMEL_OTHER
                 else:
-                    mead_type['solvent'] = OTHER_OPEN_CATEGORY
+                    mead_type['solvent'] = Parent.OTHER_OPEN_CATEGORY
             else:
-                mead_type['solvent'] = OTHER_OPEN_CATEGORY
+                mead_type['solvent'] = Parent.OTHER_OPEN_CATEGORY
         else:
-            mead_type['solvent'] = OTHER_OPEN_CATEGORY
+            mead_type['solvent'] = Parent.OTHER_OPEN_CATEGORY
 
         # Identify based on flavor.
         if len(flavor_types) == 0:
-            mead_type['flavor'] = TRADITIONAL_DRY
+            mead_type['flavor'] = Parent.TRADITIONAL_DRY
         elif len(flavor_types) == 1:
             if Ingredient.FLAVOR_SPICE in flavor_types:
-                mead_type['flavor'] = OTHER_METHEGLIN
+                mead_type['flavor'] = Parent.OTHER_METHEGLIN
             elif Ingredient.FLAVOR_APPLE in flavor_types:
-                mead_type['flavor'] = MELOMEL_CYSER
+                mead_type['flavor'] = Parent.MELOMEL_CYSER
             elif Ingredient.FLAVOR_GRAPE in flavor_types:
-                mead_type['flavor'] = MELOMEL_PYMENT
+                mead_type['flavor'] = Parent.MELOMEL_PYMENT
             elif Ingredient.FLAVOR_FRUIT in flavor_types:
-                mead_type['flavor'] = MELOMEL_OTHER
+                mead_type['flavor'] = Parent.MELOMEL_OTHER
             elif Ingredient.FLAVOR_OTHER in flavor_types:
-                mead_type['flavor'] = OTHER_OPEN_CATEGORY
+                mead_type['flavor'] = Parent.OTHER_OPEN_CATEGORY
         elif len(flavor_types) > 1:
-            mead_type['flavor'] = OTHER_OPEN_CATEGORY
+            mead_type['flavor'] = Parent.OTHER_OPEN_CATEGORY
 
         # Identify based on all together.
         recipe_type = set(mead_type.values())
-        recipe_type.discard(TRADITIONAL_DRY)
+        recipe_type.discard(Parent.TRADITIONAL_DRY)
         if len(recipe_type) == 0:
             # JMT: add SG calculations here
-            return TRADITIONAL_DRY
+            return Parent.TRADITIONAL_DRY
         if len(recipe_type) == 1:
             return recipe_type.pop()
         else:
-            return OTHER_OPEN_CATEGORY
+            return Parent.OTHER_OPEN_CATEGORY
 
 
 class Recipe(Parent):
