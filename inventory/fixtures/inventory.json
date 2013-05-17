@@ -3,22 +3,22 @@
   "pk": 2, 
   "model": "inventory.warehouse", 
   "fields": {
-    "updated_at": "2013-05-13T02:08:10.764Z", 
+    "updated_at": "2013-05-17T17:13:15.675Z", 
     "created_at": "2013-05-13T02:06:49.930Z", 
     "location": "Here", 
     "number": 1, 
-    "slug": "1"
+    "slug": "w1"
   }
 },
 {
   "pk": 4, 
   "model": "inventory.warehouse", 
   "fields": {
-    "updated_at": "2013-05-13T02:08:32.866Z", 
+    "updated_at": "2013-05-17T17:13:15.721Z", 
     "created_at": "2013-05-13T02:08:32.866Z", 
     "location": "There", 
     "number": 2, 
-    "slug": "2"
+    "slug": "w2"
   }
 },
 {
@@ -28,8 +28,8 @@
     "warehouse": 2, 
     "created_at": "2013-05-13T02:09:30.626Z", 
     "number": 1, 
-    "updated_at": "2013-05-13T02:09:30.644Z", 
-    "slug": "1-1"
+    "updated_at": "2013-05-17T17:13:47.794Z", 
+    "slug": "w1-r1"
   }
 },
 {
@@ -39,8 +39,8 @@
     "warehouse": 2, 
     "created_at": "2013-05-13T02:09:48.002Z", 
     "number": 2, 
-    "updated_at": "2013-05-13T02:09:48.046Z", 
-    "slug": "1-2"
+    "updated_at": "2013-05-17T17:13:47.955Z", 
+    "slug": "w1-r2"
   }
 },
 {
@@ -50,8 +50,8 @@
     "warehouse": 4, 
     "created_at": "2013-05-13T02:10:23.042Z", 
     "number": 1, 
-    "updated_at": "2013-05-13T02:10:23.060Z", 
-    "slug": "2-1"
+    "updated_at": "2013-05-17T17:13:47.967Z", 
+    "slug": "w2-r1"
   }
 },
 {
@@ -61,17 +61,17 @@
     "warehouse": 4, 
     "created_at": "2013-05-13T02:10:33.650Z", 
     "number": 2, 
-    "updated_at": "2013-05-13T02:10:33.668Z", 
-    "slug": "2-2"
+    "updated_at": "2013-05-17T17:13:47.979Z", 
+    "slug": "w2-r2"
   }
 },
 {
   "pk": 1, 
   "model": "inventory.shelf", 
   "fields": {
-    "updated_at": "2013-05-13T02:13:54.080Z", 
+    "updated_at": "2013-05-17T17:13:52.414Z", 
     "created_at": "2013-05-13T02:13:54.058Z", 
-    "slug": "1-1-1", 
+    "slug": "w1-r1-s1", 
     "number": 1, 
     "row": 1
   }
@@ -80,9 +80,9 @@
   "pk": 2, 
   "model": "inventory.shelf", 
   "fields": {
-    "updated_at": "2013-05-13T02:14:08.816Z", 
+    "updated_at": "2013-05-17T17:13:52.466Z", 
     "created_at": "2013-05-13T02:14:08.794Z", 
-    "slug": "1-1-2", 
+    "slug": "w1-r1-s2", 
     "number": 2, 
     "row": 1
   }
@@ -91,9 +91,9 @@
   "pk": 3, 
   "model": "inventory.shelf", 
   "fields": {
-    "updated_at": "2013-05-13T02:14:25.676Z", 
+    "updated_at": "2013-05-17T17:13:52.477Z", 
     "created_at": "2013-05-13T02:14:25.658Z", 
-    "slug": "1-2-1", 
+    "slug": "w1-r2-s1", 
     "number": 1, 
     "row": 2
   }
@@ -102,9 +102,9 @@
   "pk": 4, 
   "model": "inventory.shelf", 
   "fields": {
-    "updated_at": "2013-05-13T02:14:46.208Z", 
+    "updated_at": "2013-05-17T17:13:52.490Z", 
     "created_at": "2013-05-13T02:14:46.186Z", 
-    "slug": "2-1-1", 
+    "slug": "w2-r1-s1", 
     "number": 1, 
     "row": 3
   }
@@ -113,9 +113,9 @@
   "pk": 5, 
   "model": "inventory.shelf", 
   "fields": {
-    "updated_at": "2013-05-13T02:15:21.560Z", 
+    "updated_at": "2013-05-17T17:13:52.501Z", 
     "created_at": "2013-05-13T02:15:21.538Z", 
-    "slug": "2-1-2", 
+    "slug": "w2-r1-s2", 
     "number": 2, 
     "row": 3
   }
@@ -124,9 +124,9 @@
   "pk": 6, 
   "model": "inventory.shelf", 
   "fields": {
-    "updated_at": "2013-05-13T02:15:48.404Z", 
+    "updated_at": "2013-05-17T17:13:52.514Z", 
     "created_at": "2013-05-13T02:15:48.378Z", 
-    "slug": "2-2-1", 
+    "slug": "w2-r2-s1", 
     "number": 1, 
     "row": 4
   }
@@ -135,9 +135,9 @@
   "pk": 7, 
   "model": "inventory.shelf", 
   "fields": {
-    "updated_at": "2013-05-13T02:16:02.444Z", 
+    "updated_at": "2013-05-17T17:13:52.526Z", 
     "created_at": "2013-05-13T02:16:02.418Z", 
-    "slug": "2-2-2", 
+    "slug": "w2-r2-s2", 
     "number": 2, 
     "row": 4
   }
@@ -149,9 +149,9 @@
     "capacity": 1, 
     "shelf": 1, 
     "created_at": "2013-05-13T03:19:30.633Z", 
-    "updated_at": "2013-05-13T03:19:30.658Z", 
+    "updated_at": "2013-05-17T17:13:56.309Z", 
     "number": 1, 
-    "slug": "1-1-1-1"
+    "slug": "w1-r1-s1-b1"
   }
 },
 {
@@ -161,9 +161,9 @@
     "capacity": 2, 
     "shelf": 4, 
     "created_at": "2013-05-13T03:20:11.633Z", 
-    "updated_at": "2013-05-13T03:20:11.650Z", 
+    "updated_at": "2013-05-17T17:13:56.487Z", 
     "number": 1, 
-    "slug": "2-1-1-1"
+    "slug": "w2-r1-s1-b1"
   }
 },
 {
@@ -173,9 +173,9 @@
     "capacity": 1, 
     "shelf": 2, 
     "created_at": "2013-05-13T03:20:41.153Z", 
-    "updated_at": "2013-05-13T03:20:41.194Z", 
+    "updated_at": "2013-05-17T17:13:56.463Z", 
     "number": 1, 
-    "slug": "1-1-2-1"
+    "slug": "w1-r1-s2-b1"
   }
 },
 {
@@ -185,9 +185,9 @@
     "capacity": 1, 
     "shelf": 3, 
     "created_at": "2013-05-13T03:21:39.193Z", 
-    "updated_at": "2013-05-13T03:21:39.214Z", 
+    "updated_at": "2013-05-17T17:13:56.475Z", 
     "number": 1, 
-    "slug": "1-2-1-1"
+    "slug": "w1-r2-s1-b1"
   }
 },
 {
@@ -197,9 +197,9 @@
     "capacity": 3, 
     "shelf": 5, 
     "created_at": "2013-05-13T03:22:08.961Z", 
-    "updated_at": "2013-05-13T03:22:08.986Z", 
+    "updated_at": "2013-05-17T17:13:56.499Z", 
     "number": 1, 
-    "slug": "2-1-2-1"
+    "slug": "w2-r1-s2-b1"
   }
 },
 {
@@ -209,9 +209,9 @@
     "capacity": 1, 
     "shelf": 6, 
     "created_at": "2013-05-13T03:22:31.649Z", 
-    "updated_at": "2013-05-13T03:22:31.705Z", 
+    "updated_at": "2013-05-17T17:13:56.511Z", 
     "number": 1, 
-    "slug": "2-2-1-1"
+    "slug": "w2-r2-s1-b1"
   }
 },
 {
@@ -221,9 +221,9 @@
     "capacity": 1, 
     "shelf": 7, 
     "created_at": "2013-05-13T03:22:50.793Z", 
-    "updated_at": "2013-05-13T03:22:50.818Z", 
+    "updated_at": "2013-05-17T17:13:56.523Z", 
     "number": 1, 
-    "slug": "2-2-2-1"
+    "slug": "w2-r2-s2-b1"
   }
 },
 {
@@ -234,8 +234,8 @@
     "capacity": 11, 
     "created_at": "2013-05-13T03:23:58.657Z", 
     "number": 1, 
-    "updated_at": "2013-05-13T03:23:58.657Z", 
-    "slug": "1"
+    "updated_at": "2013-05-17T17:14:00.578Z", 
+    "slug": "c1"
   }
 },
 {
@@ -246,8 +246,20 @@
     "capacity": 12, 
     "created_at": "2013-05-13T03:24:28.841Z", 
     "number": 2, 
-    "updated_at": "2013-05-13T03:24:28.841Z", 
-    "slug": "2"
+    "updated_at": "2013-05-17T17:14:00.601Z", 
+    "slug": "c2"
+  }
+},
+{
+  "pk": 3, 
+  "model": "inventory.crate", 
+  "fields": {
+    "bin": 2, 
+    "capacity": 12, 
+    "created_at": "2013-05-17T17:12:38.720Z", 
+    "number": 3, 
+    "updated_at": "2013-05-17T17:14:00.613Z", 
+    "slug": "c3"
   }
 },
 {
@@ -259,7 +271,7 @@
     "created_at": "2013-05-13T03:27:09.209Z", 
     "is_active": true, 
     "number": 2, 
-    "updated_at": "2013-05-13T03:27:09.238Z", 
+    "updated_at": "2013-05-17T17:46:45.856Z", 
     "volume": 1, 
     "is_available": true, 
     "slug": "sip-1-a2"
@@ -274,7 +286,7 @@
     "created_at": "2013-05-13T03:27:26.809Z", 
     "is_active": true, 
     "number": 3, 
-    "updated_at": "2013-05-13T03:27:26.833Z", 
+    "updated_at": "2013-05-17T17:46:45.888Z", 
     "volume": 1, 
     "is_available": true, 
     "slug": "sip-1-a3"
@@ -289,7 +301,7 @@
     "created_at": "2013-05-13T03:28:57.873Z", 
     "is_active": true, 
     "number": 2, 
-    "updated_at": "2013-05-13T03:30:16.297Z", 
+    "updated_at": "2013-05-17T17:46:45.899Z", 
     "volume": 1, 
     "is_available": false, 
     "slug": "sip-1-b2"
@@ -304,7 +316,7 @@
     "created_at": "2013-05-13T03:29:13.113Z", 
     "is_active": false, 
     "number": 3, 
-    "updated_at": "2013-05-13T03:30:30.430Z", 
+    "updated_at": "2013-05-17T17:46:45.912Z", 
     "volume": 1, 
     "is_available": false, 
     "slug": "sip-1-b3"
@@ -319,7 +331,7 @@
     "created_at": "2013-05-13T03:29:28.537Z", 
     "is_active": false, 
     "number": 4, 
-    "updated_at": "2013-05-13T03:31:04.354Z", 
+    "updated_at": "2013-05-17T17:46:45.923Z", 
     "volume": 1, 
     "is_available": false, 
     "slug": "sip-1-b4"
@@ -334,7 +346,7 @@
     "created_at": "2013-05-13T03:31:33.737Z", 
     "is_active": false, 
     "number": 5, 
-    "updated_at": "2013-05-13T03:31:33.766Z", 
+    "updated_at": "2013-05-17T17:46:45.935Z", 
     "volume": 1, 
     "is_available": false, 
     "slug": "sip-1-b5"
@@ -349,7 +361,7 @@
     "created_at": "2013-05-13T03:31:51.041Z", 
     "is_active": false, 
     "number": 6, 
-    "updated_at": "2013-05-13T03:31:51.070Z", 
+    "updated_at": "2013-05-17T17:46:45.949Z", 
     "volume": 1, 
     "is_available": false, 
     "slug": "sip-1-b6"
@@ -364,7 +376,7 @@
     "created_at": "2013-05-13T03:32:09.577Z", 
     "is_active": false, 
     "number": 7, 
-    "updated_at": "2013-05-13T03:32:09.598Z", 
+    "updated_at": "2013-05-17T17:46:45.960Z", 
     "volume": 1, 
     "is_available": false, 
     "slug": "sip-1-b7"
@@ -379,7 +391,7 @@
     "created_at": "2013-05-13T03:32:42.257Z", 
     "is_active": false, 
     "number": 8, 
-    "updated_at": "2013-05-13T03:32:42.286Z", 
+    "updated_at": "2013-05-17T17:46:45.971Z", 
     "volume": 1, 
     "is_available": false, 
     "slug": "sip-1-b8"
@@ -394,7 +406,7 @@
     "created_at": "2013-05-13T03:32:56.585Z", 
     "is_active": false, 
     "number": 9, 
-    "updated_at": "2013-05-13T03:32:56.602Z", 
+    "updated_at": "2013-05-17T17:46:45.985Z", 
     "volume": 1, 
     "is_available": false, 
     "slug": "sip-1-b9"
@@ -409,7 +421,7 @@
     "created_at": "2013-05-13T03:33:35.497Z", 
     "is_active": false, 
     "number": 10, 
-    "updated_at": "2013-05-13T03:33:35.518Z", 
+    "updated_at": "2013-05-17T17:46:45.997Z", 
     "volume": 1, 
     "is_available": false, 
     "slug": "sip-1-b10"
@@ -424,7 +436,7 @@
     "created_at": "2013-05-13T03:33:47.001Z", 
     "is_active": false, 
     "number": 11, 
-    "updated_at": "2013-05-13T03:33:47.026Z", 
+    "updated_at": "2013-05-17T17:46:46.009Z", 
     "volume": 1, 
     "is_available": false, 
     "slug": "sip-1-b11"
@@ -439,7 +451,7 @@
     "created_at": "2013-05-13T03:33:59.673Z", 
     "is_active": false, 
     "number": 12, 
-    "updated_at": "2013-05-13T03:33:59.698Z", 
+    "updated_at": "2013-05-17T17:46:46.021Z", 
     "volume": 1, 
     "is_available": false, 
     "slug": "sip-1-b12"
@@ -454,10 +466,190 @@
     "created_at": "2013-05-13T03:34:19.833Z", 
     "is_active": false, 
     "number": 13, 
-    "updated_at": "2013-05-13T03:34:19.858Z", 
+    "updated_at": "2013-05-17T17:46:46.033Z", 
     "volume": 1, 
     "is_available": false, 
     "slug": "sip-1-b13"
+  }
+},
+{
+  "pk": 15, 
+  "model": "inventory.jar", 
+  "fields": {
+    "product": 1, 
+    "crate": 3, 
+    "created_at": "2013-05-17T17:15:50.373Z", 
+    "is_active": true, 
+    "number": 4, 
+    "updated_at": "2013-05-17T17:46:46.045Z", 
+    "volume": 1, 
+    "is_available": true, 
+    "slug": "sip-1-a4"
+  }
+},
+{
+  "pk": 16, 
+  "model": "inventory.jar", 
+  "fields": {
+    "product": 1, 
+    "crate": 3, 
+    "created_at": "2013-05-17T17:15:50.412Z", 
+    "is_active": true, 
+    "number": 5, 
+    "updated_at": "2013-05-17T17:46:46.057Z", 
+    "volume": 1, 
+    "is_available": true, 
+    "slug": "sip-1-a5"
+  }
+},
+{
+  "pk": 17, 
+  "model": "inventory.jar", 
+  "fields": {
+    "product": 1, 
+    "crate": 3, 
+    "created_at": "2013-05-17T17:15:50.424Z", 
+    "is_active": true, 
+    "number": 6, 
+    "updated_at": "2013-05-17T17:46:46.069Z", 
+    "volume": 1, 
+    "is_available": true, 
+    "slug": "sip-1-a6"
+  }
+},
+{
+  "pk": 18, 
+  "model": "inventory.jar", 
+  "fields": {
+    "product": 1, 
+    "crate": 3, 
+    "created_at": "2013-05-17T17:15:50.436Z", 
+    "is_active": true, 
+    "number": 7, 
+    "updated_at": "2013-05-17T17:46:46.080Z", 
+    "volume": 1, 
+    "is_available": true, 
+    "slug": "sip-1-a7"
+  }
+},
+{
+  "pk": 19, 
+  "model": "inventory.jar", 
+  "fields": {
+    "product": 1, 
+    "crate": 3, 
+    "created_at": "2013-05-17T17:15:50.448Z", 
+    "is_active": true, 
+    "number": 8, 
+    "updated_at": "2013-05-17T17:46:46.093Z", 
+    "volume": 1, 
+    "is_available": true, 
+    "slug": "sip-1-a8"
+  }
+},
+{
+  "pk": 20, 
+  "model": "inventory.jar", 
+  "fields": {
+    "product": 1, 
+    "crate": 3, 
+    "created_at": "2013-05-17T17:15:50.460Z", 
+    "is_active": true, 
+    "number": 9, 
+    "updated_at": "2013-05-17T17:46:46.105Z", 
+    "volume": 1, 
+    "is_available": true, 
+    "slug": "sip-1-a9"
+  }
+},
+{
+  "pk": 21, 
+  "model": "inventory.jar", 
+  "fields": {
+    "product": 1, 
+    "crate": 3, 
+    "created_at": "2013-05-17T17:15:50.472Z", 
+    "is_active": true, 
+    "number": 10, 
+    "updated_at": "2013-05-17T17:46:46.117Z", 
+    "volume": 1, 
+    "is_available": true, 
+    "slug": "sip-1-a10"
+  }
+},
+{
+  "pk": 22, 
+  "model": "inventory.jar", 
+  "fields": {
+    "product": 1, 
+    "crate": 3, 
+    "created_at": "2013-05-17T17:15:50.484Z", 
+    "is_active": true, 
+    "number": 11, 
+    "updated_at": "2013-05-17T17:46:46.129Z", 
+    "volume": 1, 
+    "is_available": true, 
+    "slug": "sip-1-a11"
+  }
+},
+{
+  "pk": 23, 
+  "model": "inventory.jar", 
+  "fields": {
+    "product": 1, 
+    "crate": 3, 
+    "created_at": "2013-05-17T17:15:50.496Z", 
+    "is_active": true, 
+    "number": 12, 
+    "updated_at": "2013-05-17T17:46:46.141Z", 
+    "volume": 1, 
+    "is_available": true, 
+    "slug": "sip-1-a12"
+  }
+},
+{
+  "pk": 24, 
+  "model": "inventory.jar", 
+  "fields": {
+    "product": 1, 
+    "crate": 3, 
+    "created_at": "2013-05-17T17:15:50.508Z", 
+    "is_active": true, 
+    "number": 13, 
+    "updated_at": "2013-05-17T17:46:46.154Z", 
+    "volume": 1, 
+    "is_available": true, 
+    "slug": "sip-1-a13"
+  }
+},
+{
+  "pk": 25, 
+  "model": "inventory.jar", 
+  "fields": {
+    "product": 1, 
+    "crate": 3, 
+    "created_at": "2013-05-17T17:15:50.520Z", 
+    "is_active": true, 
+    "number": 14, 
+    "updated_at": "2013-05-17T17:46:46.165Z", 
+    "volume": 1, 
+    "is_available": true, 
+    "slug": "sip-1-a14"
+  }
+},
+{
+  "pk": 26, 
+  "model": "inventory.jar", 
+  "fields": {
+    "product": 1, 
+    "crate": 3, 
+    "created_at": "2013-05-17T17:15:50.532Z", 
+    "is_active": true, 
+    "number": 15, 
+    "updated_at": "2013-05-17T17:46:46.175Z", 
+    "volume": 1, 
+    "is_available": true, 
+    "slug": "sip-1-a15"
   }
 }
 ]
