@@ -1,8 +1,8 @@
-from django.test import TestCase, Client
+from django.test import TestCase
 from django.core.management import call_command
 from django.core.management.base import CommandError
 from django.core.exceptions import ValidationError
-from inventory.models import Warehouse, Row, Shelf, Bin, Crate, Jar
+from models import Warehouse, Row, Shelf, Bin, Crate, Jar
 from meadery.models import Product
 from pyment import settings
 from datetime import datetime, timedelta
@@ -14,7 +14,6 @@ class WarehouseTestCase(TestCase):
 
     def setUp(self):
         self.warehouse = Warehouse.objects.get(number=1)
-        self.client = Client()
 
     def test_unicode(self):
         self.assertEqual(self.warehouse.__unicode__(), self.warehouse.name)
@@ -29,7 +28,6 @@ class RowTestCase(TestCase):
     def setUp(self):
         self.warehouse = Warehouse.objects.get(number=1)
         self.row = Row.objects.get(warehouse=self.warehouse, number=1)
-        self.client = Client()
 
     def test_unicode(self):
         self.assertEqual(self.row.__unicode__(), self.row.name)
@@ -45,7 +43,6 @@ class ShelfTestCase(TestCase):
         self.warehouse = Warehouse.objects.get(number=1)
         self.row = Row.objects.get(warehouse=self.warehouse, number=1)
         self.shelf = Shelf.objects.get(row=self.row, number=1)
-        self.client = Client()
 
     def test_unicode(self):
         self.assertEqual(self.shelf.__unicode__(), self.shelf.name)
@@ -62,7 +59,6 @@ class BinTestCase(TestCase):
         self.row = Row.objects.get(warehouse=self.warehouse, number=1)
         self.shelf = Shelf.objects.get(row=self.row, number=1)
         self.bin = Bin.objects.get(shelf=self.shelf, number=1)
-        self.client = Client()
 
     def test_unicode(self):
         self.assertEqual(self.bin.__unicode__(), self.bin.name)
@@ -88,7 +84,6 @@ class CrateTestCase(TestCase):
 
     def setUp(self):
         self.crate = Crate.objects.all()[0]
-        self.client = Client()
 
     def test_unicode(self):
         self.assertEqual(self.crate.__unicode__(), self.crate.name)
@@ -105,7 +100,6 @@ class JarTestCase(TestCase):
 
     def setUp(self):
         self.jar = Jar.objects.all()[0]
-        self.client = Client()
 
     def test_unicode(self):
         self.assertEqual(self.jar.__unicode__(), self.jar.name)

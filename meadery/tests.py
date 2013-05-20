@@ -1,145 +1,110 @@
 from decimal import Decimal
-from django.test import TestCase
-from models import Honey, Water, Flavor, Yeast, HoneyItem, CoolItem, WarmItem, FlavorItem, YeastItem, Recipe, Batch, Sample, MEAD_CATEGORIES
+from django.test import TestCase, LiveServerTestCase
+from django.core.urlresolvers import reverse
+from models import Ingredient, IngredientItem, Parent, Recipe, SIPParent, Batch, Sample, Product, ProductReview
+from selenium.webdriver.firefox.webdriver import WebDriver
+from selenium.webdriver.common.keys import Keys
+from time import sleep
 
 
-class RecipeTest(TestCase):
+class SeleniumTestCase(LiveServerTestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.selenium = WebDriver()
+        super(SeleniumTestCase, cls).setUpClass()
+
+    @classmethod
+    def tearDownClass(cls):
+        cls.selenium.quit()
+        super(SeleniumTestCase, cls).tearDownClass()
+
+    def login_as_admin(self):
+        self.selenium.get(self.live_server_url + '/admin/')
+        username_field = self.selenium.find_element_by_name('username')
+        username_field.send_keys('admin')
+        password_field = self.selenium.find_element_by_name('password')
+        password_field.send_keys('passw0rd')
+        password_field.send_keys(Keys.RETURN)
+
+
+class ViewTest(TestCase):
+    """
+    One test for each view in urls.py
+    """
+
+    # JMT: currently testing only for success not for content
+    fixtures = ['meadery']
+
+    def test_meadery_home(self):
+        response = self.client.get(reverse('meadery_home'))
+        self.assertEqual(response.status_code, 200)
+
+    def test_meadery_category(self):
+        data = Product.active.order_by().values_list('category').distinct('category')[0][0]
+        kwargs = {}
+        kwargs['category_value'] = data
+        response = self.client.get(reverse('meadery_category', kwargs=kwargs))
+        self.assertEqual(response.status_code, 200)
+
+    def test_meadery_product(self):
+        data = Product.active.order_by().values_list('slug')[0][0]
+        kwargs = {}
+        kwargs['product_slug'] = data
+        response = self.client.get(reverse('meadery_product', kwargs=kwargs))
+        self.assertEqual(response.status_code, 200)
+
+    def test_product_add_review(self):
+        # JMT: not exactly sure how to do this...
+        pass
+
+
+class IngredientTestCase(SeleniumTestCase):
+    """
+    This class tests ingredients.  Adding, deleting, whatever else.
+    """
+    fixtures = ['meadery', 'auth']
+
     def setUp(self):
-        """ Using standard recipe for testing:
+        self.login_as_admin()
 
-        4.540kg honey (10 lbs)
-        9.467L warm water (2.5 gal) at 140 deg F
-        9.467L cool water (2.5 gal) at 70 deg F
-        no flavor
-        no yeast
-        """
+    def tearDown(self):
+        pass
 
-        self.honey = Honey()
-        self.honey.save()
+    def test_add(self):
+        self.selenium.get(self.live_server_url + '/admin/meadery/ingredient/add/')
+        name_field = self.selenium.find_element_by_name('name')
+        name_field.send_keys('Test Honey')
+        appellation_field = self.selenium.find_element_by_name('appellation')
+        appellation_field.send_keys('(None)')
+        sg_field = self.selenium.find_element_by_name('sg')
+        sg_field.clear()
+        sg_field.send_keys('1.422')
+        sh_field = self.selenium.find_element_by_name('sh')
+        sh_field.clear()
+        sh_field.send_keys('0.57')
+        cpu_field = self.selenium.find_element_by_name('cpu')
+        cpu_field.clear()
+        cpu_field.send_keys('7.95')
+        cpu_field.submit()
+        body = self.selenium.find_element_by_tag_name('body')
+        self.assertIn('successfully', body.text)
+        # JMT: test form validation code with wrong ingredient types and subtypes
 
-        self.water = Water()
-        self.water.save()
+    # def test_modify(self):
+    #     # JMT: this also involves accessing the form.  eek.
+    #     pass
 
-        self.yeast = Yeast()
-        self.yeast.tolerance = 18
-        self.yeast.save()
+    # def test_delete(self):
+    #     # JMT: deleting an ingredient in a recipe should not remove the recipe
+    #     pass
 
-        self.recipe = Recipe()
-        self.recipe.save()
 
-        self.honey_item = HoneyItem()
-        self.honey_item.honey = self.honey
-        self.honey_item.mass = Decimal('4.540')
-        self.honey_item.temp = 70
-        self.honey_item.recipe = self.recipe
-        self.honey_item.save()
+class IngredientItemTestCase(TestCase):
+    """
+    This class tests ingredient items.
 
-        self.warm_item = WarmItem()
-        self.warm_item.water = self.water
-        self.warm_item.volume = Decimal('9.467')
-        self.warm_item.temp = 140
-        self.warm_item.recipe = self.recipe
-        self.warm_item.save()
+    How do we do this?  Ingredient items are internal to recipes.
+    Should I test them inside recipes?
 
-        self.cool_item = CoolItem()
-        self.cool_item.water = self.water
-        self.cool_item.volume = Decimal('9.467')
-        self.cool_item.temp = 70
-        self.cool_item.recipe = self.recipe
-        self.cool_item.save()
-
-    def test_brew_mass(self):
-        """
-        Test brewing volume prediction.
-
-        Standard recipe should produce 23.474 kilograms.
-        """
-        self.assertEqual(self.recipe.brew_mass, Decimal('23.474'))
-
-    def test_brew_volume(self):
-        """
-        Test brewing volume prediction.
-
-        Standard recipe should produce 22.127 liters.
-        """
-        self.assertEqual(self.recipe.brew_volume, Decimal('22.127'))
-
-    def test_brew_sg(self):
-        """
-        Test brewing specific gravity prediction.
-
-        Standard recipe should have a specific gravity of 1.061.
-        """
-        self.assertEqual(self.recipe.brew_sg, Decimal('1.061'))
-
-    def test_brew_temp(self):
-        """
-        Test brewing temperature prediction.
-
-        Standard recipe should have a brew temperature of 100 deg F.
-
-        """
-        self.assertEqual(self.recipe.brew_temp, 100)
-
-    def test_category(self):
-        """
-        Test brewing categories.
-
-        Standard recipe should be MEAD_CATEGORIES['dry'].
-
-        """
-        self.assertEqual(self.recipe.suggested_category(), MEAD_CATEGORIES['dry'])
-
-        # Now tweak the recipes
-        dump_recipe = Recipe()
-        dump_recipe.save()
-
-        new_honey = Honey()
-        new_honey.type = Honey.MALT
-        new_honey.save()
-        new_honey_item = HoneyItem()
-        new_honey_item.honey = new_honey
-        new_honey_item.mass = Decimal('4.540')
-        new_honey_item.temp = 70
-        new_honey_item.recipe = self.recipe
-        new_honey_item.save()
-        self.assertEqual(self.recipe.suggested_category(), MEAD_CATEGORIES['braggot'])
-        new_honey.type = Honey.OTHER
-        new_honey.save()
-        self.assertEqual(self.recipe.suggested_category(), MEAD_CATEGORIES['open_category'])
-        new_honey_item.recipe = dump_recipe
-        new_honey_item.save()
-        self.assertEqual(self.recipe.suggested_category(), MEAD_CATEGORIES['dry'])
-
-        new_water = Water()
-        new_water.type = Water.APPLE_JUICE
-        new_water.save()
-        new_cool_item = CoolItem()
-        new_cool_item.water = new_water
-        new_cool_item.volume = Decimal('9.467')
-        new_cool_item.temp = 70
-        new_cool_item.recipe = self.recipe
-        new_cool_item.save()
-        self.assertEqual(self.recipe.suggested_category(), MEAD_CATEGORIES['cyser'])
-        new_water.type = Water.OTHER
-        new_water.save()
-        self.assertEqual(self.recipe.suggested_category(), MEAD_CATEGORIES['open_category'])
-        new_cool_item.recipe = dump_recipe
-        new_cool_item.save()
-        self.assertEqual(self.recipe.suggested_category(), MEAD_CATEGORIES['dry'])
-
-        new_flavor = Flavor()
-        new_flavor.type = Flavor.FRUIT
-        new_flavor.save()
-        new_flavor_item = FlavorItem()
-        new_flavor_item.flavor = new_flavor
-        new_flavor_item.amount = 70
-        new_flavor_item.recipe = self.recipe
-        new_flavor_item.save()
-        self.assertEqual(self.recipe.suggested_category(), MEAD_CATEGORIES['other_fruit_melomel'])
-        new_flavor.type = Flavor.OTHER
-        new_flavor.save()
-        self.assertEqual(self.recipe.suggested_category(), MEAD_CATEGORIES['open_category'])
-        new_flavor_item.recipe = dump_recipe
-        new_flavor_item.save()
-        self.assertEqual(self.recipe.suggested_category(), MEAD_CATEGORIES['dry'])
+    """
+    pass
