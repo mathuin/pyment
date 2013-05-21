@@ -1,5 +1,6 @@
 from decimal import Decimal
 from django.test import TestCase, LiveServerTestCase
+from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 from models import Ingredient, IngredientItem, Parent, Recipe, SIPParent, Batch, Sample, Product, ProductReview
 from selenium.webdriver.firefox.webdriver import WebDriver
@@ -18,10 +19,17 @@ class SeleniumTestCase(LiveServerTestCase):
         cls.selenium.quit()
         super(SeleniumTestCase, cls).tearDownClass()
 
-    def login_as_admin(self):
-        self.selenium.get(self.live_server_url + '/admin/')
+    def login_as_admin(self, url):
+        userdict = {'username': 'admin',
+                    'password': 'pbkdf2_sha256$10000$dMAdIm5LrBkt$gS8TSnpYq7J/YEbEeQ5AMr6AHOz/RHtHIapWHKjSHwM=',
+                    'email': 'admin@example.com',
+                    'is_superuser': True,
+                    'is_staff': True,
+                    }
+        admin_user, created = User.objects.get_or_create(username=userdict['username'], defaults=userdict)
+        self.selenium.get(self.live_server_url + url)
         username_field = self.selenium.find_element_by_name('username')
-        username_field.send_keys('admin')
+        username_field.send_keys(userdict['username'])
         password_field = self.selenium.find_element_by_name('password')
         password_field.send_keys('passw0rd')
         password_field.send_keys(Keys.RETURN)
@@ -67,65 +75,62 @@ class IngredientTestCase(SeleniumTestCase):
     """
     This class tests ingredients.  Adding, deleting, whatever else.
     """
-    fixtures = ['meadery', 'auth']
+    fixtures = ['meadery']  # , 'auth']
 
     def setUp(self):
-        self.login_as_admin()
+        pass
 
     def tearDown(self):
         pass
 
     def test_add(self):
-        self.selenium.get(self.live_server_url + '/admin/meadery/ingredient/add/')
+        self.login_as_admin(reverse('admin:meadery_ingredient_add'))
         # Set boring fields.
-        name_field = self.selenium.find_element_by_name('name')
-        name_field.send_keys('Test Honey')
-        appellation_field = self.selenium.find_element_by_name('appellation')
-        appellation_field.send_keys('(None)')
-        sg_field = self.selenium.find_element_by_name('sg')
-        sg_field.clear()
-        sg_field.send_keys('1.422')
-        sh_field = self.selenium.find_element_by_name('sh')
-        sh_field.clear()
-        sh_field.send_keys('0.57')
-        cpu_field = self.selenium.find_element_by_name('cpu')
-        cpu_field.clear()
-        cpu_field.send_keys('7.95')
+        fields = {'name': 'Test Honey',
+                  'appellation': '(None)',
+                  'sg': '1.422',
+                  'sh': '0.57',
+                  'cpu': '7.95'}
+        for key, value in fields.items():
+            field = self.selenium.find_element_by_name(key)
+            field.clear()
+            field.send_keys(value)
         # JMT: is checking just the 'Sugar' case adequate?
         self.pick_option('type', 'Sugar')
-        # Try saving with 'Sugar | Water': fail
-        self.pick_option('subtype', 'Water')
-        self.selenium.find_element_by_name('_save').click()
-        self.assertIn('Ingredient type and subtype must match.', self.selenium.find_element_by_tag_name('body').text)
-        # Try saving with 'Sugar | Spice': fail
-        self.pick_option('subtype', 'Spice')
-        self.selenium.find_element_by_name('_save').click()
-        self.assertIn('Ingredient type and subtype must match.', self.selenium.find_element_by_tag_name('body').text)
-        # Try saving with 'Sugar | Dry': fail
-        self.pick_option('subtype', 'Dry')
-        self.selenium.find_element_by_name('_save').click()
-        self.assertIn('Ingredient type and subtype must match.', self.selenium.find_element_by_tag_name('body').text)
-        # Try saving with 'Sugar | Honey | Liquid': fail
+        # Try saving with bad subtype values.
+        bad_subtypes = ['Water', 'Spice', 'Dry']
+        for subtype in bad_subtypes:
+            self.pick_option('subtype', subtype)
+            self.selenium.find_element_by_name('_save').click()
+            self.assertIn('Ingredient type and subtype must match.', self.selenium.find_element_by_tag_name('body').text)
+        # Try saving with bad state values.
         self.pick_option('subtype', 'Honey')
-        self.pick_option('state', 'Liquid')
-        self.selenium.find_element_by_name('_save').click()
-        self.assertIn('Ingredient state does not match type.', self.selenium.find_element_by_tag_name('body').text)
-        # Try saving with 'Sugar | Honey | Other': fail
-        self.pick_option('state', 'Other')
-        self.selenium.find_element_by_name('_save').click()
-        self.assertIn('Ingredient state does not match type.', self.selenium.find_element_by_tag_name('body').text)
+        bad_states = ['Liquid', 'Other']
+        for state in bad_states:
+            self.pick_option('state', state)
+            self.selenium.find_element_by_name('_save').click()
+            self.assertIn('Ingredient state does not match type.', self.selenium.find_element_by_tag_name('body').text)
         # Try saving with 'Sugar | Honey | Solid': succeed
         self.pick_option('state', 'Solid')
         self.selenium.find_element_by_name('_save').click()
-        self.assertIn('The ingredient "Test Honey" was added successfully.', self.selenium.find_element_by_tag_name('body').text)
+        self.assertIn('The ingredient "%s" was added successfully.' % fields['name'], self.selenium.find_element_by_tag_name('body').text)
 
     # def test_modify(self):
-    #     # JMT: this also involves accessing the form.  eek.
-    #     pass
+        # JMT: this also involves accessing the form.  eek.
+        # JMT: use proper view thingee here
+        # pass
 
-    # def test_delete(self):
-    #     # JMT: deleting an ingredient in a recipe should not remove the recipe
-    #     pass
+    def test_delete(self):
+        name = Ingredient.objects.get(pk=1).name
+        self.login_as_admin(reverse('admin:meadery_ingredient_delete', args=(1,)))
+        body = self.selenium.find_element_by_tag_name('body')
+        self.assertIn('Are you sure?', body.text)
+        # JMT: deleting an ingredient should remove related items.
+        self.assertIn('All of the following related items will be deleted', body.text)
+        # Yes, we are sure!
+        self.selenium.find_element_by_xpath('//input[@type="submit"]').click()
+        # JMT: I need to check that this actually succeeded
+        self.assertIn('The ingredient "%s" was deleted successfully.' % name, self.selenium.find_element_by_tag_name('body').text)
 
 
 class IngredientItemTestCase(TestCase):
