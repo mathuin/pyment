@@ -5,13 +5,13 @@ from django.core.urlresolvers import reverse
 from models import Ingredient, IngredientItem, Parent, Recipe, SIPParent, Batch, Sample, Product, ProductReview
 from selenium.webdriver.firefox.webdriver import WebDriver
 from selenium.webdriver.common.keys import Keys
-from time import sleep
 
 
 class SeleniumTestCase(LiveServerTestCase):
     @classmethod
     def setUpClass(cls):
         cls.selenium = WebDriver()
+        cls.selenium.implicitly_wait(10)
         super(SeleniumTestCase, cls).setUpClass()
 
     @classmethod
@@ -115,17 +115,20 @@ class IngredientTestCase(SeleniumTestCase):
         self.selenium.find_element_by_name('_save').click()
         self.assertIn('The ingredient "%s" was added successfully.' % fields['name'], self.selenium.find_element_by_tag_name('body').text)
 
-    # def test_modify(self):
-        # JMT: this also involves accessing the form.  eek.
-        # JMT: use proper view thingee here
-        # pass
+    def test_modify(self):
+        name = Ingredient.objects.get(pk=1).name
+        self.login_as_admin(reverse('admin:meadery_ingredient_change', args=(1,)))
+        sh_field = self.selenium.find_element_by_name('sh')
+        sh_field.clear()
+        sh_field.send_keys('1.00')
+        self.selenium.find_element_by_name('_save').click()
+        self.assertIn('The ingredient "%s" was changed successfully.' % name, self.selenium.find_element_by_tag_name('body').text)
 
     def test_delete(self):
         name = Ingredient.objects.get(pk=1).name
         self.login_as_admin(reverse('admin:meadery_ingredient_delete', args=(1,)))
         body = self.selenium.find_element_by_tag_name('body')
         self.assertIn('Are you sure?', body.text)
-        # JMT: deleting an ingredient should remove related items.
         self.assertIn('All of the following related items will be deleted', body.text)
         # Yes, we are sure!
         self.selenium.find_element_by_xpath('//input[@type="submit"]').click()
