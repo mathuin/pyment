@@ -26,6 +26,11 @@ class SeleniumTestCase(LiveServerTestCase):
         password_field.send_keys('passw0rd')
         password_field.send_keys(Keys.RETURN)
 
+    def pick_option(self, name, text):
+        for option in self.selenium.find_element_by_name(name).find_elements_by_tag_name('option'):
+            if option.text == text:
+                option.click()
+
 
 class ViewTest(TestCase):
     """
@@ -72,6 +77,7 @@ class IngredientTestCase(SeleniumTestCase):
 
     def test_add(self):
         self.selenium.get(self.live_server_url + '/admin/meadery/ingredient/add/')
+        # Set boring fields.
         name_field = self.selenium.find_element_by_name('name')
         name_field.send_keys('Test Honey')
         appellation_field = self.selenium.find_element_by_name('appellation')
@@ -85,10 +91,33 @@ class IngredientTestCase(SeleniumTestCase):
         cpu_field = self.selenium.find_element_by_name('cpu')
         cpu_field.clear()
         cpu_field.send_keys('7.95')
-        cpu_field.submit()
-        body = self.selenium.find_element_by_tag_name('body')
-        self.assertIn('successfully', body.text)
-        # JMT: test form validation code with wrong ingredient types and subtypes
+        # JMT: is checking just the 'Sugar' case adequate?
+        self.pick_option('type', 'Sugar')
+        # Try saving with 'Sugar | Water': fail
+        self.pick_option('subtype', 'Water')
+        self.selenium.find_element_by_name('_save').click()
+        self.assertIn('Ingredient type and subtype must match.', self.selenium.find_element_by_tag_name('body').text)
+        # Try saving with 'Sugar | Spice': fail
+        self.pick_option('subtype', 'Spice')
+        self.selenium.find_element_by_name('_save').click()
+        self.assertIn('Ingredient type and subtype must match.', self.selenium.find_element_by_tag_name('body').text)
+        # Try saving with 'Sugar | Dry': fail
+        self.pick_option('subtype', 'Dry')
+        self.selenium.find_element_by_name('_save').click()
+        self.assertIn('Ingredient type and subtype must match.', self.selenium.find_element_by_tag_name('body').text)
+        # Try saving with 'Sugar | Honey | Liquid': fail
+        self.pick_option('subtype', 'Honey')
+        self.pick_option('state', 'Liquid')
+        self.selenium.find_element_by_name('_save').click()
+        self.assertIn('Ingredient state does not match type.', self.selenium.find_element_by_tag_name('body').text)
+        # Try saving with 'Sugar | Honey | Other': fail
+        self.pick_option('state', 'Other')
+        self.selenium.find_element_by_name('_save').click()
+        self.assertIn('Ingredient state does not match type.', self.selenium.find_element_by_tag_name('body').text)
+        # Try saving with 'Sugar | Honey | Solid': succeed
+        self.pick_option('state', 'Solid')
+        self.selenium.find_element_by_name('_save').click()
+        self.assertIn('The ingredient "Test Honey" was added successfully.', self.selenium.find_element_by_tag_name('body').text)
 
     # def test_modify(self):
     #     # JMT: this also involves accessing the form.  eek.
