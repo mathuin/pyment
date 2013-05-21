@@ -75,7 +75,7 @@ class IngredientTestCase(SeleniumTestCase):
     """
     This class tests ingredients.  Adding, deleting, whatever else.
     """
-    fixtures = ['meadery']  # , 'auth']
+    fixtures = ['meadery']
 
     def setUp(self):
         pass
@@ -138,10 +138,42 @@ class IngredientTestCase(SeleniumTestCase):
 
 class IngredientItemTestCase(TestCase):
     """
-    This class tests ingredient items.
-
-    How do we do this?  Ingredient items are internal to recipes.
-    Should I test them inside recipes?
-
+    For now I am testing ingredient items from within recipes.
     """
     pass
+
+
+class RecipeTestCase(SeleniumTestCase):
+    """
+    Recipes need tests, too.
+
+    Adding recipes should be easy enough.
+    -- especially since there is not yet any "recipe validation".
+
+    Deleting recipes should also be easy enough.
+    -- all ingredient items should be deleted, too.
+
+    Changing recipes should be easy too!
+
+    What about admin actions?  Creating a batch from a recipe?
+    """
+    fixtures = ['meadery']
+
+    def test_add(self):
+        pass
+
+    def test_delete(self):
+        name = Recipe.objects.get(pk=3).name
+        self.login_as_admin(reverse('admin:meadery_recipe_delete', args=(3,)))
+        body = self.selenium.find_element_by_tag_name('body')
+        self.assertIn('Are you sure?', body.text)
+        self.assertIn('All of the following related items will be deleted', body.text)
+        # Yes, we are sure!
+        self.selenium.find_element_by_xpath('//input[@type="submit"]').click()
+        self.assertIn('The recipe "%s" was deleted successfully.' % name, self.selenium.find_element_by_tag_name('body').text)
+
+    def test_modify(self):
+        pass
+
+    def test_create_batch_from_recipe(self):
+        pass
