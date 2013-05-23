@@ -15,7 +15,7 @@ class SeleniumTestCase(LiveServerTestCase):
     @classmethod
     def setUpClass(cls):
         cls.selenium = WebDriver()
-        cls.selenium.implicitly_wait(1)
+        cls.selenium.implicitly_wait(10)
         super(SeleniumTestCase, cls).setUpClass()
 
     @classmethod
@@ -42,6 +42,33 @@ class SeleniumTestCase(LiveServerTestCase):
         for option in self.selenium.find_element_by_name(name).find_elements_by_tag_name('option'):
             if option.text == text:
                 option.click()
+
+    def populate_object(self, fields={}, ingredients=[]):
+        for key, value in fields.items():
+            field = self.selenium.find_element_by_name(key)
+            field.clear()
+            field.send_keys(value)
+        for index, ingredient in enumerate(ingredients):
+            name, amount, temp = ingredient
+            idhead = 'ingredientitem_set-%d' % index
+            step = 0
+            found = False
+            while step < 10:
+                try:
+                    div = self.selenium.find_element_by_id(idhead)
+                    found = True
+                    break
+                except NoSuchElementException:
+                    step = step + 1
+                    self.selenium.find_element_by_link_text('Add another Ingredient Item').click()
+            self.assertTrue(found)
+            self.pick_option('%s-ingredient' % idhead, name)
+            amount_field = self.selenium.find_element_by_name('%s-amount' % idhead)
+            amount_field.clear()
+            amount_field.send_keys(amount)
+            temp_field = self.selenium.find_element_by_name('%s-temp' % idhead)
+            temp_field.clear()
+            temp_field.send_keys(temp)
 
 
 class ViewTest(TestCase):
@@ -81,10 +108,7 @@ class IngredientTestCase(SeleniumTestCase):
                   'sg': '1.422',
                   'sh': '0.57',
                   'cpu': '7.95'}
-        for key, value in fields.items():
-            field = self.selenium.find_element_by_name(key)
-            field.clear()
-            field.send_keys(value)
+        self.populate_object(fields)
         # JMT: is checking just the 'Sugar' case adequate?
         self.pick_option('type', 'Sugar')
         # Try saving with bad subtype values.
@@ -110,9 +134,8 @@ class IngredientTestCase(SeleniumTestCase):
         pk = ingredient.pk
         name = ingredient.name
         self.login_as_admin(reverse('admin:meadery_ingredient_change', args=(pk,)))
-        sh_field = self.selenium.find_element_by_name('sh')
-        sh_field.clear()
-        sh_field.send_keys('1.00')
+        fields = {'sh': '1.00'}
+        self.populate_object(fields)
         self.selenium.find_element_by_name('_save').click()
         self.assertIn('The ingredient "%s" was changed successfully.' % name, self.selenium.find_element_by_tag_name('body').text)
 
@@ -145,36 +168,12 @@ class RecipeTestCase(SeleniumTestCase):
         # Set boring fields.
         fields = {'title': 'Test Recipe',
                   'description': 'Test description!'}
-        for key, value in fields.items():
-            field = self.selenium.find_element_by_name(key)
-            field.clear()
-            field.send_keys(value)
         # Set ingredients.
         ingredients = [['Local Honey', '4.540', '70'],
                        ['Local Water', '9.725', '140'],
                        ['Local Water', '9.725', '70'],
                        ['Red Star Champagne Yeast', '1', '100']]
-        for index, ingredient in enumerate(ingredients):
-            name, amount, temp = ingredient
-            idhead = 'ingredientitem_set-%d' % index
-            step = 0
-            found = False
-            while step < 10:
-                try:
-                    div = self.selenium.find_element_by_id(idhead)
-                    found = True
-                    break
-                except NoSuchElementException:
-                    step = step + 1
-                    self.selenium.find_element_by_link_text('Add another Ingredient Item').click()
-            self.assertTrue(found)
-            self.pick_option('%s-ingredient' % idhead, name)
-            amount_field = self.selenium.find_element_by_name('%s-amount' % idhead)
-            amount_field.clear()
-            amount_field.send_keys(amount)
-            temp_field = self.selenium.find_element_by_name('%s-temp' % idhead)
-            temp_field.clear()
-            temp_field.send_keys(temp)
+        self.populate_object(fields, ingredients)
         self.selenium.find_element_by_name('_save').click()
         self.assertIn('The recipe "%s" was added successfully.' % fields['title'], self.selenium.find_element_by_tag_name('body').text)
 
@@ -195,9 +194,8 @@ class RecipeTestCase(SeleniumTestCase):
         pk = recipe.pk
         name = recipe.name
         self.login_as_admin(reverse('admin:meadery_recipe_change', args=(pk,)))
-        description_field = self.selenium.find_element_by_name('description')
-        description_field.clear()
-        description_field.send_keys('New Description')
+        fields = {'description': 'New Description'}
+        self.populate_object(fields)
         self.selenium.find_element_by_name('_save').click()
         self.assertIn('The recipe "%s" was changed successfully.' % name, self.selenium.find_element_by_tag_name('body').text)
 
@@ -222,35 +220,11 @@ class BatchTestCase(SeleniumTestCase):
                   'batchletter': 'A',
                   'event': 'Christmas',
                   'jars': '0'}
-        for key, value in fields.items():
-            field = self.selenium.find_element_by_name(key)
-            field.clear()
-            field.send_keys(value)
         ingredients = [['Local Honey', '4.540', '70'],
                        ['Local Water', '9.725', '140'],
                        ['Local Water', '9.725', '70'],
                        ['Red Star Champagne Yeast', '1', '100']]
-        for index, ingredient in enumerate(ingredients):
-            name, amount, temp = ingredient
-            idhead = 'ingredientitem_set-%d' % index
-            step = 0
-            found = False
-            while step < 10:
-                try:
-                    div = self.selenium.find_element_by_id(idhead)
-                    found = True
-                    break
-                except NoSuchElementException:
-                    step = step + 1
-                    self.selenium.find_element_by_link_text('Add another Ingredient Item').click()
-            self.assertTrue(found)
-            self.pick_option('%s-ingredient' % idhead, name)
-            amount_field = self.selenium.find_element_by_name('%s-amount' % idhead)
-            amount_field.clear()
-            amount_field.send_keys(amount)
-            temp_field = self.selenium.find_element_by_name('%s-temp' % idhead)
-            temp_field.clear()
-            temp_field.send_keys(temp)
+        self.populate_object(fields, ingredients)
         self.selenium.find_element_by_name('_save').click()
         self.assertIn('The batch "%s %s" was added successfully.' % (fields['brewname'], fields['batchletter']), self.selenium.find_element_by_tag_name('body').text)
 
@@ -263,10 +237,7 @@ class BatchTestCase(SeleniumTestCase):
                   'batchletter': 'A',
                   'event': 'Christmas',
                   'jars': '0'}
-        for key, value in fields.items():
-            field = self.selenium.find_element_by_name(key)
-            field.clear()
-            field.send_keys(value)
+        self.populate_object(fields)
         recipe = Recipe.objects.all()[0].name
         self.pick_option('recipe', recipe)
         self.selenium.find_element_by_name('_save').click()
@@ -310,9 +281,8 @@ class BatchTestCase(SeleniumTestCase):
         pk = batch.pk
         name = batch.name
         self.login_as_admin(reverse('admin:meadery_batch_change', args=(pk,)))
-        description_field = self.selenium.find_element_by_name('description')
-        description_field.clear()
-        description_field.send_keys('New Description')
+        fields = {'description': 'New Description'}
+        self.populate_object(fields)
         self.selenium.find_element_by_name('_save').click()
         self.assertIn('The batch "%s" was changed successfully.' % name, self.selenium.find_element_by_tag_name('body').text)
 
