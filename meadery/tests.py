@@ -386,11 +386,28 @@ class SampleTestCase(SeleniumTestCase):
 
 class ProductTestCase(SeleniumTestCase):
     def test_add_from_scratch(self):
-        # Add a product from scratch.
-        pass
+        self.login_as_admin(reverse('admin:meadery_product_add'))
+        # Set boring fields.
+        fields = {'title': 'Test Product',
+                  'description': 'Test description!',
+                  'brewname': 'SIP 99',
+                  'batchletter': 'A',
+                  'event': 'Christmas',
+                  'jars': '0'}
+        self.populate_object(fields)
+        self.selenium.find_element_by_name('_save').click()
+        self.assertIn('The product "%s %s" was added successfully.' % (fields['brewname'], fields['batchletter']), self.selenium.find_element_by_tag_name('body').text)
 
     def test_add_from_batch(self):
-        # Add a product from a batch.
+        # Not the same as create_product_from_batch!
+        pass
+
+    def test_delete_from_scratch(self):
+        # Delete a product made from scratch.
+        pass
+
+    def test_delete_from_batch(self):
+        # Delete a product made from a batch.
         pass
 
 
