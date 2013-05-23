@@ -207,11 +207,122 @@ class RecipeTestCase(SeleniumTestCase):
         name = recipe.name
         self.login_as_admin(reverse('admin:meadery_recipe_change', args=(pk,)))
         self.selenium.find_element_by_link_text('Create batch from recipe').click()
-        self.assertIn('One batch was created', self.selenium.find_element_by_tag_name('body').text)
+        self.assertIn('One batch was created!', self.selenium.find_element_by_tag_name('body').text)
 
 
 class BatchTestCase(SeleniumTestCase):
-    pass
+    fixtures = ['meadery']
+
+    def test_add_from_scratch(self):
+        self.login_as_admin(reverse('admin:meadery_batch_add'))
+        # Set boring fields.
+        fields = {'title': 'Test Batch',
+                  'description': 'Test description!',
+                  'brewname': 'SIP 99',
+                  'batchletter': 'A',
+                  'event': 'Christmas',
+                  'jars': '0'}
+        for key, value in fields.items():
+            field = self.selenium.find_element_by_name(key)
+            field.clear()
+            field.send_keys(value)
+        ingredients = [['Local Honey', '4.540', '70'],
+                       ['Local Water', '9.725', '140'],
+                       ['Local Water', '9.725', '70'],
+                       ['Red Star Champagne Yeast', '1', '100']]
+        for index, ingredient in enumerate(ingredients):
+            name, amount, temp = ingredient
+            idhead = 'ingredientitem_set-%d' % index
+            step = 0
+            found = False
+            while step < 10:
+                try:
+                    div = self.selenium.find_element_by_id(idhead)
+                    found = True
+                    break
+                except NoSuchElementException:
+                    step = step + 1
+                    self.selenium.find_element_by_link_text('Add another Ingredient Item').click()
+            self.assertTrue(found)
+            self.pick_option('%s-ingredient' % idhead, name)
+            amount_field = self.selenium.find_element_by_name('%s-amount' % idhead)
+            amount_field.clear()
+            amount_field.send_keys(amount)
+            temp_field = self.selenium.find_element_by_name('%s-temp' % idhead)
+            temp_field.clear()
+            temp_field.send_keys(temp)
+        self.selenium.find_element_by_name('_save').click()
+        self.assertIn('The batch "%s %s" was added successfully.' % (fields['brewname'], fields['batchletter']), self.selenium.find_element_by_tag_name('body').text)
+
+    def test_add_from_recipe(self):
+        self.login_as_admin(reverse('admin:meadery_batch_add'))
+        # Set boring fields.
+        fields = {'title': 'Test Batch',
+                  'description': 'Test description!',
+                  'brewname': 'SIP 99',
+                  'batchletter': 'A',
+                  'event': 'Christmas',
+                  'jars': '0'}
+        for key, value in fields.items():
+            field = self.selenium.find_element_by_name(key)
+            field.clear()
+            field.send_keys(value)
+        recipe = Recipe.objects.all()[0].name
+        self.pick_option('recipe', recipe)
+        self.selenium.find_element_by_name('_save').click()
+        self.assertIn('The batch "%s %s" was added successfully.' % (fields['brewname'], fields['batchletter']), self.selenium.find_element_by_tag_name('body').text)
+
+    def test_delete_from_scratch(self):
+        try:
+            batch = Batch.objects.filter(recipe__isnull=True)[0]
+        except IndexError:
+            self.fail('There is no batch from scratch in the fixture!')
+        pk = batch.pk
+        name = batch.name
+        self.login_as_admin(reverse('admin:meadery_batch_delete', args=(pk,)))
+        body = self.selenium.find_element_by_tag_name('body')
+        self.assertIn('Are you sure?', body.text)
+        self.assertIn('All of the following related items will be deleted', body.text)
+        # Yes, we are sure!
+        self.selenium.find_element_by_xpath('//input[@type="submit"]').click()
+        self.assertIn('The batch "%s" was deleted successfully.' % name, self.selenium.find_element_by_tag_name('body').text)
+
+    def test_delete_from_recipe(self):
+        try:
+            batch = Batch.objects.filter(recipe__isnull=False)[0]
+        except IndexError:
+            self.fail('There is no batch from a recipe in the fixture!')
+        pk = batch.pk
+        name = batch.name
+        old_recipe_count = Recipe.objects.count()
+        self.login_as_admin(reverse('admin:meadery_batch_delete', args=(pk,)))
+        body = self.selenium.find_element_by_tag_name('body')
+        self.assertIn('Are you sure?', body.text)
+        self.assertIn('All of the following related items will be deleted', body.text)
+        # Yes, we are sure!
+        self.selenium.find_element_by_xpath('//input[@type="submit"]').click()
+        self.assertIn('The batch "%s" was deleted successfully.' % name, self.selenium.find_element_by_tag_name('body').text)
+        new_recipe_count = Recipe.objects.count()
+        self.assertEqual(old_recipe_count, new_recipe_count)
+
+    def test_modify(self):
+        batch = Batch.objects.all()[0]
+        pk = batch.pk
+        name = batch.name
+        self.login_as_admin(reverse('admin:meadery_batch_change', args=(pk,)))
+        description_field = self.selenium.find_element_by_name('description')
+        description_field.clear()
+        description_field.send_keys('New Description')
+        self.selenium.find_element_by_name('_save').click()
+        self.assertIn('The batch "%s" was changed successfully.' % name, self.selenium.find_element_by_tag_name('body').text)
+
+    def test_create_recipe_from_batch(self):
+        batch = Batch.objects.all()[0]
+        pk = batch.pk
+        name = batch.name
+        self.login_as_admin(reverse('admin:meadery_batch_change', args=(pk,)))
+        self.selenium.find_element_by_link_text('Create recipe from batch').click()
+        self.assertIn('One recipe was created!', self.selenium.find_element_by_tag_name('body').text)
 
 
 class SampleTestCase(SeleniumTestCase):

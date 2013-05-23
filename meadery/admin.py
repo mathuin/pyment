@@ -68,6 +68,8 @@ class BatchAdmin(ButtonAdmin):
     # list_display = ('name', 'recipe', 'all_natural', 'appellation', 'brew_sg', 'final_sg', 'link_samples', 'firstsg', 'lastsg', 'abv', 'jars', )
     list_display = ('name', 'recipe', 'all_natural', 'appellation', 'link_samples', 'firstsg', 'lastsg', 'abv', 'jars', )
     list_display_links = ('name', )
+    inlines = [IngredientItemInline, ]
+    readonly_fields = ('category', )
 
     def link_samples(self, obj):
         howmany = obj.sample_set.count()

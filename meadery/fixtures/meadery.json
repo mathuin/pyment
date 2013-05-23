@@ -380,6 +380,106 @@
   }
 },
 {
+  "pk": 23, 
+  "model": "meadery.ingredientitem", 
+  "fields": {
+    "amount": "1.000", 
+    "temp": 100, 
+    "parent": 3, 
+    "ingredient": 9
+  }
+},
+{
+  "pk": 24, 
+  "model": "meadery.ingredientitem", 
+  "fields": {
+    "amount": "1.000", 
+    "temp": 100, 
+    "parent": 4, 
+    "ingredient": 9
+  }
+},
+{
+  "pk": 25, 
+  "model": "meadery.ingredientitem", 
+  "fields": {
+    "amount": "4.540", 
+    "temp": 70, 
+    "parent": 3, 
+    "ingredient": 1
+  }
+},
+{
+  "pk": 26, 
+  "model": "meadery.ingredientitem", 
+  "fields": {
+    "amount": "9.725", 
+    "temp": 140, 
+    "parent": 3, 
+    "ingredient": 3
+  }
+},
+{
+  "pk": 27, 
+  "model": "meadery.ingredientitem", 
+  "fields": {
+    "amount": "9.725", 
+    "temp": 70, 
+    "parent": 3, 
+    "ingredient": 3
+  }
+},
+{
+  "pk": 28, 
+  "model": "meadery.ingredientitem", 
+  "fields": {
+    "amount": "1.000", 
+    "temp": 100, 
+    "parent": 3, 
+    "ingredient": 9
+  }
+},
+{
+  "pk": 29, 
+  "model": "meadery.ingredientitem", 
+  "fields": {
+    "amount": "4.540", 
+    "temp": 70, 
+    "parent": 8, 
+    "ingredient": 1
+  }
+},
+{
+  "pk": 30, 
+  "model": "meadery.ingredientitem", 
+  "fields": {
+    "amount": "9.725", 
+    "temp": 140, 
+    "parent": 8, 
+    "ingredient": 3
+  }
+},
+{
+  "pk": 31, 
+  "model": "meadery.ingredientitem", 
+  "fields": {
+    "amount": "9.725", 
+    "temp": 70, 
+    "parent": 8, 
+    "ingredient": 3
+  }
+},
+{
+  "pk": 32, 
+  "model": "meadery.ingredientitem", 
+  "fields": {
+    "amount": "1.000", 
+    "temp": 100, 
+    "parent": 8, 
+    "ingredient": 9
+  }
+},
+{
   "pk": 1, 
   "model": "meadery.parent", 
   "fields": {
@@ -443,6 +543,15 @@
   }
 },
 {
+  "pk": 8, 
+  "model": "meadery.parent", 
+  "fields": {
+    "category": 241, 
+    "description": "This one is from scratch!", 
+    "title": "Scratch Batch"
+  }
+},
+{
   "pk": 3, 
   "model": "meadery.recipe", 
   "fields": {}
@@ -466,6 +575,34 @@
   "pk": 7, 
   "model": "meadery.recipe", 
   "fields": {}
+},
+{
+  "pk": 3, 
+  "model": "meadery.batch", 
+  "fields": {
+    "batchletter": "A", 
+    "is_active": false, 
+    "created_at": "2013-05-23T17:22:38.000Z", 
+    "recipe": 3, 
+    "brewname": "SIP 98", 
+    "updated_at": "2013-05-23T17:23:13.576Z", 
+    "jars": 0, 
+    "event": "Christmas"
+  }
+},
+{
+  "pk": 8, 
+  "model": "meadery.batch", 
+  "fields": {
+    "batchletter": "B", 
+    "is_active": false, 
+    "created_at": "2013-05-23T17:40:54.485Z", 
+    "recipe": null, 
+    "brewname": "SIP 98", 
+    "updated_at": "2013-05-23T17:42:07.019Z", 
+    "jars": 0, 
+    "event": "Christmas"
+  }
 },
 {
   "pk": 1, 
