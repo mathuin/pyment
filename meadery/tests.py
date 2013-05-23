@@ -3,15 +3,19 @@ from django.test import TestCase, LiveServerTestCase
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 from models import Ingredient, IngredientItem, Parent, Recipe, SIPParent, Batch, Sample, Product, ProductReview
+from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.firefox.webdriver import WebDriver
 from selenium.webdriver.common.keys import Keys
+
+# JMT: There's a whole lot of trusting-the-admin-site-output here.
+# Nearly all these tests are testing for *success*, not for *accuracy*.
 
 
 class SeleniumTestCase(LiveServerTestCase):
     @classmethod
     def setUpClass(cls):
         cls.selenium = WebDriver()
-        cls.selenium.implicitly_wait(10)
+        cls.selenium.implicitly_wait(1)
         super(SeleniumTestCase, cls).setUpClass()
 
     @classmethod
@@ -41,11 +45,6 @@ class SeleniumTestCase(LiveServerTestCase):
 
 
 class ViewTest(TestCase):
-    """
-    One test for each view in urls.py
-    """
-
-    # JMT: currently testing only for success not for content
     fixtures = ['meadery']
 
     def test_meadery_home(self):
@@ -72,16 +71,7 @@ class ViewTest(TestCase):
 
 
 class IngredientTestCase(SeleniumTestCase):
-    """
-    This class tests ingredients.  Adding, deleting, whatever else.
-    """
     fixtures = ['meadery']
-
-    def setUp(self):
-        pass
-
-    def tearDown(self):
-        pass
 
     def test_add(self):
         self.login_as_admin(reverse('admin:meadery_ingredient_add'))
@@ -116,8 +106,10 @@ class IngredientTestCase(SeleniumTestCase):
         self.assertIn('The ingredient "%s" was added successfully.' % fields['name'], self.selenium.find_element_by_tag_name('body').text)
 
     def test_modify(self):
-        name = Ingredient.objects.get(pk=1).name
-        self.login_as_admin(reverse('admin:meadery_ingredient_change', args=(1,)))
+        ingredient = Ingredient.objects.all()[0]
+        pk = ingredient.pk
+        name = ingredient.name
+        self.login_as_admin(reverse('admin:meadery_ingredient_change', args=(pk,)))
         sh_field = self.selenium.find_element_by_name('sh')
         sh_field.clear()
         sh_field.send_keys('1.00')
@@ -125,14 +117,14 @@ class IngredientTestCase(SeleniumTestCase):
         self.assertIn('The ingredient "%s" was changed successfully.' % name, self.selenium.find_element_by_tag_name('body').text)
 
     def test_delete(self):
-        name = Ingredient.objects.get(pk=1).name
-        self.login_as_admin(reverse('admin:meadery_ingredient_delete', args=(1,)))
+        ingredient = Ingredient.objects.all()[0]
+        pk = ingredient.pk
+        name = ingredient.name
+        self.login_as_admin(reverse('admin:meadery_ingredient_delete', args=(pk,)))
         body = self.selenium.find_element_by_tag_name('body')
         self.assertIn('Are you sure?', body.text)
         self.assertIn('All of the following related items will be deleted', body.text)
-        # Yes, we are sure!
         self.selenium.find_element_by_xpath('//input[@type="submit"]').click()
-        # JMT: I need to check that this actually succeeded
         self.assertIn('The ingredient "%s" was deleted successfully.' % name, self.selenium.find_element_by_tag_name('body').text)
 
 
@@ -144,27 +136,53 @@ class IngredientItemTestCase(TestCase):
 
 
 class RecipeTestCase(SeleniumTestCase):
-    """
-    Recipes need tests, too.
-
-    Adding recipes should be easy enough.
-    -- especially since there is not yet any "recipe validation".
-
-    Deleting recipes should also be easy enough.
-    -- all ingredient items should be deleted, too.
-
-    Changing recipes should be easy too!
-
-    What about admin actions?  Creating a batch from a recipe?
-    """
     fixtures = ['meadery']
 
     def test_add(self):
-        pass
+        # JMT: eventually test for 'bad recipes', whatever that means
+        # ... missing yeast?  missing water?  missing sugar?
+        self.login_as_admin(reverse('admin:meadery_recipe_add'))
+        # Set boring fields.
+        fields = {'title': 'Test Recipe',
+                  'description': 'Test description!'}
+        for key, value in fields.items():
+            field = self.selenium.find_element_by_name(key)
+            field.clear()
+            field.send_keys(value)
+        # Set ingredients.
+        ingredients = [['Local Honey', '4.540', '70'],
+                       ['Local Water', '9.725', '140'],
+                       ['Local Water', '9.725', '70'],
+                       ['Red Star Champagne Yeast', '1', '100']]
+        for index, ingredient in enumerate(ingredients):
+            name, amount, temp = ingredient
+            idhead = 'ingredientitem_set-%d' % index
+            step = 0
+            found = False
+            while step < 10:
+                try:
+                    div = self.selenium.find_element_by_id(idhead)
+                    found = True
+                    break
+                except NoSuchElementException:
+                    step = step + 1
+                    self.selenium.find_element_by_link_text('Add another Ingredient Item').click()
+            self.assertTrue(found)
+            self.pick_option('%s-ingredient' % idhead, name)
+            amount_field = self.selenium.find_element_by_name('%s-amount' % idhead)
+            amount_field.clear()
+            amount_field.send_keys(amount)
+            temp_field = self.selenium.find_element_by_name('%s-temp' % idhead)
+            temp_field.clear()
+            temp_field.send_keys(temp)
+        self.selenium.find_element_by_name('_save').click()
+        self.assertIn('The recipe "%s" was added successfully.' % fields['title'], self.selenium.find_element_by_tag_name('body').text)
 
     def test_delete(self):
-        name = Recipe.objects.get(pk=3).name
-        self.login_as_admin(reverse('admin:meadery_recipe_delete', args=(3,)))
+        recipe = Recipe.objects.all()[0]
+        pk = recipe.pk
+        name = recipe.name
+        self.login_as_admin(reverse('admin:meadery_recipe_delete', args=(pk,)))
         body = self.selenium.find_element_by_tag_name('body')
         self.assertIn('Are you sure?', body.text)
         self.assertIn('All of the following related items will be deleted', body.text)
@@ -173,7 +191,39 @@ class RecipeTestCase(SeleniumTestCase):
         self.assertIn('The recipe "%s" was deleted successfully.' % name, self.selenium.find_element_by_tag_name('body').text)
 
     def test_modify(self):
-        pass
+        recipe = Recipe.objects.all()[0]
+        pk = recipe.pk
+        name = recipe.name
+        self.login_as_admin(reverse('admin:meadery_recipe_change', args=(pk,)))
+        description_field = self.selenium.find_element_by_name('description')
+        description_field.clear()
+        description_field.send_keys('New Description')
+        self.selenium.find_element_by_name('_save').click()
+        self.assertIn('The recipe "%s" was changed successfully.' % name, self.selenium.find_element_by_tag_name('body').text)
 
     def test_create_batch_from_recipe(self):
-        pass
+        recipe = Recipe.objects.all()[0]
+        pk = recipe.pk
+        name = recipe.name
+        self.login_as_admin(reverse('admin:meadery_recipe_change', args=(pk,)))
+        self.selenium.find_element_by_link_text('Create batch from recipe').click()
+        self.assertIn('One batch was created', self.selenium.find_element_by_tag_name('body').text)
+
+
+class BatchTestCase(SeleniumTestCase):
+    pass
+
+
+class SampleTestCase(SeleniumTestCase):
+    pass
+
+
+class ProductTestCase(SeleniumTestCase):
+    pass
+
+
+class ProductReviewTestCase(SeleniumTestCase):
+    """
+    I do not know if I'm going to bother with this.
+    """
+    pass
