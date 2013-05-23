@@ -79,14 +79,20 @@ class ViewTest(TestCase):
         self.assertEqual(response.status_code, 200)
 
     def test_meadery_category(self):
-        data = Product.active.order_by().values_list('category').distinct('category')[0][0]
+        try:
+            data = Product.active.order_by().values_list('category').distinct('category')[0][0]
+        except IndexError:
+            self.fail('No active products found!')
         kwargs = {}
         kwargs['category_value'] = data
         response = self.client.get(reverse('meadery_category', kwargs=kwargs))
         self.assertEqual(response.status_code, 200)
 
     def test_meadery_product(self):
-        data = Product.active.order_by().values_list('slug')[0][0]
+        try:
+            data = Product.active.order_by().values_list('slug')[0][0]
+        except IndexError:
+            self.fail('No active products found!')
         kwargs = {}
         kwargs['product_slug'] = data
         response = self.client.get(reverse('meadery_product', kwargs=kwargs))
@@ -130,7 +136,10 @@ class IngredientTestCase(SeleniumTestCase):
         self.assertIn('The ingredient "%s" was added successfully.' % fields['name'], self.selenium.find_element_by_tag_name('body').text)
 
     def test_modify(self):
-        ingredient = Ingredient.objects.all()[0]
+        try:
+            ingredient = Ingredient.objects.all()[0]
+        except IndexError:
+            self.fail('No ingredients found!')
         pk = ingredient.pk
         name = ingredient.name
         self.login_as_admin(reverse('admin:meadery_ingredient_change', args=(pk,)))
@@ -140,7 +149,10 @@ class IngredientTestCase(SeleniumTestCase):
         self.assertIn('The ingredient "%s" was changed successfully.' % name, self.selenium.find_element_by_tag_name('body').text)
 
     def test_delete(self):
-        ingredient = Ingredient.objects.all()[0]
+        try:
+            ingredient = Ingredient.objects.all()[0]
+        except IndexError:
+            self.fail('No ingredients found!')
         pk = ingredient.pk
         name = ingredient.name
         self.login_as_admin(reverse('admin:meadery_ingredient_delete', args=(pk,)))
@@ -178,7 +190,10 @@ class RecipeTestCase(SeleniumTestCase):
         self.assertIn('The recipe "%s" was added successfully.' % fields['title'], self.selenium.find_element_by_tag_name('body').text)
 
     def test_delete(self):
-        recipe = Recipe.objects.all()[0]
+        try:
+            recipe = Recipe.objects.all()[0]
+        except IndexError:
+            self.fail('No recipe found!')
         pk = recipe.pk
         name = recipe.name
         self.login_as_admin(reverse('admin:meadery_recipe_delete', args=(pk,)))
@@ -190,7 +205,10 @@ class RecipeTestCase(SeleniumTestCase):
         self.assertIn('The recipe "%s" was deleted successfully.' % name, self.selenium.find_element_by_tag_name('body').text)
 
     def test_modify(self):
-        recipe = Recipe.objects.all()[0]
+        try:
+            recipe = Recipe.objects.all()[0]
+        except IndexError:
+            self.fail('No recipe found!')
         pk = recipe.pk
         name = recipe.name
         self.login_as_admin(reverse('admin:meadery_recipe_change', args=(pk,)))
@@ -200,7 +218,10 @@ class RecipeTestCase(SeleniumTestCase):
         self.assertIn('The recipe "%s" was changed successfully.' % name, self.selenium.find_element_by_tag_name('body').text)
 
     def test_create_batch_from_recipe(self):
-        recipe = Recipe.objects.all()[0]
+        try:
+            recipe = Recipe.objects.all()[0]
+        except IndexError:
+            self.fail('No recipe found!')
         pk = recipe.pk
         name = recipe.name
         self.login_as_admin(reverse('admin:meadery_recipe_change', args=(pk,)))
@@ -237,9 +258,12 @@ class BatchTestCase(SeleniumTestCase):
                   'batchletter': 'A',
                   'event': 'Christmas',
                   'jars': '0'}
-        self.populate_object(fields)
-        recipe = Recipe.objects.all()[0].name
+        try:
+            recipe = Recipe.objects.all()[0].name
+        except IndexError:
+            self.fail('No recipe found!')
         self.pick_option('recipe', recipe)
+        self.populate_object(fields)
         self.selenium.find_element_by_name('_save').click()
         self.assertIn('The batch "%s %s" was added successfully.' % (fields['brewname'], fields['batchletter']), self.selenium.find_element_by_tag_name('body').text)
 
@@ -280,7 +304,10 @@ class BatchTestCase(SeleniumTestCase):
         self.assertEqual(old_recipe_count, new_recipe_count)
 
     def test_modify(self):
-        batch = Batch.objects.all()[0]
+        try:
+            batch = Batch.objects.all()[0]
+        except IndexError:
+            self.fail('No batch found!')
         pk = batch.pk
         name = batch.name
         self.login_as_admin(reverse('admin:meadery_batch_change', args=(pk,)))
@@ -290,7 +317,10 @@ class BatchTestCase(SeleniumTestCase):
         self.assertIn('The batch "%s" was changed successfully.' % name, self.selenium.find_element_by_tag_name('body').text)
 
     def test_create_recipe_from_batch(self):
-        batch = Batch.objects.all()[0]
+        try:
+            batch = Batch.objects.all()[0]
+        except IndexError:
+            self.fail('No batch found!')
         pk = batch.pk
         self.login_as_admin(reverse('admin:meadery_batch_change', args=(pk,)))
         self.selenium.find_element_by_link_text('Create recipe from batch').click()
@@ -302,6 +332,8 @@ class BatchTestCase(SeleniumTestCase):
 
 
 class SampleTestCase(SeleniumTestCase):
+    fixtures = ['meadery']
+
     def test_add(self):
         self.login_as_admin(reverse('admin:meadery_sample_add'))
         fields = {'date': '2012-05-31',
@@ -309,7 +341,10 @@ class SampleTestCase(SeleniumTestCase):
                   'sg': '1.168',
                   'notes': 'Tastes great!'}
         self.populate_object(fields)
-        batch = Batch.objects.all()[0].name
+        try:
+            batch = Batch.objects.all()[0].name
+        except IndexError:
+            self.fail('No batch found!')
         self.pick_option('batch', batch)
         self.selenium.find_element_by_name('_save').click()
         body = self.selenium.find_element_by_tag_name('body')
@@ -318,9 +353,12 @@ class SampleTestCase(SeleniumTestCase):
         self.assertIn('was added successfully.', body.text)
 
     def test_modify(self):
-        sample = Sample.objects.all()[0]
+        try:
+            sample = Sample.objects.all()[0]
+        except IndexError:
+            self.fail('No samples found!')
         pk = sample.pk
-        name = sample.name
+        name = sample.__unicode__()
         self.login_as_admin(reverse('admin:meadery_sample_change', args=(pk,)))
         fields = {'notes': 'Still delicious.'}
         self.populate_object(fields)
@@ -328,9 +366,12 @@ class SampleTestCase(SeleniumTestCase):
         self.assertIn('The sample "%s" was changed successfully.' % name, self.selenium.find_element_by_tag_name('body').text)
 
     def test_delete(self):
-        sample = Sample.objects.all()[0]
+        try:
+            sample = Sample.objects.all()[0]
+        except IndexError:
+            self.fail('No samples found!')
         pk = sample.pk
-        name = sample.name
+        name = sample.__unicode__()
         old_batch_count = Batch.objects.count()
         self.login_as_admin(reverse('admin:meadery_sample_delete', args=(pk,)))
         body = self.selenium.find_element_by_tag_name('body')
