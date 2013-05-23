@@ -259,6 +259,9 @@ class BatchTestCase(SeleniumTestCase):
         self.assertIn('The batch "%s" was deleted successfully.' % name, self.selenium.find_element_by_tag_name('body').text)
 
     def test_delete_from_recipe(self):
+        # This test fails with "Server Error (500)".  This is the real error:
+        # IntegrityError: update or delete on table "meadery_parent" violates foreign key constraint "meadery_recipe_parent_ptr_id_fkey" on table "meadery_recipe"
+        # DETAIL:  Key (id)=(3) is still referenced from table "meadery_recipe".
         try:
             batch = Batch.objects.filter(recipe__isnull=False)[0]
         except IndexError:
@@ -289,18 +292,65 @@ class BatchTestCase(SeleniumTestCase):
     def test_create_recipe_from_batch(self):
         batch = Batch.objects.all()[0]
         pk = batch.pk
-        name = batch.name
         self.login_as_admin(reverse('admin:meadery_batch_change', args=(pk,)))
         self.selenium.find_element_by_link_text('Create recipe from batch').click()
         self.assertIn('One recipe was created!', self.selenium.find_element_by_tag_name('body').text)
 
+    def test_make_labels(self):
+        # JMT: conventional wisdom on the internet says don't test file downloads
+        pass
+
 
 class SampleTestCase(SeleniumTestCase):
-    pass
+    def test_add(self):
+        self.login_as_admin(reverse('admin:meadery_sample_add'))
+        fields = {'date': '2012-05-31',
+                  'temp': '60',
+                  'sg': '1.168',
+                  'notes': 'Tastes great!'}
+        self.populate_object(fields)
+        batch = Batch.objects.all()[0].name
+        self.pick_option('batch', batch)
+        self.selenium.find_element_by_name('_save').click()
+        body = self.selenium.find_element_by_tag_name('body')
+        # Figuring out the middle is annoying.
+        self.assertIn('The sample ', body.text)
+        self.assertIn('was added successfully.', body.text)
+
+    def test_modify(self):
+        sample = Sample.objects.all()[0]
+        pk = sample.pk
+        name = sample.name
+        self.login_as_admin(reverse('admin:meadery_sample_change', args=(pk,)))
+        fields = {'notes': 'Still delicious.'}
+        self.populate_object(fields)
+        self.selenium.find_element_by_name('_save').click()
+        self.assertIn('The sample "%s" was changed successfully.' % name, self.selenium.find_element_by_tag_name('body').text)
+
+    def test_delete(self):
+        sample = Sample.objects.all()[0]
+        pk = sample.pk
+        name = sample.name
+        old_batch_count = Batch.objects.count()
+        self.login_as_admin(reverse('admin:meadery_sample_delete', args=(pk,)))
+        body = self.selenium.find_element_by_tag_name('body')
+        self.assertIn('Are you sure?', body.text)
+        self.assertIn('All of the following related items will be deleted', body.text)
+        # Yes, we are sure!
+        self.selenium.find_element_by_xpath('//input[@type="submit"]').click()
+        self.assertIn('The sample "%s" was deleted successfully.' % name, self.selenium.find_element_by_tag_name('body').text)
+        new_batch_count = Batch.objects.count()
+        self.assertEqual(old_batch_count, new_batch_count)
 
 
 class ProductTestCase(SeleniumTestCase):
-    pass
+    def test_add_from_scratch(self):
+        # Add a product from scratch.
+        pass
+
+    def test_add_from_batch(self):
+        # Add a product from a batch.
+        pass
 
 
 class ProductReviewTestCase(SeleniumTestCase):

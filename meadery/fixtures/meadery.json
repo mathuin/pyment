@@ -519,7 +519,7 @@
   "pk": 5, 
   "model": "meadery.parent", 
   "fields": {
-    "category": 241, 
+    "category": 253, 
     "description": "This is some good stuff.", 
     "title": "Blueberry Mead"
   }
@@ -528,7 +528,7 @@
   "pk": 6, 
   "model": "meadery.parent", 
   "fields": {
-    "category": 241, 
+    "category": 263, 
     "description": "Two great tastes that taste great together.", 
     "title": "Apple Cinnamon"
   }
@@ -537,7 +537,7 @@
   "pk": 7, 
   "model": "meadery.parent", 
   "fields": {
-    "category": 241, 
+    "category": 261, 
     "description": "Cocoa and cinnamon are perfect together.", 
     "title": "Metheglin of Champions"
   }
@@ -582,7 +582,7 @@
   "fields": {
     "batchletter": "A", 
     "is_active": false, 
-    "created_at": "2013-05-23T17:22:38.000Z", 
+    "created_at": "2013-05-23T17:22:38Z", 
     "recipe": 3, 
     "brewname": "SIP 98", 
     "updated_at": "2013-05-23T17:23:13.576Z", 
@@ -602,6 +602,28 @@
     "updated_at": "2013-05-23T17:42:07.019Z", 
     "jars": 0, 
     "event": "Christmas"
+  }
+},
+{
+  "pk": 1, 
+  "model": "meadery.sample", 
+  "fields": {
+    "date": "2013-05-02", 
+    "notes": "Tastes great!", 
+    "sg": "1.126", 
+    "batch": 3, 
+    "temp": 60
+  }
+},
+{
+  "pk": 2, 
+  "model": "meadery.sample", 
+  "fields": {
+    "date": "2013-05-23", 
+    "notes": "Tastes even better!", 
+    "sg": "0.998", 
+    "batch": 3, 
+    "temp": 60
   }
 },
 {
