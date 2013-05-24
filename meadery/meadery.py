@@ -44,7 +44,7 @@ def create_recipe_from_batch(batch):
 
 
 def create_product_from_batch(batch):
-    if batch.jars > 0:
+    if batch.sample_set.count() > 1 and batch.jars > 0:
         product = Product()
         product.brewname = batch.brewname
         product.batchletter = batch.batchletter

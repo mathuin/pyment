@@ -4,6 +4,7 @@ from django.test import TestCase, LiveServerTestCase
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 from models import Ingredient, IngredientItem, Parent, Recipe, SIPParent, Batch, Sample, Product, ProductReview
+from inventory.models import Jar
 from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.firefox.webdriver import WebDriver
 from selenium.webdriver.common.keys import Keys
@@ -299,9 +300,6 @@ class BatchTestCase(SeleniumTestCase):
         self.assertIn('The batch "%s" was deleted successfully.' % name, self.selenium.find_element_by_tag_name('body').text)
 
     def test_delete_from_recipe_without_samples(self):
-        # This test fails with "Server Error (500)".  This is the real error:
-        # IntegrityError: update or delete on table "meadery_parent" violates foreign key constraint "meadery_recipe_parent_ptr_id_fkey" on table "meadery_recipe"
-        # DETAIL:  Key (id)=(3) is still referenced from table "meadery_recipe".
         try:
             batch = Batch.objects.annotate(num_samples=Count('sample')).filter(recipe__isnull=False, num_samples=0)[0]
         except IndexError:
@@ -320,9 +318,6 @@ class BatchTestCase(SeleniumTestCase):
         self.assertEqual(old_recipe_count, new_recipe_count)
 
     def test_delete_from_recipe_with_samples(self):
-        # This test fails with "Server Error (500)".  This is the real error:
-        # IntegrityError: update or delete on table "meadery_parent" violates foreign key constraint "meadery_recipe_parent_ptr_id_fkey" on table "meadery_recipe"
-        # DETAIL:  Key (id)=(3) is still referenced from table "meadery_recipe".
         try:
             batch = Batch.objects.annotate(num_samples=Count('sample')).filter(recipe__isnull=False, num_samples__gt=0)[0]
         except IndexError:
@@ -362,6 +357,32 @@ class BatchTestCase(SeleniumTestCase):
         self.login_as_admin(reverse('admin:meadery_batch_change', args=(pk,)))
         self.selenium.find_element_by_link_text('Create recipe from batch').click()
         self.assertIn('One recipe was created!', self.selenium.find_element_by_tag_name('body').text)
+
+    def test_create_product_from_batch_with_samples(self):
+        try:
+            batch = Batch.objects.annotate(num_samples=Count('sample')).filter(num_samples__gt=0)[0]
+        except IndexError:
+            self.fail('There is no batch with samples in the fixture!')
+        # JMT: not testing for jars at the moment
+        batch.jars = 24
+        batch.save()
+        pk = batch.pk
+        self.login_as_admin(reverse('admin:meadery_batch_change', args=(pk,)))
+        self.selenium.find_element_by_link_text('Create product from batch').click()
+        self.assertIn('One product was created!', self.selenium.find_element_by_tag_name('body').text)
+
+    def test_create_product_from_batch_without_samples(self):
+        try:
+            batch = Batch.objects.annotate(num_samples=Count('sample')).filter(num_samples=0)[0]
+        except IndexError:
+            self.fail('There is no batch without samples in the fixture!')
+        # JMT: not testing for jars at the moment
+        batch.jars = 24
+        batch.save()
+        pk = batch.pk
+        self.login_as_admin(reverse('admin:meadery_batch_change', args=(pk,)))
+        self.selenium.find_element_by_link_text('Create product from batch').click()
+        self.assertIn('No product was created!', self.selenium.find_element_by_tag_name('body').text)
 
     def test_make_labels(self):
         # JMT: conventional wisdom on the internet says don't test file downloads
@@ -422,30 +443,44 @@ class SampleTestCase(SeleniumTestCase):
 
 
 class ProductTestCase(SeleniumTestCase):
-    def test_add_from_scratch(self):
+    def test_add(self):
         self.login_as_admin(reverse('admin:meadery_product_add'))
         # Set boring fields.
         fields = {'title': 'Test Product',
                   'description': 'Test description!',
                   'brewname': 'SIP 99',
                   'batchletter': 'A',
-                  'event': 'Christmas',
-                  'jars': '0'}
+                  'meta_keywords': 'bogus',
+                  'meta_description': 'bogus',
+                  'brewed_date': '2013-05-01',
+                  'brewed_sg': '1.126',
+                  'bottled_date': '2013-05-31',
+                  'bottled_sg': '0.996',
+                  'abv': '17.33'}
         self.populate_object(fields)
+        self.pick_option('category', 'Dry Mead')
         self.selenium.find_element_by_name('_save').click()
         self.assertIn('The product "%s %s" was added successfully.' % (fields['brewname'], fields['batchletter']), self.selenium.find_element_by_tag_name('body').text)
 
-    def test_add_from_batch(self):
-        # Not the same as create_product_from_batch!
-        pass
-
-    def test_delete_from_scratch(self):
-        # Delete a product made from scratch.
-        pass
-
-    def test_delete_from_batch(self):
-        # Delete a product made from a batch.
-        pass
+    def test_delete(self):
+        print Product.objects.all()
+        try:
+            product = Product.objects.annotate(num_jars=Count('jar')).filter(num_jars=0)[0]
+        except IndexError:
+            print [(product.name, product.num_jars) for product in Product.objects.annotate(num_jars=Count('jar')).all()]
+            self.fail('No products without jars found!')
+        pk = product.pk
+        name = product.name
+        old_batch_count = Batch.objects.count()
+        self.login_as_admin(reverse('admin:meadery_product_delete', args=(pk,)))
+        body = self.selenium.find_element_by_tag_name('body')
+        self.assertIn('Are you sure?', body.text)
+        # We do not want to delete related objects!
+        self.assertNotIn('All of the following related items will be deleted', body.text)
+        self.selenium.find_element_by_xpath('//input[@type="submit"]').click()
+        self.assertIn('The product "%s" was deleted successfully.' % name, self.selenium.find_element_by_tag_name('body').text)
+        new_batch_count = Batch.objects.count()
+        self.assertEqual(old_batch_count, new_batch_count)
 
 
 class ProductReviewTestCase(SeleniumTestCase):
