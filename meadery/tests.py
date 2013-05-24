@@ -1,4 +1,5 @@
 from decimal import Decimal
+from django.db.models import Count
 from django.test import TestCase, LiveServerTestCase
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
@@ -267,11 +268,11 @@ class BatchTestCase(SeleniumTestCase):
         self.selenium.find_element_by_name('_save').click()
         self.assertIn('The batch "%s %s" was added successfully.' % (fields['brewname'], fields['batchletter']), self.selenium.find_element_by_tag_name('body').text)
 
-    def test_delete_from_scratch(self):
+    def test_delete_from_scratch_without_samples(self):
         try:
-            batch = Batch.objects.filter(recipe__isnull=True)[0]
+            batch = Batch.objects.annotate(num_samples=Count('sample')).filter(recipe__isnull=True, num_samples=0)[0]
         except IndexError:
-            self.fail('There is no batch from scratch in the fixture!')
+            self.fail('There is no batch from scratch without samples in the fixture!')
         pk = batch.pk
         name = batch.name
         self.login_as_admin(reverse('admin:meadery_batch_delete', args=(pk,)))
@@ -282,14 +283,50 @@ class BatchTestCase(SeleniumTestCase):
         self.selenium.find_element_by_xpath('//input[@type="submit"]').click()
         self.assertIn('The batch "%s" was deleted successfully.' % name, self.selenium.find_element_by_tag_name('body').text)
 
-    def test_delete_from_recipe(self):
+    def test_delete_from_scratch_with_samples(self):
+        try:
+            batch = Batch.objects.annotate(num_samples=Count('sample')).filter(recipe__isnull=True, num_samples__gt=0)[0]
+        except IndexError:
+            self.fail('There is no batch from scratch with samples in the fixture!')
+        pk = batch.pk
+        name = batch.name
+        self.login_as_admin(reverse('admin:meadery_batch_delete', args=(pk,)))
+        body = self.selenium.find_element_by_tag_name('body')
+        self.assertIn('Are you sure?', body.text)
+        self.assertIn('All of the following related items will be deleted', body.text)
+        # Yes, we are sure!
+        self.selenium.find_element_by_xpath('//input[@type="submit"]').click()
+        self.assertIn('The batch "%s" was deleted successfully.' % name, self.selenium.find_element_by_tag_name('body').text)
+
+    def test_delete_from_recipe_without_samples(self):
         # This test fails with "Server Error (500)".  This is the real error:
         # IntegrityError: update or delete on table "meadery_parent" violates foreign key constraint "meadery_recipe_parent_ptr_id_fkey" on table "meadery_recipe"
         # DETAIL:  Key (id)=(3) is still referenced from table "meadery_recipe".
         try:
-            batch = Batch.objects.filter(recipe__isnull=False)[0]
+            batch = Batch.objects.annotate(num_samples=Count('sample')).filter(recipe__isnull=False, num_samples=0)[0]
         except IndexError:
-            self.fail('There is no batch from a recipe in the fixture!')
+            self.fail('There is no batch from a recipe without samples in the fixture!')
+        pk = batch.pk
+        name = batch.name
+        old_recipe_count = Recipe.objects.count()
+        self.login_as_admin(reverse('admin:meadery_batch_delete', args=(pk,)))
+        body = self.selenium.find_element_by_tag_name('body')
+        self.assertIn('Are you sure?', body.text)
+        self.assertIn('All of the following related items will be deleted', body.text)
+        # Yes, we are sure!
+        self.selenium.find_element_by_xpath('//input[@type="submit"]').click()
+        self.assertIn('The batch "%s" was deleted successfully.' % name, self.selenium.find_element_by_tag_name('body').text)
+        new_recipe_count = Recipe.objects.count()
+        self.assertEqual(old_recipe_count, new_recipe_count)
+
+    def test_delete_from_recipe_with_samples(self):
+        # This test fails with "Server Error (500)".  This is the real error:
+        # IntegrityError: update or delete on table "meadery_parent" violates foreign key constraint "meadery_recipe_parent_ptr_id_fkey" on table "meadery_recipe"
+        # DETAIL:  Key (id)=(3) is still referenced from table "meadery_recipe".
+        try:
+            batch = Batch.objects.annotate(num_samples=Count('sample')).filter(recipe__isnull=False, num_samples__gt=0)[0]
+        except IndexError:
+            self.fail('There is no batch from a recipe with samples in the fixture!')
         pk = batch.pk
         name = batch.name
         old_recipe_count = Recipe.objects.count()

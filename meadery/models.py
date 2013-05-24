@@ -306,6 +306,28 @@ class Batch(SIPParent):
     event = models.CharField('Brewing event', max_length=20, help_text='Brewing event (e.g., Lughnasadh 2013, Samhain 2012, Imbolc 2011, Beltane 2010)')
     jars = models.IntegerField(help_text='Number of jars actually produced from this batch.')
 
+    def nodelete(self):
+        print 'I tried!'
+        recipe = self.recipe
+        print '1 batch unicode = %s, pk = %d, id = %d' % (self.__unicode__, self.pk, self.id)
+        if recipe is not None:
+            print '1 recipe unicode = %s, pk = %d, id = %d' % (recipe.__unicode__, recipe.pk, recipe.id)
+        recipe.batch_set.remove(self)
+        self.save()
+        recipe = self.recipe
+        print '2 batch unicode = %s, pk = %d, id = %d' % (self.__unicode__, self.pk, self.id)
+        if recipe is not None:
+            print '2 recipe unicode = %s, pk = %d, id = %d' % (recipe.__unicode__, recipe.pk, recipe.id)
+        if self.recipe is not None:
+            print 'forcing self.recipe to None'
+            self.recipe = None
+            self.save()
+        recipe = self.recipe
+        print '3 batch unicode = %s, pk = %d, id = %d' % (self.__unicode__, self.pk, self.id)
+        if recipe is not None:
+            print '3 recipe unicode = %s, pk = %d, id = %d' % (recipe.__unicode__, recipe.pk, recipe.id)
+        super(Batch, self).delete()
+
     @property
     def abv(self):
         zero = Decimal('0.000')
