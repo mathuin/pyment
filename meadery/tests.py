@@ -443,6 +443,8 @@ class SampleTestCase(SeleniumTestCase):
 
 
 class ProductTestCase(SeleniumTestCase):
+    fixtures = ['meadery', 'inventory']
+
     def test_add(self):
         self.login_as_admin(reverse('admin:meadery_product_add'))
         # Set boring fields.
@@ -462,25 +464,37 @@ class ProductTestCase(SeleniumTestCase):
         self.selenium.find_element_by_name('_save').click()
         self.assertIn('The product "%s %s" was added successfully.' % (fields['brewname'], fields['batchletter']), self.selenium.find_element_by_tag_name('body').text)
 
-    def test_delete(self):
-        print Product.objects.all()
+    def test_delete_without_jars(self):
         try:
             product = Product.objects.annotate(num_jars=Count('jar')).filter(num_jars=0)[0]
         except IndexError:
-            print [(product.name, product.num_jars) for product in Product.objects.annotate(num_jars=Count('jar')).all()]
             self.fail('No products without jars found!')
         pk = product.pk
         name = product.name
-        old_batch_count = Batch.objects.count()
         self.login_as_admin(reverse('admin:meadery_product_delete', args=(pk,)))
         body = self.selenium.find_element_by_tag_name('body')
         self.assertIn('Are you sure?', body.text)
-        # We do not want to delete related objects!
-        self.assertNotIn('All of the following related items will be deleted', body.text)
+        self.assertIn('All of the following related items will be deleted', body.text)
         self.selenium.find_element_by_xpath('//input[@type="submit"]').click()
         self.assertIn('The product "%s" was deleted successfully.' % name, self.selenium.find_element_by_tag_name('body').text)
-        new_batch_count = Batch.objects.count()
-        self.assertEqual(old_batch_count, new_batch_count)
+
+    def test_delete_with_jars(self):
+        try:
+            product = Product.objects.annotate(num_jars=Count('jar')).filter(num_jars__gt=0)[0]
+        except IndexError:
+            self.fail('No products with jars found!')
+        pk = product.pk
+        name = product.name
+        old_jar_count = Jar.objects.count()
+        product_jar_count = Jar.objects.filter(product=product).count()
+        self.login_as_admin(reverse('admin:meadery_product_delete', args=(pk,)))
+        body = self.selenium.find_element_by_tag_name('body')
+        self.assertIn('Are you sure?', body.text)
+        self.assertIn('All of the following related items will be deleted', body.text)
+        self.selenium.find_element_by_xpath('//input[@type="submit"]').click()
+        self.assertIn('The product "%s" was deleted successfully.' % name, self.selenium.find_element_by_tag_name('body').text)
+        new_jar_count = Jar.objects.count()
+        self.assertEqual(new_jar_count, old_jar_count - product_jar_count)
 
 
 class ProductReviewTestCase(SeleniumTestCase):

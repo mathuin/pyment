@@ -669,6 +669,24 @@
   }
 },
 {
+  "pk": 30, 
+  "model": "meadery.parent", 
+  "fields": {
+    "category": 241, 
+    "description": "Local!", 
+    "title": "Local Mead"
+  }
+},
+{
+  "pk": 31, 
+  "model": "meadery.parent", 
+  "fields": {
+    "category": 241, 
+    "description": "Ripoff of local mead", 
+    "title": "Local Ripoff"
+  }
+},
+{
   "pk": 19, 
   "model": "meadery.recipe", 
   "fields": {}
@@ -702,8 +720,8 @@
     "created_at": "2013-05-24T17:23:38.470Z", 
     "recipe": 19, 
     "brewname": "SIP 98", 
-    "updated_at": "2013-05-24T17:23:57.135Z", 
-    "jars": 0, 
+    "updated_at": "2013-05-24T17:56:20.370Z", 
+    "jars": 24, 
     "event": "Christmas"
   }
 },
@@ -730,8 +748,8 @@
     "created_at": "2013-05-24T17:29:38.674Z", 
     "recipe": null, 
     "brewname": "SIP 98", 
-    "updated_at": "2013-05-24T17:29:38.674Z", 
-    "jars": 0, 
+    "updated_at": "2013-05-24T17:57:32.202Z", 
+    "jars": 24, 
     "event": "Christmas"
   }
 },
@@ -747,6 +765,50 @@
     "updated_at": "2013-05-24T17:31:13.770Z", 
     "jars": 0, 
     "event": "Christmas"
+  }
+},
+{
+  "pk": 9, 
+  "model": "meadery.sample", 
+  "fields": {
+    "date": "2013-05-04", 
+    "notes": "Good start!", 
+    "sg": "1.126", 
+    "batch": 26, 
+    "temp": 60
+  }
+},
+{
+  "pk": 10, 
+  "model": "meadery.sample", 
+  "fields": {
+    "date": "2013-05-24", 
+    "notes": "Delicious!", 
+    "sg": "0.998", 
+    "batch": 26, 
+    "temp": 60
+  }
+},
+{
+  "pk": 11, 
+  "model": "meadery.sample", 
+  "fields": {
+    "date": "2013-05-04", 
+    "notes": "Light!", 
+    "sg": "1.126", 
+    "batch": 28, 
+    "temp": 60
+  }
+},
+{
+  "pk": 12, 
+  "model": "meadery.sample", 
+  "fields": {
+    "date": "2013-05-24", 
+    "notes": "Tasty!", 
+    "sg": "0.996", 
+    "batch": 28, 
+    "temp": 60
   }
 },
 {
@@ -796,47 +858,49 @@
   }
 },
 {
-  "pk": 9, 
-  "model": "meadery.sample", 
+  "pk": 30, 
+  "model": "meadery.product", 
   "fields": {
-    "date": "2013-05-04", 
-    "notes": "Good start!", 
-    "sg": "1.126", 
-    "batch": 26, 
-    "temp": 60
+    "meta_description": "bogus", 
+    "bottled_sg": "0.998", 
+    "is_featured": false, 
+    "batchletter": "A", 
+    "abv": "0.00", 
+    "created_at": "2013-05-24T17:56:24.778Z", 
+    "is_active": true, 
+    "brewname": "SIP 98", 
+    "updated_at": "2013-05-24T17:58:22.499Z", 
+    "thumbnail": "", 
+    "meta_keywords": "bogus", 
+    "is_bestseller": false, 
+    "image": "", 
+    "brewed_sg": "1.126", 
+    "bottled_date": "2013-05-24", 
+    "slug": "sip-98-a", 
+    "brewed_date": "2013-05-04"
   }
 },
 {
-  "pk": 10, 
-  "model": "meadery.sample", 
+  "pk": 31, 
+  "model": "meadery.product", 
   "fields": {
-    "date": "2013-05-24", 
-    "notes": "Delicious!", 
-    "sg": "0.998", 
-    "batch": 26, 
-    "temp": 60
-  }
-},
-{
-  "pk": 11, 
-  "model": "meadery.sample", 
-  "fields": {
-    "date": "2013-05-04", 
-    "notes": "Light!", 
-    "sg": "1.126", 
-    "batch": 28, 
-    "temp": 60
-  }
-},
-{
-  "pk": 12, 
-  "model": "meadery.sample", 
-  "fields": {
-    "date": "2013-05-24", 
-    "notes": "Tasty!", 
-    "sg": "0.996", 
-    "batch": 28, 
-    "temp": 60
+    "meta_description": "bogus", 
+    "bottled_sg": "0.996", 
+    "is_featured": false, 
+    "batchletter": "C", 
+    "abv": "0.00", 
+    "created_at": "2013-05-24T17:57:38.242Z", 
+    "is_active": true, 
+    "brewname": "SIP 98", 
+    "updated_at": "2013-05-24T18:01:01.743Z", 
+    "thumbnail": "", 
+    "meta_keywords": "bogus", 
+    "is_bestseller": false, 
+    "image": "", 
+    "brewed_sg": "1.126", 
+    "bottled_date": "2013-05-24", 
+    "slug": "sip-98-c", 
+    "brewed_date": "2013-05-04"
   }
 }
 ]
