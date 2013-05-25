@@ -14,31 +14,33 @@ from selenium.webdriver.common.keys import Keys
 
 
 class SeleniumTestCase(LiveServerTestCase):
+    def go(self, url):
+        self.selenium.get(self.live_server_url + url)
+
     @classmethod
     def setUpClass(cls):
         cls.selenium = WebDriver()
         cls.selenium.implicitly_wait(10)
         super(SeleniumTestCase, cls).setUpClass()
 
-    @classmethod
-    def tearDownClass(cls):
-        cls.selenium.quit()
-        super(SeleniumTestCase, cls).tearDownClass()
-
-    def login_as_admin(self, url):
+    def setUp(self):
         userdict = {'username': 'admin',
                     'password': 'pbkdf2_sha256$10000$dMAdIm5LrBkt$gS8TSnpYq7J/YEbEeQ5AMr6AHOz/RHtHIapWHKjSHwM=',
                     'email': 'admin@example.com',
                     'is_superuser': True,
-                    'is_staff': True,
-                    }
+                    'is_staff': True, }
         admin_user, created = User.objects.get_or_create(username=userdict['username'], defaults=userdict)
-        self.selenium.get(self.live_server_url + url)
+        self.go(reverse('admin:index'))
         username_field = self.selenium.find_element_by_name('username')
         username_field.send_keys(userdict['username'])
         password_field = self.selenium.find_element_by_name('password')
         password_field.send_keys('passw0rd')
         password_field.send_keys(Keys.RETURN)
+
+    @classmethod
+    def tearDownClass(cls):
+        cls.selenium.quit()
+        super(SeleniumTestCase, cls).tearDownClass()
 
     def pick_option(self, name, text):
         for option in self.selenium.find_element_by_name(name).find_elements_by_tag_name('option'):
@@ -109,13 +111,18 @@ class IngredientTestCase(SeleniumTestCase):
     fixtures = ['meadery']
 
     def test_add(self):
-        self.login_as_admin(reverse('admin:meadery_ingredient_add'))
-        # Set boring fields.
         fields = {'name': 'Test Honey',
                   'appellation': '(None)',
                   'sg': '1.422',
                   'sh': '0.57',
                   'cpu': '7.95'}
+        # Ingredient does not yet exist in database.
+        self.assertFalse((Ingredient.objects.filter(name=fields['name'],
+                                                    appellation=fields['appellation'],
+                                                    sg=Decimal(fields['sg']),
+                                                    sh=Decimal(fields['sh']),
+                                                    cpu=Decimal(fields['cpu'])).exists()))
+        self.go(reverse('admin:meadery_ingredient_add'))
         self.populate_object(fields)
         # JMT: is checking just the 'Sugar' case adequate?
         self.pick_option('type', 'Sugar')
@@ -136,6 +143,12 @@ class IngredientTestCase(SeleniumTestCase):
         self.pick_option('state', 'Solid')
         self.selenium.find_element_by_name('_save').click()
         self.assertIn('The ingredient "%s" was added successfully.' % fields['name'], self.selenium.find_element_by_tag_name('body').text)
+        # Ingredient should now exist in database.
+        self.assertTrue((Ingredient.objects.filter(name=fields['name'],
+                                                   appellation=fields['appellation'],
+                                                   sg=Decimal(fields['sg']),
+                                                   sh=Decimal(fields['sh']),
+                                                   cpu=Decimal(fields['cpu'])).exists()))
 
     def test_modify(self):
         try:
@@ -144,11 +157,15 @@ class IngredientTestCase(SeleniumTestCase):
             self.fail('No ingredients found!')
         pk = ingredient.pk
         name = ingredient.name
-        self.login_as_admin(reverse('admin:meadery_ingredient_change', args=(pk,)))
-        fields = {'sh': '1.00'}
-        self.populate_object(fields)
+        old_cpu = ingredient.cpu
+        new_cpu = old_cpu + Decimal('1.00')
+        self.go(reverse('admin:meadery_ingredient_change', args=(pk,)))
+        self.populate_object({'cpu': str(new_cpu)})
         self.selenium.find_element_by_name('_save').click()
         self.assertIn('The ingredient "%s" was changed successfully.' % name, self.selenium.find_element_by_tag_name('body').text)
+        ingredient = Ingredient.objects.get(pk=pk)
+        self.assertNotEqual(old_cpu, ingredient.cpu)
+        self.assertEqual(new_cpu, ingredient.cpu)
 
     def test_delete(self):
         try:
@@ -157,12 +174,13 @@ class IngredientTestCase(SeleniumTestCase):
             self.fail('No ingredients found!')
         pk = ingredient.pk
         name = ingredient.name
-        self.login_as_admin(reverse('admin:meadery_ingredient_delete', args=(pk,)))
+        self.go(reverse('admin:meadery_ingredient_delete', args=(pk,)))
         body = self.selenium.find_element_by_tag_name('body')
         self.assertIn('Are you sure?', body.text)
         self.assertIn('All of the following related items will be deleted', body.text)
         self.selenium.find_element_by_xpath('//input[@type="submit"]').click()
         self.assertIn('The ingredient "%s" was deleted successfully.' % name, self.selenium.find_element_by_tag_name('body').text)
+        self.assertFalse(Ingredient.objects.filter(pk=pk).exists())
 
 
 class IngredientItemTestCase(TestCase):
@@ -178,7 +196,7 @@ class RecipeTestCase(SeleniumTestCase):
     def test_add(self):
         # JMT: eventually test for 'bad recipes', whatever that means
         # ... missing yeast?  missing water?  missing sugar?
-        self.login_as_admin(reverse('admin:meadery_recipe_add'))
+        self.go(reverse('admin:meadery_recipe_add'))
         # Set boring fields.
         fields = {'title': 'Test Recipe',
                   'description': 'Test description!'}
@@ -198,7 +216,7 @@ class RecipeTestCase(SeleniumTestCase):
             self.fail('No recipe found!')
         pk = recipe.pk
         name = recipe.name
-        self.login_as_admin(reverse('admin:meadery_recipe_delete', args=(pk,)))
+        self.go(reverse('admin:meadery_recipe_delete', args=(pk,)))
         body = self.selenium.find_element_by_tag_name('body')
         self.assertIn('Are you sure?', body.text)
         self.assertIn('All of the following related items will be deleted', body.text)
@@ -213,7 +231,7 @@ class RecipeTestCase(SeleniumTestCase):
             self.fail('No recipe found!')
         pk = recipe.pk
         name = recipe.name
-        self.login_as_admin(reverse('admin:meadery_recipe_change', args=(pk,)))
+        self.go(reverse('admin:meadery_recipe_change', args=(pk,)))
         fields = {'description': 'New Description'}
         self.populate_object(fields)
         self.selenium.find_element_by_name('_save').click()
@@ -226,7 +244,7 @@ class RecipeTestCase(SeleniumTestCase):
             self.fail('No recipe found!')
         pk = recipe.pk
         name = recipe.name
-        self.login_as_admin(reverse('admin:meadery_recipe_change', args=(pk,)))
+        self.go(reverse('admin:meadery_recipe_change', args=(pk,)))
         self.selenium.find_element_by_link_text('Create batch from recipe').click()
         self.assertIn('One batch was created!', self.selenium.find_element_by_tag_name('body').text)
 
@@ -235,7 +253,7 @@ class BatchTestCase(SeleniumTestCase):
     fixtures = ['meadery']
 
     def test_add_from_scratch(self):
-        self.login_as_admin(reverse('admin:meadery_batch_add'))
+        self.go(reverse('admin:meadery_batch_add'))
         # Set boring fields.
         fields = {'title': 'Test Batch',
                   'description': 'Test description!',
@@ -252,7 +270,7 @@ class BatchTestCase(SeleniumTestCase):
         self.assertIn('The batch "%s %s" was added successfully.' % (fields['brewname'], fields['batchletter']), self.selenium.find_element_by_tag_name('body').text)
 
     def test_add_from_recipe(self):
-        self.login_as_admin(reverse('admin:meadery_batch_add'))
+        self.go(reverse('admin:meadery_batch_add'))
         # Set boring fields.
         fields = {'title': 'Test Batch',
                   'description': 'Test description!',
@@ -269,71 +287,37 @@ class BatchTestCase(SeleniumTestCase):
         self.selenium.find_element_by_name('_save').click()
         self.assertIn('The batch "%s %s" was added successfully.' % (fields['brewname'], fields['batchletter']), self.selenium.find_element_by_tag_name('body').text)
 
-    def test_delete_from_scratch_without_samples(self):
+    def test_delete(self):
+        batches = Batch.objects.annotate(num_samples=Count('sample'))
         try:
-            batch = Batch.objects.annotate(num_samples=Count('sample')).filter(recipe__isnull=True, num_samples=0)[0]
+            batch_from_scratch_without_samples = batches.filter(recipe__isnull=True, num_samples=0)[0]
         except IndexError:
             self.fail('There is no batch from scratch without samples in the fixture!')
-        pk = batch.pk
-        name = batch.name
-        self.login_as_admin(reverse('admin:meadery_batch_delete', args=(pk,)))
-        body = self.selenium.find_element_by_tag_name('body')
-        self.assertIn('Are you sure?', body.text)
-        self.assertIn('All of the following related items will be deleted', body.text)
-        # Yes, we are sure!
-        self.selenium.find_element_by_xpath('//input[@type="submit"]').click()
-        self.assertIn('The batch "%s" was deleted successfully.' % name, self.selenium.find_element_by_tag_name('body').text)
-
-    def test_delete_from_scratch_with_samples(self):
         try:
-            batch = Batch.objects.annotate(num_samples=Count('sample')).filter(recipe__isnull=True, num_samples__gt=0)[0]
+            batch_from_scratch_with_samples = batches.filter(recipe__isnull=True, num_samples__gt=0)[0]
         except IndexError:
             self.fail('There is no batch from scratch with samples in the fixture!')
-        pk = batch.pk
-        name = batch.name
-        self.login_as_admin(reverse('admin:meadery_batch_delete', args=(pk,)))
-        body = self.selenium.find_element_by_tag_name('body')
-        self.assertIn('Are you sure?', body.text)
-        self.assertIn('All of the following related items will be deleted', body.text)
-        # Yes, we are sure!
-        self.selenium.find_element_by_xpath('//input[@type="submit"]').click()
-        self.assertIn('The batch "%s" was deleted successfully.' % name, self.selenium.find_element_by_tag_name('body').text)
-
-    def test_delete_from_recipe_without_samples(self):
         try:
-            batch = Batch.objects.annotate(num_samples=Count('sample')).filter(recipe__isnull=False, num_samples=0)[0]
+            batch_from_recipe_without_samples = batches.filter(recipe__isnull=False, num_samples=0)[0]
         except IndexError:
             self.fail('There is no batch from a recipe without samples in the fixture!')
-        pk = batch.pk
-        name = batch.name
-        old_recipe_count = Recipe.objects.count()
-        self.login_as_admin(reverse('admin:meadery_batch_delete', args=(pk,)))
-        body = self.selenium.find_element_by_tag_name('body')
-        self.assertIn('Are you sure?', body.text)
-        self.assertIn('All of the following related items will be deleted', body.text)
-        # Yes, we are sure!
-        self.selenium.find_element_by_xpath('//input[@type="submit"]').click()
-        self.assertIn('The batch "%s" was deleted successfully.' % name, self.selenium.find_element_by_tag_name('body').text)
-        new_recipe_count = Recipe.objects.count()
-        self.assertEqual(old_recipe_count, new_recipe_count)
-
-    def test_delete_from_recipe_with_samples(self):
         try:
-            batch = Batch.objects.annotate(num_samples=Count('sample')).filter(recipe__isnull=False, num_samples__gt=0)[0]
+            batch_from_recipe_with_samples = batches.filter(recipe__isnull=False, num_samples__gt=0)[0]
         except IndexError:
             self.fail('There is no batch from a recipe with samples in the fixture!')
-        pk = batch.pk
-        name = batch.name
-        old_recipe_count = Recipe.objects.count()
-        self.login_as_admin(reverse('admin:meadery_batch_delete', args=(pk,)))
-        body = self.selenium.find_element_by_tag_name('body')
-        self.assertIn('Are you sure?', body.text)
-        self.assertIn('All of the following related items will be deleted', body.text)
-        # Yes, we are sure!
-        self.selenium.find_element_by_xpath('//input[@type="submit"]').click()
-        self.assertIn('The batch "%s" was deleted successfully.' % name, self.selenium.find_element_by_tag_name('body').text)
-        new_recipe_count = Recipe.objects.count()
-        self.assertEqual(old_recipe_count, new_recipe_count)
+        for batch in [batch_from_scratch_without_samples, batch_from_scratch_with_samples, batch_from_recipe_without_samples, batch_from_recipe_with_samples]:
+            pk = batch.pk
+            name = batch.name
+            old_sample_count = Sample.objects.count()
+            batch_sample_count = Sample.objects.filter(batch=batch).count()
+            self.go(reverse('admin:meadery_batch_delete', args=(pk,)))
+            body = self.selenium.find_element_by_tag_name('body')
+            self.assertIn('Are you sure?', body.text)
+            self.assertIn('All of the following related items will be deleted', body.text)
+            self.selenium.find_element_by_xpath('//input[@type="submit"]').click()
+            self.assertIn('The batch "%s" was deleted successfully.' % name, self.selenium.find_element_by_tag_name('body').text)
+            new_sample_count = Sample.objects.count()
+            self.assertEqual(new_sample_count, old_sample_count - batch_sample_count)
 
     def test_modify(self):
         try:
@@ -342,7 +326,7 @@ class BatchTestCase(SeleniumTestCase):
             self.fail('No batch found!')
         pk = batch.pk
         name = batch.name
-        self.login_as_admin(reverse('admin:meadery_batch_change', args=(pk,)))
+        self.go(reverse('admin:meadery_batch_change', args=(pk,)))
         fields = {'description': 'New Description'}
         self.populate_object(fields)
         self.selenium.find_element_by_name('_save').click()
@@ -354,35 +338,39 @@ class BatchTestCase(SeleniumTestCase):
         except IndexError:
             self.fail('No batch found!')
         pk = batch.pk
-        self.login_as_admin(reverse('admin:meadery_batch_change', args=(pk,)))
+        self.go(reverse('admin:meadery_batch_change', args=(pk,)))
         self.selenium.find_element_by_link_text('Create recipe from batch').click()
         self.assertIn('One recipe was created!', self.selenium.find_element_by_tag_name('body').text)
 
-    def test_create_product_from_batch_with_samples(self):
+    def test_create_product_from_batch(self):
+        # First, remove all batches that have already been converted into products.
+        batches = Batch.objects.annotate(num_samples=Count('sample'))
+        for prod in Product.objects.all():
+            batches = batches.exclude(brewname=prod.brewname, batchletter=prod.batchletter)
+        # What's left is available for testing.
         try:
-            batch = Batch.objects.annotate(num_samples=Count('sample')).filter(num_samples__gt=0)[0]
+            batch_with = batches.filter(num_samples__gt=0)[0]
         except IndexError:
-            self.fail('There is no batch with samples in the fixture!')
-        # JMT: not testing for jars at the moment
-        batch.jars = 24
-        batch.save()
-        pk = batch.pk
-        self.login_as_admin(reverse('admin:meadery_batch_change', args=(pk,)))
-        self.selenium.find_element_by_link_text('Create product from batch').click()
-        self.assertIn('One product was created!', self.selenium.find_element_by_tag_name('body').text)
-
-    def test_create_product_from_batch_without_samples(self):
+            self.fail('There is no unconverted batch with samples in the fixture!')
         try:
-            batch = Batch.objects.annotate(num_samples=Count('sample')).filter(num_samples=0)[0]
+            batch_without = batches.filter(num_samples=0)[0]
         except IndexError:
-            self.fail('There is no batch without samples in the fixture!')
-        # JMT: not testing for jars at the moment
-        batch.jars = 24
-        batch.save()
-        pk = batch.pk
-        self.login_as_admin(reverse('admin:meadery_batch_change', args=(pk,)))
-        self.selenium.find_element_by_link_text('Create product from batch').click()
-        self.assertIn('No product was created!', self.selenium.find_element_by_tag_name('body').text)
+            self.fail('There is no unconverted batch without samples in the fixture!')
+        # Final test should fail because a batch cannot be turned into a product twice.
+        samples_jars_output = [[True, 0, 'No product was created!'],
+                               [False, 0, 'No product was created!'],
+                               [False, 24, 'No product was created!'],
+                               [True, 24, 'One product was created!'],
+                               [True, 24, 'No product was created!'], ]
+        for test in samples_jars_output:
+            samples, jars, output = test
+            batch = batch_with if samples else batch_without
+            batch.jars = jars
+            batch.save()
+            pk = batch.pk
+            self.go(reverse('admin:meadery_batch_change', args=(pk,)))
+            self.selenium.find_element_by_link_text('Create product from batch').click()
+            self.assertIn(output, self.selenium.find_element_by_tag_name('body').text)
 
     def test_make_labels(self):
         # JMT: conventional wisdom on the internet says don't test file downloads
@@ -393,7 +381,7 @@ class SampleTestCase(SeleniumTestCase):
     fixtures = ['meadery']
 
     def test_add(self):
-        self.login_as_admin(reverse('admin:meadery_sample_add'))
+        self.go(reverse('admin:meadery_sample_add'))
         fields = {'date': '2012-05-31',
                   'temp': '60',
                   'sg': '1.168',
@@ -417,7 +405,7 @@ class SampleTestCase(SeleniumTestCase):
             self.fail('No samples found!')
         pk = sample.pk
         name = sample.__unicode__()
-        self.login_as_admin(reverse('admin:meadery_sample_change', args=(pk,)))
+        self.go(reverse('admin:meadery_sample_change', args=(pk,)))
         fields = {'notes': 'Still delicious.'}
         self.populate_object(fields)
         self.selenium.find_element_by_name('_save').click()
@@ -431,7 +419,7 @@ class SampleTestCase(SeleniumTestCase):
         pk = sample.pk
         name = sample.__unicode__()
         old_batch_count = Batch.objects.count()
-        self.login_as_admin(reverse('admin:meadery_sample_delete', args=(pk,)))
+        self.go(reverse('admin:meadery_sample_delete', args=(pk,)))
         body = self.selenium.find_element_by_tag_name('body')
         self.assertIn('Are you sure?', body.text)
         self.assertIn('All of the following related items will be deleted', body.text)
@@ -446,7 +434,7 @@ class ProductTestCase(SeleniumTestCase):
     fixtures = ['meadery', 'inventory']
 
     def test_add(self):
-        self.login_as_admin(reverse('admin:meadery_product_add'))
+        self.go(reverse('admin:meadery_product_add'))
         # Set boring fields.
         fields = {'title': 'Test Product',
                   'description': 'Test description!',
@@ -464,37 +452,42 @@ class ProductTestCase(SeleniumTestCase):
         self.selenium.find_element_by_name('_save').click()
         self.assertIn('The product "%s %s" was added successfully.' % (fields['brewname'], fields['batchletter']), self.selenium.find_element_by_tag_name('body').text)
 
-    def test_delete_without_jars(self):
+    def test_modify(self):
         try:
-            product = Product.objects.annotate(num_jars=Count('jar')).filter(num_jars=0)[0]
+            product = Product.objects.all()[0]
         except IndexError:
-            self.fail('No products without jars found!')
+            self.fail('No products found!')
         pk = product.pk
         name = product.name
-        self.login_as_admin(reverse('admin:meadery_product_delete', args=(pk,)))
-        body = self.selenium.find_element_by_tag_name('body')
-        self.assertIn('Are you sure?', body.text)
-        self.assertIn('All of the following related items will be deleted', body.text)
-        self.selenium.find_element_by_xpath('//input[@type="submit"]').click()
-        self.assertIn('The product "%s" was deleted successfully.' % name, self.selenium.find_element_by_tag_name('body').text)
+        self.go(reverse('admin:meadery_product_change', args=(pk,)))
+        fields = {'description': 'Still delicious.'}
+        self.populate_object(fields)
+        self.selenium.find_element_by_name('_save').click()
+        self.assertIn('The product "%s" was changed successfully.' % name, self.selenium.find_element_by_tag_name('body').text)
 
-    def test_delete_with_jars(self):
+    def test_delete(self):
+        products = Product.objects.annotate(num_jars=Count('jar'))
         try:
-            product = Product.objects.annotate(num_jars=Count('jar')).filter(num_jars__gt=0)[0]
+            product_with = products.filter(num_jars__gt=0)[0]
         except IndexError:
             self.fail('No products with jars found!')
-        pk = product.pk
-        name = product.name
-        old_jar_count = Jar.objects.count()
-        product_jar_count = Jar.objects.filter(product=product).count()
-        self.login_as_admin(reverse('admin:meadery_product_delete', args=(pk,)))
-        body = self.selenium.find_element_by_tag_name('body')
-        self.assertIn('Are you sure?', body.text)
-        self.assertIn('All of the following related items will be deleted', body.text)
-        self.selenium.find_element_by_xpath('//input[@type="submit"]').click()
-        self.assertIn('The product "%s" was deleted successfully.' % name, self.selenium.find_element_by_tag_name('body').text)
-        new_jar_count = Jar.objects.count()
-        self.assertEqual(new_jar_count, old_jar_count - product_jar_count)
+        try:
+            product_without = products.filter(num_jars=0)[0]
+        except IndexError:
+            self.fail('No products without jars found!')
+        for product in [product_with, product_without]:
+            pk = product.pk
+            name = product.name
+            old_jar_count = Jar.objects.count()
+            product_jar_count = Jar.objects.filter(product=product).count()
+            self.go(reverse('admin:meadery_product_delete', args=(pk,)))
+            body = self.selenium.find_element_by_tag_name('body')
+            self.assertIn('Are you sure?', body.text)
+            self.assertIn('All of the following related items will be deleted', body.text)
+            self.selenium.find_element_by_xpath('//input[@type="submit"]').click()
+            self.assertIn('The product "%s" was deleted successfully.' % name, self.selenium.find_element_by_tag_name('body').text)
+            new_jar_count = Jar.objects.count()
+            self.assertEqual(new_jar_count, old_jar_count - product_jar_count)
 
 
 class ProductReviewTestCase(SeleniumTestCase):

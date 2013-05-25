@@ -678,15 +678,6 @@
   }
 },
 {
-  "pk": 31, 
-  "model": "meadery.parent", 
-  "fields": {
-    "category": 241, 
-    "description": "Ripoff of local mead", 
-    "title": "Local Ripoff"
-  }
-},
-{
   "pk": 19, 
   "model": "meadery.recipe", 
   "fields": {}
@@ -877,29 +868,6 @@
     "brewed_sg": "1.126", 
     "bottled_date": "2013-05-24", 
     "slug": "sip-98-a", 
-    "brewed_date": "2013-05-04"
-  }
-},
-{
-  "pk": 31, 
-  "model": "meadery.product", 
-  "fields": {
-    "meta_description": "bogus", 
-    "bottled_sg": "0.996", 
-    "is_featured": false, 
-    "batchletter": "C", 
-    "abv": "0.00", 
-    "created_at": "2013-05-24T17:57:38.242Z", 
-    "is_active": true, 
-    "brewname": "SIP 98", 
-    "updated_at": "2013-05-24T18:01:01.743Z", 
-    "thumbnail": "", 
-    "meta_keywords": "bogus", 
-    "is_bestseller": false, 
-    "image": "", 
-    "brewed_sg": "1.126", 
-    "bottled_date": "2013-05-24", 
-    "slug": "sip-98-c", 
     "brewed_date": "2013-05-04"
   }
 }

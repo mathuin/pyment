@@ -44,7 +44,10 @@ def create_recipe_from_batch(batch):
 
 
 def create_product_from_batch(batch):
-    if batch.sample_set.count() > 1 and batch.jars > 0:
+    # Do not create product if product already exists!
+    if Product.objects.filter(brewname=batch.brewname, batchletter=batch.batchletter).exists() or batch.sample_set.count() == 0 or batch.jars == 0:
+        return None
+    else:
         product = Product()
         product.brewname = batch.brewname
         product.batchletter = batch.batchletter
@@ -62,8 +65,6 @@ def create_product_from_batch(batch):
         product.category = batch.category
         product.save()
         return product
-    else:
-        return None
 
 
 try:
