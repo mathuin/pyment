@@ -186,14 +186,16 @@ class Parent(models.Model):
     @property
     def all_natural(self):
         # JMT: skipping yeast
-        return all([item.ingredient.is_natural for item in self.items((Ingredient.TYPE_SUGAR | Ingredient.TYPE_SOLVENT | Ingredient.TYPE_FLAVOR))])
+        relevant_items = self.items(Ingredient.TYPE_SUGAR) | self.items(Ingredient.TYPE_SOLVENT) | self.items(Ingredient.TYPE_FLAVOR)
+        return all([item.ingredient.is_natural for item in relevant_items])
 
     @property
     def appellation(self):
         # Proper implementation of appellation testing is very complex.
         # See 27 CFR 4.25(b) for more information.
         # JMT: skipping yeast
-        total_appellations = set([item.ingredient.appellation for item in self.items((Ingredient.TYPE_SUGAR | Ingredient.TYPE_SOLVENT | Ingredient.TYPE_FLAVOR))])
+        relevant_items = self.items(Ingredient.TYPE_SUGAR) | self.items(Ingredient.TYPE_SOLVENT) | self.items(Ingredient.TYPE_FLAVOR)
+        total_appellations = set([item.ingredient.appellation for item in relevant_items])
         if len(total_appellations) == 1:
             return total_appellations.pop()
         else:

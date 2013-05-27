@@ -284,6 +284,52 @@ class RecipeTestCase(SeleniumTestCase):
             self.assertEqual(Recipe.objects.get(title=fields['title']).category, category)
             Recipe.objects.filter(title=fields['title']).delete()
 
+    def test_appellation(self):
+        fields = {'title': 'Test Recipe',
+                  'description': 'Test description'}
+        oregon_ingredients = [['Local Honey', '4.540', '70'],
+                              ['Local Water', '9.725', '140'],
+                              ['Local Water', '9.725', '70'],
+                              ['Red Star Champagne Yeast', '1', '100']]
+        none_ingredients = [['Scary Honey', '4.540', '70'],
+                            ['Local Water', '9.725', '140'],
+                            ['Local Water', '9.725', '70'],
+                            ['Red Star Champagne Yeast', '1', '100']]
+        tests = [[oregon_ingredients, 'Oregon'],
+                 [none_ingredients, None], ]
+        for test in tests:
+            ingredients, appellation = test
+            self.assertFalse(Recipe.objects.filter(title=fields['title']).exists())
+            self.go(reverse('admin:meadery_recipe_add'))
+            self.populate_object(fields, ingredients)
+            self.selenium.find_element_by_name('_save').click()
+            self.assertTrue(Recipe.objects.filter(title=fields['title']).exists())
+            self.assertEqual(Recipe.objects.get(title=fields['title']).appellation, appellation)
+            Recipe.objects.filter(title=fields['title']).delete()
+
+    def test_natural(self):
+        fields = {'title': 'Test Recipe',
+                  'description': 'Test description'}
+        true_ingredients = [['Local Honey', '4.540', '70'],
+                            ['Local Water', '9.725', '140'],
+                            ['Local Water', '9.725', '70'],
+                            ['Red Star Champagne Yeast', '1', '100']]
+        false_ingredients = [['Local Honey', '4.540', '70'],
+                             ['Tap Water', '9.725', '140'],
+                             ['Tap Water', '9.725', '70'],
+                             ['Red Star Champagne Yeast', '1', '100']]
+        tests = [[true_ingredients, True],
+                 [false_ingredients, False], ]
+        for test in tests:
+            ingredients, all_natural = test
+            self.assertFalse(Recipe.objects.filter(title=fields['title']).exists())
+            self.go(reverse('admin:meadery_recipe_add'))
+            self.populate_object(fields, ingredients)
+            self.selenium.find_element_by_name('_save').click()
+            self.assertTrue(Recipe.objects.filter(title=fields['title']).exists())
+            self.assertEqual(Recipe.objects.get(title=fields['title']).all_natural, all_natural)
+            Recipe.objects.filter(title=fields['title']).delete()
+
     def test_create_batch_from_recipe(self):
         try:
             recipe = Recipe.objects.all()[0]
