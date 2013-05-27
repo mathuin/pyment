@@ -17,7 +17,7 @@ class SeleniumTestCase(LiveServerTestCase):
     @classmethod
     def setUpClass(cls):
         cls.selenium = WebDriver()
-        cls.selenium.implicitly_wait(10)
+        cls.selenium.implicitly_wait(1)
         super(SeleniumTestCase, cls).setUpClass()
 
     def setUp(self):
@@ -183,27 +183,32 @@ class RecipeTestCase(SeleniumTestCase):
     fixtures = ['meadery']
 
     def test_add(self):
-        # JMT: for now, zero or more ingredients makes a recipe.
-        # In the future, recipes will require:
-        #  - one or more sugars, two or more solvents, and one or more yeasts
-        #  - the solvents must be of different temperatures
-        # In the far future, recipes may also require:
+        # JMT: in the far future, recipes may also require:
         #  - the final temperature of the mixture be in the yeast friendly range
         #  - the final volume of the mixture be no bigger than the bucket/carboy it goes into
-        # Set boring fields.
         fields = {'title': 'Test Recipe',
                   'description': 'Test description!'}
-        # Set ingredients.
-        ingredients = [['Local Honey', '4.540', '70'],
-                       ['Local Water', '9.725', '140'],
-                       ['Local Water', '9.725', '70'],
-                       ['Red Star Champagne Yeast', '1', '100']]
-        self.assertFalse(Recipe.objects.filter(title=fields['title']).exists())
-        self.go(reverse('admin:meadery_recipe_add'))
-        self.populate_object(fields, ingredients)
-        self.selenium.find_element_by_name('_save').click()
-        self.assertIn('The recipe "%s" was added successfully.' % fields['title'], self.selenium.find_element_by_tag_name('body').text)
-        self.assertTrue(Recipe.objects.filter(title=fields['title']).exists())
+        all_ingredients = [['Local Honey', '4.540', '70'],
+                           ['Local Water', '9.725', '140'],
+                           ['Local Water', '9.725', '70'],
+                           ['Red Star Champagne Yeast', '1', '100']]
+        ingindex_output = [[[0, 1, 2], 'At least one yeast is required'],
+                           [[1, 2, 3], 'At least one sugar source is required'],
+                           [[0, 1, 3], 'At least two solvents with different temperatures are required'],
+                           [[0, 1, 1, 3], 'At least two solvents with different temperatures are required'],
+                           [[0, 1, 2, 3], 'was added successfully']]
+        for test in ingindex_output:
+            ingindex, output = test
+            ingredients = [all_ingredients[x] for x in ingindex]
+            self.assertFalse(Recipe.objects.filter(title=fields['title']).exists())
+            self.go(reverse('admin:meadery_recipe_add'))
+            self.populate_object(fields, ingredients)
+            self.selenium.find_element_by_name('_save').click()
+            self.assertIn(output, self.selenium.find_element_by_tag_name('body').text)
+            if output is 'was added successfully':
+                self.assertTrue(Recipe.objects.filter(title=fields['title']).exists())
+            else:
+                self.assertFalse(Recipe.objects.filter(title=fields['title']).exists())
 
     def test_modify(self):
         try:
@@ -256,51 +261,37 @@ class RecipeTestCase(SeleniumTestCase):
 class BatchTestCase(SeleniumTestCase):
     fixtures = ['meadery']
 
-    def test_add_from_scratch(self):
-        # JMT: for now, zero or more ingredients makes a batch.
-        # In the future, batches will require:
-        #  - one or more sugars, two or more solvents, and one or more yeasts
-        #  - the solvents must be of different temperatures
-        # In the far future, batches may also require:
+    def test_add(self):
+        # JMT: in the far future, batchs may also require:
         #  - the final temperature of the mixture be in the yeast friendly range
         #  - the final volume of the mixture be no bigger than the bucket/carboy it goes into
-        # Set boring fields.
         fields = {'title': 'Test Batch',
                   'description': 'Test description!',
                   'brewname': 'SIP 99',
                   'batchletter': 'A',
                   'event': 'Christmas',
                   'jars': '0'}
-        ingredients = [['Local Honey', '4.540', '70'],
-                       ['Local Water', '9.725', '140'],
-                       ['Local Water', '9.725', '70'],
-                       ['Red Star Champagne Yeast', '1', '100']]
-        self.assertFalse(Batch.objects.filter(title=fields['title']).exists())
-        self.go(reverse('admin:meadery_batch_add'))
-        self.populate_object(fields, ingredients)
-        self.selenium.find_element_by_name('_save').click()
-        self.assertIn('The batch "%s %s" was added successfully.' % (fields['brewname'], fields['batchletter']), self.selenium.find_element_by_tag_name('body').text)
-        self.assertTrue(Batch.objects.filter(title=fields['title']).exists())
-
-    def test_add_from_recipe(self):
-        # Set boring fields.
-        fields = {'title': 'Test Batch',
-                  'description': 'Test description!',
-                  'brewname': 'SIP 99',
-                  'batchletter': 'A',
-                  'event': 'Christmas',
-                  'jars': '0'}
-        try:
-            recipe = Recipe.objects.all()[0].name
-        except IndexError:
-            self.fail('No recipe found!')
-        self.assertFalse(Batch.objects.filter(title=fields['title']).exists())
-        self.go(reverse('admin:meadery_batch_add'))
-        self.pick_option('recipe', recipe)
-        self.populate_object(fields)
-        self.selenium.find_element_by_name('_save').click()
-        self.assertIn('The batch "%s %s" was added successfully.' % (fields['brewname'], fields['batchletter']), self.selenium.find_element_by_tag_name('body').text)
-        self.assertTrue(Batch.objects.filter(title=fields['title']).exists())
+        all_ingredients = [['Local Honey', '4.540', '70'],
+                           ['Local Water', '9.725', '140'],
+                           ['Local Water', '9.725', '70'],
+                           ['Red Star Champagne Yeast', '1', '100']]
+        ingindex_output = [[[0, 1, 2], 'At least one yeast is required.'],
+                           [[1, 2, 3], 'At least one sugar source is required.'],
+                           [[0, 1, 3], 'At least two solvents with different temperatures are required.'],
+                           [[0, 1, 1, 3], 'At least two solvents with different temperatures are required.'],
+                           [[0, 1, 2, 3], 'was added successfully']]
+        for test in ingindex_output:
+            ingindex, output = test
+            ingredients = [all_ingredients[x] for x in ingindex]
+            self.assertFalse(Batch.objects.filter(title=fields['title']).exists())
+            self.go(reverse('admin:meadery_batch_add'))
+            self.populate_object(fields, ingredients)
+            self.selenium.find_element_by_name('_save').click()
+            self.assertIn(output, self.selenium.find_element_by_tag_name('body').text)
+            if output is 'was added successfully':
+                self.assertTrue(Batch.objects.filter(title=fields['title']).exists())
+            else:
+                self.assertFalse(Batch.objects.filter(title=fields['title']).exists())
 
     def test_modify(self):
         try:
@@ -396,7 +387,11 @@ class BatchTestCase(SeleniumTestCase):
             self.selenium.find_element_by_link_text('Create product from batch').click()
             self.assertIn(output, self.selenium.find_element_by_tag_name('body').text)
             new_product_count = Product.objects.count()
-            self.assertEqual(new_product_count, old_product_count + (1 if output is 'One product was created!' else 0))
+            if output is 'One product was created!':
+                self.assertTrue(Product.objects.filter(title=batch.title).exists())
+                self.assertEqual(new_product_count, old_product_count + 1)
+            else:
+                self.assertEqual(new_product_count, old_product_count)
 
     def test_make_labels(self):
         # JMT: conventional wisdom on the internet says don't test file downloads

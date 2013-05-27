@@ -1,7 +1,7 @@
 from django.contrib import admin
 from utils.buttonadmin import ButtonAdmin
 from .models import Ingredient, IngredientItem, Recipe, Batch, Sample, Product, ProductReview
-from .forms import IngredientAdminForm, RecipeAdminForm, BatchAdminForm, SampleAdminForm, ProductAdminForm, ProductReviewForm
+from .forms import IngredientAdminForm, IngredientItemFormset, RecipeAdminForm, BatchAdminForm, SampleAdminForm, ProductAdminForm, ProductReviewForm
 from meadery import create_batch_from_recipe, create_recipe_from_batch, create_product_from_batch, make_labels_from_batch
 from django.core.urlresolvers import reverse
 from decimal import Decimal
@@ -19,6 +19,7 @@ admin.site.register(Ingredient, IngredientAdmin)
 
 
 class IngredientItemInline(admin.StackedInline):
+    formset = IngredientItemFormset
     model = IngredientItem
     extra = 0
 
