@@ -116,7 +116,11 @@ class ParentManager(models.Manager):
 def set_category(sender, **kwargs):
     instance = kwargs.pop('instance', False)
     if instance.items() is not []:
-        instance.category = instance.suggested_category
+        sugar_types = set([item.ingredient.subtype for item in instance.items(Ingredient.TYPE_SUGAR)])
+        solvent_types = set([item.ingredient.subtype for item in instance.items(Ingredient.TYPE_SOLVENT)])
+        flavor_types = set([item.ingredient.subtype for item in instance.items(Ingredient.TYPE_FLAVOR)])
+
+        instance.category = instance.suggested_category(sugar_types, solvent_types, flavor_types)
 
 
 class Parent(models.Model):
@@ -195,12 +199,7 @@ class Parent(models.Model):
         else:
             return None
 
-    @property
-    def suggested_category(self):
-        sugar_types = set([item.ingredient.subtype for item in self.items(Ingredient.TYPE_SUGAR)])
-        solvent_types = set([item.ingredient.subtype for item in self.items(Ingredient.TYPE_SOLVENT)])
-        flavor_types = set([item.ingredient.subtype for item in self.items(Ingredient.TYPE_FLAVOR)])
-
+    def suggested_category(self, sugar_types, solvent_types, flavor_types):
         # Identify based on sugar.
         mead_type = {}
         if len(sugar_types) == 1:

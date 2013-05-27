@@ -243,6 +243,47 @@ class RecipeTestCase(SeleniumTestCase):
         self.assertIn('The recipe "%s" was deleted successfully.' % name, self.selenium.find_element_by_tag_name('body').text)
         self.assertFalse(Recipe.objects.filter(pk=pk).exists())
 
+    def test_category(self):
+        fields = {'title': 'Test Recipe',
+                  'description': 'Test description'}
+        dry_ingredients = [['Local Honey', '4.540', '70'],
+                           ['Local Water', '9.725', '140'],
+                           ['Local Water', '9.725', '70'],
+                           ['Red Star Champagne Yeast', '1', '100']]
+        cyser_ingredients = [['Local Honey', '4.540', '70'],
+                             ['Apple Juice', '9.725', '140'],
+                             ['Apple Juice', '9.725', '70'],
+                             ['Red Star Champagne Yeast', '1', '100']]
+        melomel_ingredients = [['Local Honey', '4.540', '70'],
+                               ['Local Water', '9.725', '140'],
+                               ['Local Water', '9.725', '70'],
+                               ['Freeze-Dried Blueberry Powder', '0.238', '100'],
+                               ['Red Star Champagne Yeast', '1', '100']]
+        metheglin_ingredients = [['Local Honey', '4.540', '70'],
+                                 ['Local Water', '9.725', '140'],
+                                 ['Local Water', '9.725', '70'],
+                                 ['Cinnamon Sticks', '10', '100'],
+                                 ['Red Star Champagne Yeast', '1', '100']]
+        open_ingredients = [['Local Honey', '4.540', '70'],
+                            ['Apple Juice', '9.725', '140'],
+                            ['Apple Juice', '9.725', '70'],
+                            ['Cinnamon Sticks', '10', '100'],
+                            ['Red Star Champagne Yeast', '1', '100']]
+        tests = [[dry_ingredients, Parent.TRADITIONAL_DRY],
+                 [cyser_ingredients, Parent.MELOMEL_CYSER],
+                 [melomel_ingredients, Parent.MELOMEL_OTHER],
+                 [metheglin_ingredients, Parent.OTHER_METHEGLIN],
+                 [open_ingredients, Parent.OTHER_OPEN_CATEGORY], ]
+        for test in tests:
+            ingredients, category = test
+            self.assertFalse(Recipe.objects.filter(title=fields['title']).exists())
+            self.go(reverse('admin:meadery_recipe_add'))
+            self.populate_object(fields, ingredients)
+            self.selenium.find_element_by_name('_save').click()
+            self.assertTrue(Recipe.objects.filter(title=fields['title']).exists())
+            self.assertEqual(Recipe.objects.get(title=fields['title']).category, category)
+            Recipe.objects.filter(title=fields['title']).delete()
+
     def test_create_batch_from_recipe(self):
         try:
             recipe = Recipe.objects.all()[0]

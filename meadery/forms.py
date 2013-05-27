@@ -1,6 +1,6 @@
 from django import forms
 from django.core.exceptions import ValidationError
-from .models import Ingredient, IngredientItem, Recipe, Batch, Sample, Product, ProductReview
+from .models import Ingredient, IngredientItem, Parent, Recipe, Batch, Sample, Product, ProductReview
 
 
 class IngredientAdminForm(forms.ModelForm):
@@ -58,6 +58,9 @@ class IngredientItemFormset(forms.models.BaseInlineFormSet):
 
         if not yeast_types.issubset(set(a for (a, b) in Ingredient.YEAST_TYPES)):
             raise ValidationError('Unknown yeast type found -- check ingredients!')
+
+        # Now that we know the mead is valid, set the category.
+        self.instance.category = self.instance.suggested_category(sugar_types, solvent_types, flavor_types)
 
 
 class RecipeAdminForm(forms.ModelForm):
