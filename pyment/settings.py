@@ -203,6 +203,9 @@ LOGGING = {
 # Email!
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 
+# South stuff
+SOUTH_TESTS_MIGRATE = False
+
 # Import local settings.
 try:
     from settings_local import *

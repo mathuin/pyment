@@ -8,15 +8,20 @@ def create_batch_from_recipe(recipe):
     batch = Batch()
     batch.brewname = 'CHANGEME'
     batch.batchletter = 'A'
+    batch.recipe = None
+    batch.event = 'Christmas'
+    batch.jars = 0
+    batch.save()
     batch.recipe = recipe
     # First copy fields from recipe to batch.
-    [setattr(batch, field.name, getattr(recipe, field.name)) for field in Recipe._meta.fields if field.name != 'id']
-    batch.jars = 0
+    for field in Recipe._meta.fields:
+        if field.name != 'id' and field.name != 'pk':
+            setattr(batch, field.name, getattr(recipe, field.name))
     batch.save()
     for item in IngredientItem.objects.filter(parent=recipe):
         new_item = item
         new_item.pk = None
-        new_item.recipe = batch
+        new_item.parent = batch
         new_item.save()
     return batch
 
@@ -24,20 +29,25 @@ def create_batch_from_recipe(recipe):
 def create_recipe_from_batch(batch):
     recipe = Recipe()
     # First copy fields from recipe to batch.
-    [setattr(recipe, field.name, getattr(batch, field.name)) for field in Recipe._meta.fields if field.name != 'id']
+    for field in Recipe._meta.fields:
+        if field.name != 'id' and field.name != 'pk':
+            setattr(recipe, field.name, getattr(batch, field.name))
     recipe.title = '%s Recipe' % batch.name
     recipe.save()
     # Now copy separate items.
     for item in IngredientItem.objects.filter(parent=batch):
         new_item = item
         new_item.pk = None
-        new_item.recipe = recipe
+        new_item.parent = recipe
         new_item.save()
     return recipe
 
 
 def create_product_from_batch(batch):
-    if batch.jars > 0:
+    # Do not create product if product already exists!
+    if Product.objects.filter(brewname=batch.brewname, batchletter=batch.batchletter).exists() or batch.sample_set.count() == 0 or batch.jars == 0:
+        return None
+    else:
         product = Product()
         product.brewname = batch.brewname
         product.batchletter = batch.batchletter
@@ -55,8 +65,6 @@ def create_product_from_batch(batch):
         product.category = batch.category
         product.save()
         return product
-    else:
-        return None
 
 
 try:

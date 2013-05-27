@@ -4,7 +4,9 @@
 
 {% block content %}
 	<div class="product_image" >
+                {% if p.image %}
 		<img src="{% static p.image.url %}" alt="{{ p.title }}" />
+                {% endif %}
 	</div>
 	<h3>Product</h3>
 	<h4>{{ p.title }} ({{ p.name }})</h4>

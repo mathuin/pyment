@@ -4,9 +4,10 @@ from optparse import make_option
 
 
 class Command(BaseCommand):
-    args = '<warehouse number>'
     help = 'Generates a crate utilization table for the specified warehouse.'
     option_list = BaseCommand.option_list + (
+        make_option('--warehouse',
+                    help='Warehouse for which table is generated.'),
         make_option('--full',
                     action='store_true',
                     dest='full',
@@ -20,12 +21,13 @@ class Command(BaseCommand):
     )
 
     def handle(self, *args, **options):
-        if len(args) != 1:
-            raise CommandError('Wrong number of arguments')
-        try:
-            warehouse_number = int(args[0])
-        except ValueError:
-            raise CommandError('Argument not an int: %s' % args[0])
+        if options['warehouse']:
+            if isinstance(options['warehouse'], (int, long)):
+                warehouse = options['warehouse']
+            else:
+                raise CommandError('Warehouse not an int: %s' % args[0])
+        else:
+            raise CommandError('Warehouse required!')
         if Warehouse.objects.filter(number=warehouse_number).exists():
             warehouse = Warehouse.objects.get(number=warehouse_number)
         else:
@@ -43,5 +45,5 @@ class Command(BaseCommand):
         for crate in sorted(Crate.objects.filter(bin__in=Bin.objects.filter(shelf__in=Shelf.objects.filter(row__in=Row.objects.filter(warehouse=warehouse)))), key=lambda c: c.jars*1.0/c.capacity):
             if (crate.jars != crate.capacity and crate.jars != 0) or (options['full'] and crate.jars == crate.capacity) or (options['empty'] and crate.jars == 0):
                 # The warehouse is superfluous here
-                loc = crate.bin.longname[len(warehouse.longname):]
+                loc = crate.bin.longname[len(warehouse.longname)+1:]
                 self.stdout.write(dataformat.format(crate.id, loc, crate.capacity, crate.jars))
