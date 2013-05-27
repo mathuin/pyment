@@ -1,4 +1,4 @@
-from django.core.management.base import NoArgsCommand
+from django.core.management.base import BaseCommand
 from inventory.models import Jar
 from pyment import settings
 from datetime import datetime, timedelta
@@ -6,9 +6,9 @@ from django.utils.timezone import utc
 from optparse import make_option
 
 
-class Command(NoArgsCommand):
+class Command(BaseCommand):
     help = 'Delete inactive jars more than %d days old' % settings.INACTIVE_JAR_AGE_DAYS
-    option_list = NoArgsCommand.option_list + (
+    option_list = BaseCommand.option_list + (
         make_option('--dry-run',
                     action='store_true',
                     dest='dryrun',

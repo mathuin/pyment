@@ -12,27 +12,41 @@ class Command(BaseCommand):
                     dest='dryrun',
                     default=False,
                     help='Simulate the command'),
+        make_option('--source',
+                    dest='source',
+                    type='int',
+                    help='Crate from which jars are moved'),
+        make_option('--dest',
+                    dest='dest',
+                    type='int',
+                    help='Crate to which jars are moved'),
     )
 
     def handle(self, *args, **options):
-        if len(args) != 2:
-            raise CommandError('Wrong number of arguments')
-        try:
-            source_number = args[0]
-        except ValueError:
-            raise CommandError('Source crate is not an int: %s' % args[0])
+        if options['source']:
+            if isinstance(options['source'], (int, long)):
+                source_number = options['source']
+            else:
+                raise CommandError('Source crate is not an int: %s' % options['source'])
+        else:
+            raise CommandError('Source crate required!')
         if Crate.objects.filter(number=source_number).exists():
             source = Crate.objects.get(number=source_number)
         else:
             raise CommandError('Source crate not valid: %d' % source_number)
-        try:
-            dest_number = args[1]
-        except ValueError:
-            raise CommandError('Destination crate is not an int: %s' % args[1])
+
+        if options['dest']:
+            if isinstance(options['dest'], (int, long)):
+                dest_number = options['dest']
+            else:
+                raise CommandError('Destination crate is not an int: %s' % options['dest'])
+        else:
+            raise CommandError('Destination crate required!')
         if Crate.objects.filter(number=dest_number).exists():
             dest = Crate.objects.get(number=dest_number)
         else:
             raise CommandError('Destination crate not valid: %d' % dest_number)
+
         if source.jars + dest.jars > dest.capacity:
             raise CommandError('Destination crate does not have enough room')
         if not Jar.objects.filter(crate=source).exists():

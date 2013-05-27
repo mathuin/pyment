@@ -35,6 +35,10 @@ class Warehouse(models.Model):
     def __unicode__(self):
         return self.name
 
+    def save(self, *args, **kwargs):
+        self.slug = 'w%d' % self.number
+        super(Warehouse, self).save(*args, **kwargs)
+
     def get_absolute_url(self):
         return reverse('inventory_warehouse', kwargs={'warehouse_slug': self.slug})
 
@@ -72,9 +76,7 @@ class Row(models.Model):
         return self.name
 
     def save(self, *args, **kwargs):
-        self.slug = str(self.warehouse.slug)
-        super(Row, self).save(*args, **kwargs)
-        self.slug = str(self.warehouse.slug) + '-' + str(self.number)
+        self.slug = '-'.join([self.warehouse.slug, 'r%d' % self.number])
         super(Row, self).save(*args, **kwargs)
 
     def get_absolute_url(self):
@@ -119,9 +121,7 @@ class Shelf(models.Model):
         return self.name
 
     def save(self, *args, **kwargs):
-        self.slug = str(self.row.slug)
-        super(Shelf, self).save(*args, **kwargs)
-        self.slug = str(self.row.slug) + '-' + str(self.number)
+        self.slug = '-'.join([self.row.slug, 's%d' % self.number])
         super(Shelf, self).save(*args, **kwargs)
 
     def get_absolute_url(self):
@@ -172,9 +172,7 @@ class Bin(models.Model):
         return self.name
 
     def save(self, *args, **kwargs):
-        self.slug = str(self.shelf.slug)
-        super(Bin, self).save(*args, **kwargs)
-        self.slug = str(self.shelf.slug) + '-' + str(self.number)
+        self.slug = '-'.join([self.shelf.slug, 'b%d' % self.number])
         super(Bin, self).save(*args, **kwargs)
 
     def get_absolute_url(self):
@@ -217,6 +215,10 @@ class Crate(models.Model):
 
     def __unicode__(self):
         return self.name
+
+    def save(self, *args, **kwargs):
+        self.slug = 'c%d' % self.number
+        super(Crate, self).save(*args, **kwargs)
 
     def get_absolute_url(self):
         return reverse('inventory_crate', kwargs={'crate_slug': self.slug})
@@ -261,9 +263,7 @@ class Jar(models.Model):
         return self.name
 
     def save(self, *args, **kwargs):
-        self.slug = str(self.product.slug)
-        super(Jar, self).save(*args, **kwargs)
-        self.slug = str(self.product.slug) + str(self.number)
+        self.slug = ''.join([self.product.slug, str(self.number)])
         super(Jar, self).save(*args, **kwargs)
 
     def get_absolute_url(self):
