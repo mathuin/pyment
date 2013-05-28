@@ -18,7 +18,7 @@ class IngredientAdmin(admin.ModelAdmin):
 admin.site.register(Ingredient, IngredientAdmin)
 
 
-class IngredientItemInline(admin.StackedInline):
+class IngredientItemInline(admin.TabularInline):
     formset = IngredientItemFormset
     model = IngredientItem
     extra = 0
@@ -30,6 +30,10 @@ class RecipeAdmin(ButtonAdmin):
     list_display_links = ('title', )
     inlines = [IngredientItemInline, ]
     readonly_fields = ('category', )
+
+    def all_natural(self, obj):
+        return obj.all_natural
+    all_natural.boolean = True
 
     def total_cost(self, obj):
         return Decimal(sum([(item.amount * item.ingredient.cpu) for item in obj.items()])).quantize(Decimal('0.01'))
@@ -64,13 +68,37 @@ class RecipeAdmin(ButtonAdmin):
 admin.site.register(Recipe, RecipeAdmin)
 
 
+class SampleInline(admin.TabularInline):
+    model = Sample
+    extra = 0
+    # readonly_fields = ('date', 'temp', 'sg', 'notes')
+
+
 class BatchAdmin(ButtonAdmin):
     form = BatchAdminForm
     # list_display = ('name', 'recipe', 'all_natural', 'appellation', 'brew_sg', 'final_sg', 'link_samples', 'firstsg', 'lastsg', 'abv', 'jars', )
     list_display = ('name', 'recipe', 'all_natural', 'appellation', 'link_samples', 'firstsg', 'lastsg', 'abv', 'jars', )
     list_display_links = ('name', )
-    inlines = [IngredientItemInline, ]
-    readonly_fields = ('category', )
+    inlines = [SampleInline, IngredientItemInline, ]
+    readonly_fields = ('category', 'recipe', )
+    fieldsets = (
+        ('Event', {
+            'fields': (('brewname', 'batchletter', 'event', ), )
+        }),
+        ('Title', {
+            'fields': ('title', 'description', ),
+        }),
+        ('Jars', {
+            'fields': ('jars', )
+        }),
+        ('Recipe', {
+            'fields': (('recipe', 'category', ), )
+        }),
+    )
+
+    def all_natural(self, obj):
+        return obj.all_natural
+    all_natural.boolean = True
 
     def link_samples(self, obj):
         howmany = obj.sample_set.count()
@@ -123,12 +151,12 @@ class BatchAdmin(ButtonAdmin):
             return None
     create_product.short_description = 'Create product from batch'
 
-    def add_sample(self, request, batch=None):
-        if batch is not None:
-            return HttpResponseRedirect('%s?batch=%d' % (reverse('admin:meadery_sample_add'), batch.pk))
-        else:
-            return None
-    add_sample.short_description = 'Add sample'
+    # def add_sample(self, request, batch=None):
+    #     if batch is not None:
+    #         return HttpResponseRedirect('%s?batch=%d' % (reverse('admin:meadery_sample_add'), batch.pk))
+    #     else:
+    #         return None
+    # add_sample.short_description = 'Add sample'
 
     def make_labels(self, request, batch=None):
         if batch is not None:
@@ -146,7 +174,8 @@ class BatchAdmin(ButtonAdmin):
             return None
     make_labels.short_description = 'Make labels'
 
-    change_buttons = [make_labels, add_sample, create_recipe, create_product]
+    # change_buttons = [make_labels, add_sample, create_recipe, create_product]
+    change_buttons = [make_labels, create_recipe, create_product]
 
 admin.site.register(Batch, BatchAdmin)
 
