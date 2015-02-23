@@ -1,20 +1,24 @@
 # Django settings for pyment project.
 
-import os
-PROJECT_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), '..').decode('utf-8')).replace('\\', '/')
+import environ
+root = environ.Path(__file__) - 3
+env = environ.Env(DEBUG=(bool, False),)
+environ.Env.read_env()
 
-DEBUG = False
+site_root = root()
+app_root = root.path('app')
+public_root = root.path('public/')
+
+DEBUG = env('DEBUG')
 TEMPLATE_DEBUG = DEBUG
 
-# Defaults for site-specific settings.
-SITE_NAME = 'Pyment'
-META_KEYWORDS = 'mead, cyser, pyment, melomel, metheglin, braggot'
-META_DESCRIPTION = 'Pyment is a small online supplier of high-quality fermented honey wine products.'
-BREWER_NAME = 'Your Name'
-BREWER_EMAIL = 'your_email@example.com'
-BREWER_LOCATION = 'Anywhere, USA'
+SITE_NAME = env('SITE_NAME')
+META_KEYWORDS = env('META_KEYWORDS')
+META_DESCRIPTION = env('META_DESCRIPTION')
+BREWER_NAME = env('BREWER_NAME')
+BREWER_EMAIL = env('BREWER_EMAIL')
+BREWER_LOCATION = env('BREWER_LOCATION')
 
-# If the above values are changed, the following two must be updated
 ADMINS = (
     # ('Your Name', 'your_email@example.com'),
     (BREWER_NAME, BREWER_EMAIL),
@@ -23,19 +27,12 @@ ADMINS = (
 MANAGERS = ADMINS
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',  # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
-        'NAME': 'pyment_db',
-        'USER': 'pyment_user',           # Not used with sqlite3.
-        'PASSWORD': 'pyment_password',   # Not used with sqlite3.
-        'HOST': 'localhost',             # Set to empty string for localhost. Not used with sqlite3.
-        'PORT': '',                      # Set to empty string for default. Not used with sqlite3.
-    }
+    'default': env.db(),
 }
 
 # Hosts/domain names that are valid for this site; required if DEBUG is False
 # See https://docs.djangoproject.com/en/1.5/ref/settings/#allowed-hosts
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['localhost']
 
 # Local time zone for this installation. Choices can be found here:
 # http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
@@ -62,18 +59,18 @@ USE_TZ = True
 
 # Absolute filesystem path to the directory that will hold user-uploaded files.
 # Example: "/home/media/media.lawrence.com/media/"
-MEDIA_ROOT = os.path.join(PROJECT_ROOT, 'static')
+MEDIA_ROOT = public_root('media')
 
 # URL that handles the media served from MEDIA_ROOT. Make sure to use a
 # trailing slash.
 # Examples: "http://media.lawrence.com/media/", "http://example.com/media/"
-MEDIA_URL = ''
+MEDIA_URL = '/media/'
 
 # Absolute path to the directory static files should be collected to.
 # Don't put anything in this directory yourself; store your static files
 # in apps' "static/" subdirectories and in STATICFILES_DIRS.
 # Example: "/home/media/media.lawrence.com/static/"
-STATIC_ROOT = ''
+STATIC_ROOT = public_root('static')
 
 # URL prefix for static files.
 # Example: "http://media.lawrence.com/static/"
@@ -84,7 +81,7 @@ STATICFILES_DIRS = (
     # Put strings here, like "/home/html/static" or "C:/www/django/static".
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
-    os.path.join(PROJECT_ROOT, 'templates', 'static'),
+    app_root('templates', 'static'),
 )
 
 # List of finder classes that know how to find static files in
@@ -92,17 +89,15 @@ STATICFILES_DIRS = (
 STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.FileSystemFinder',
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
-#    'django.contrib.staticfiles.finders.DefaultStorageFinder',
 )
 
 # Make this unique, and don't share it with anybody.
-SECRET_KEY = '&amp;b_htw&amp;h^-@cd&amp;666#-s49)=h@yijtb1oz+o@(a^!+-5610hcd'
+SECRET_KEY = env('SECRET_KEY')
 
 # List of callables that know how to import templates from various sources.
 TEMPLATE_LOADERS = (
     'django.template.loaders.filesystem.Loader',
     'django.template.loaders.app_directories.Loader',
-#     'django.template.loaders.eggs.Loader',
 )
 
 TEMPLATE_CONTEXT_PROCESSORS = (
@@ -136,7 +131,8 @@ TEMPLATE_DIRS = (
     # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
-    os.path.join(PROJECT_ROOT, 'templates'),
+    # os.path.join(PROJECT_ROOT, 'templates'),
+    app_root('templates'),
 )
 
 LOGIN_REDIRECT_URL = '/accounts/my_account'
