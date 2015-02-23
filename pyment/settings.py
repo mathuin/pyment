@@ -167,8 +167,6 @@ INSTALLED_APPS = (
     'django.contrib.admin',
     # Uncomment the next line to enable admin documentation:
     'django.contrib.admindocs',
-    # South!
-    'south',
 )
 
 # A sample logging configuration. The only tangible logging
@@ -202,12 +200,3 @@ LOGGING = {
 
 # Email!
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-
-# South stuff
-SOUTH_TESTS_MIGRATE = False
-
-# Import local settings.
-try:
-    from settings_local import *
-except ImportError:
-    pass
