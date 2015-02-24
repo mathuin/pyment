@@ -23,5 +23,10 @@ fig start db && \
     sleep 5 && \
     docker exec -i pyment_db_1 psql -U pyment < pyment_db.bak && \
     fig stop db
+# to *export* fixtures, do this:
+# fig start db && \
+#     sleep 5 && \
+#     docker exec -i pyment_db_1 pg_dump -U pyment pyment > newpyment.bak && \
+#     fig stop db
 # populate media directory
 fig run web tar -C /opt/public -xf /opt/app/media.tar

@@ -193,4 +193,15 @@ LOGGING = {
 }
 
 # Email!
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+email_config = env.email_url()
+EMAIL_HOST = email_config['EMAIL_HOST']
+EMAIL_PORT = email_config['EMAIL_PORT']
+EMAIL_HOST_USER = email_config['EMAIL_HOST_USER']
+EMAIL_HOST_PASSWORD = email_config['EMAIL_HOST_PASSWORD']
+EMAIL_USE_TLS = email_config['EMAIL_USE_TLS']
+EMAIL_SUBJECT_PREFIX = env('EMAIL_SUBJECT_PREFIX')
+SERVER_EMAIL = email_config['EMAIL_HOST_USER']
+DEFAULT_FROM_EMAIL = email_config['EMAIL_HOST_USER']
+
+# New test runner as of 1.6
+TEST_RUNNER = 'django.test.runner.DiscoverRunner'

@@ -14,7 +14,6 @@ class WarehouseAdmin(admin.ModelAdmin):
     ordering = ['number']
     search_fields = ['number', 'location']
     readonly_fields = ('created_at', 'updated_at',)
-    prepopulated_fields = {'slug': ('number',)}
 
     def link_rows(self, obj):
         howmany = obj.rows
@@ -99,7 +98,6 @@ class CrateAdmin(admin.ModelAdmin):
     ordering = ['bin', 'number']
     search_fields = ['number']
     readonly_fields = ('created_at', 'updated_at',)
-    prepopulated_fields = {'slug': ('number',)}
 
     def link_jars(self, obj):
         howmany = obj.jars
