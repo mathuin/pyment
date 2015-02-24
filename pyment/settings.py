@@ -1,13 +1,13 @@
 # Django settings for pyment project.
 
-import environ
-root = environ.Path(__file__) - 3
-env = environ.Env(DEBUG=(bool, False),)
-environ.Env.read_env()
+from environ import Path, Env
+root = Path(__file__) - 3
+env = Env(DEBUG=(bool, False),)
+Env.read_env()
 
 site_root = root()
 app_root = root.path('app')
-public_root = root.path('public/')
+public_root = Path(env('PUBLIC_ROOT'))
 
 DEBUG = env('DEBUG')
 TEMPLATE_DEBUG = DEBUG
