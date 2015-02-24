@@ -1,12 +1,10 @@
 # Django settings for pyment project.
 
 from environ import Path, Env
-root = Path(__file__) - 3
 env = Env(DEBUG=(bool, False),)
 Env.read_env()
 
-site_root = root()
-app_root = root.path('app')
+site_root = Path(__file__) - 2
 public_root = Path(env('PUBLIC_ROOT'))
 
 DEBUG = env('DEBUG')
@@ -32,7 +30,7 @@ DATABASES = {
 
 # Hosts/domain names that are valid for this site; required if DEBUG is False
 # See https://docs.djangoproject.com/en/1.5/ref/settings/#allowed-hosts
-ALLOWED_HOSTS = ['localhost']
+ALLOWED_HOSTS = ['localhost', '127.0.0.1']
 
 # Local time zone for this installation. Choices can be found here:
 # http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
@@ -81,7 +79,7 @@ STATICFILES_DIRS = (
     # Put strings here, like "/home/html/static" or "C:/www/django/static".
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
-    app_root('templates', 'static'),
+    site_root('templates', 'static'),
 )
 
 # List of finder classes that know how to find static files in
@@ -132,7 +130,7 @@ TEMPLATE_DIRS = (
     # Always use forward slashes, even on Windows.
     # Don't forget to use absolute paths, not relative paths.
     # os.path.join(PROJECT_ROOT, 'templates'),
-    app_root('templates'),
+    site_root('templates'),
 )
 
 LOGIN_REDIRECT_URL = '/accounts/my_account'
