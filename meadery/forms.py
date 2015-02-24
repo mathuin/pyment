@@ -6,6 +6,7 @@ from .models import Ingredient, IngredientItem, Parent, Recipe, Batch, Sample, P
 class IngredientAdminForm(forms.ModelForm):
     class Meta:
         model = Ingredient
+        exclude = ['slug']
 
     def clean(self):
         cleaned_data = super(IngredientAdminForm, self).clean()
@@ -66,21 +67,25 @@ class IngredientItemFormset(forms.models.BaseInlineFormSet):
 class RecipeAdminForm(forms.ModelForm):
     class Meta:
         model = Recipe
+        exclude = ['slug']
 
 
 class BatchAdminForm(forms.ModelForm):
     class Meta:
         model = Batch
+        exclude = ['slug']
 
 
 class SampleAdminForm(forms.ModelForm):
     class Meta:
         model = Sample
+        exclude = ['slug']
 
 
 class ProductAdminForm(forms.ModelForm):
     class Meta:
         model = Product
+        exclude = ['slug']
 
 
 class ProductAddToCartForm(forms.Form):

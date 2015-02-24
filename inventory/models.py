@@ -230,8 +230,8 @@ class Crate(models.Model):
 
 
 class InStockJarManager(models.Manager):
-    def get_query_set(self):
-        return super(InStockJarManager, self).get_query_set().filter(is_active=True, is_available=True)
+    def get_queryset(self):
+        return super(InStockJarManager, self).get_queryset().filter(is_active=True, is_available=True)
 
 
 class Jar(models.Model):

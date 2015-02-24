@@ -194,3 +194,6 @@ LOGGING = {
 
 # Email!
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+
+# New test runner as of 1.6
+TEST_RUNNER = 'django.test.runner.DiscoverRunner'
