@@ -47,7 +47,37 @@ The site works like a standard e-commerce site, where orders can be placed.  Fro
 
 Copy pyment/settings.py to pyment/settings_local.py and modify it to suit your environment.
 
-Sync the database and start the admin site.  Create flatpages for "about" and "contact".  This should be enough for the site itself to look right.
+Use the text editor of your choice to create a new file named
+```pyment/.env```.  The following is an example env file which
+includes all the required variables:
+
+```
+# DEBUG must be false for production
+DEBUG=False
+
+# Site-specific parameters
+SITE_NAME='My Pyment Site'
+META_KEYWORDS='mead, cyser, pyment, melomel, metheglin, braggot'
+META_DESCRIPTION='This is my pyment site where I track the production, storage, and distribution of my home-brewed mead.'
+BREWER_NAME='My Name'
+BREWER_EMAIL='My Email'
+BREWER_LOCATION='My Location'
+
+# 1 is example.com 2 is production
+SITE_ID=2
+
+# Make this unique, and don't share it with anybody.
+SECRET_KEY='NOPE'
+
+# public file root
+PUBLIC_ROOT=/web/pyment-site
+
+# mail
+EMAIL_URL='smtps://username@domain.org:password@mailhost:port'
+EMAIL_SUBJECT_PREFIX='[Pyment] '
+```
+
+Modify the file to reflect your site's requirements.  Generate your own secret key for Django and use it in the file.  Sync the database and start the admin site.  Create flatpages for "about" and "contact".  This should be enough for the site itself to look right.
 
 The cornerstone of the inventory model is the warehouse.  Each warehouse should contain at least one row.  Each row should contain at least one shelf.  Each shelf should contain at least one bin (a section of shelf set aside for one or more crates).  Using the admin site, create the warehouse first, then rows, then shelves, then bins.
 
@@ -60,6 +90,42 @@ Once all the mead has been entered into the database, take another tour of the s
 ## Custom labels
 
 Simple labels are created by default.  Custom labels can be produced by creating a file 'meadery\_local.py' in the meadery app which contains a 'generate\_labels(batch)' function, plus any supporting code.  If images are used on labels, they must be copied into the static directory and 'collectstatic' must be run.
+
+# Development
+
+Docker and fig are used to assist with developing this software.  Both of these tools should be installed on the host server.  Some variables have required values for development:
+
+```
+# DEBUG must be True when using fig
+DEBUG=True
+
+# Container uses this value
+PUBLIC_ROOT=/opt/public
+```
+
+If ```squid-deb-proxy``` is running on port 8000, the Dockerfile will access the cache when retrieving packages from the Internet.  This can save considerable time when rebuilding images.
+
+The containers can be built using the following command:
+
+```
+$ ./dev-setup.sh
+```
+
+A database dump and collection of media files are both required to construct the containers.  These are not currently supplied, but fixing that has a high priority!
+
+To run the existing test suite, use the following command:
+
+```
+$ fig run web python manage.py shell
+```
+
+To bring up the web site on port 8001:
+
+```
+$ fig up
+```
+
+Thanks!
 
 # License
 
