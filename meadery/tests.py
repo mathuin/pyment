@@ -6,7 +6,8 @@ from django.core.urlresolvers import reverse
 from models import Ingredient, IngredientItem, Parent, Recipe, SIPParent, Batch, Sample, Product, ProductReview
 from inventory.models import Jar
 from selenium.common.exceptions import NoSuchElementException
-from selenium.webdriver.firefox.webdriver import WebDriver
+#from selenium.webdriver.firefox.webdriver import WebDriver
+from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 
 
@@ -16,7 +17,7 @@ class SeleniumTestCase(LiveServerTestCase):
 
     @classmethod
     def setUpClass(cls):
-        cls.selenium = WebDriver()
+        cls.selenium = webdriver.PhantomJS()  # WebDriver()
         cls.selenium.implicitly_wait(1)
         super(SeleniumTestCase, cls).setUpClass()
 
