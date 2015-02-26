@@ -2,10 +2,18 @@ FROM phusion/baseimage:0.9.16
 MAINTAINER mathuin@gmail.com
 EXPOSE 8000
 
+ENV DEBIAN_FRONTEND noninteractive
+
 RUN apt-get update && apt-get install -y \
+    libfontconfig1 \
+    libfreetype6 \
     libpq-dev \
+    nodejs-legacy \
+    npm \
     python-dev \
     python-pip
+
+RUN npm -g install phantomjs
 
 ENV PYTHONUNBUFFERED 1
 
