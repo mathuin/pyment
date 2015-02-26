@@ -103,6 +103,8 @@ DEBUG=True
 PUBLIC_ROOT=/opt/public
 ```
 
+If ```squid-deb-proxy``` is running on port 8000, the Dockerfile will access the cache when retrieving packages from the Internet.  This can save considerable time when rebuilding images.
+
 The containers can be built using the following command:
 
 ```
