@@ -1,0 +1,37 @@
+dbdata:
+  image: postgres:9.4
+  volumes:
+    - /var/lib/postgresql/data
+  command: true
+
+db:
+  image: postgres:9.4
+  volumes_from:
+    - dbdata
+  ports:
+    - "5432"
+  environment:
+    - POSTGRES_USER=pyment
+    - POSTGRES_PASSWORD=pyment_password
+    - POSTGRES_DATABASE=pyment
+
+public:
+  image: phusion/baseimage:0.9.16
+  volumes:
+    - /opt/public
+  command: true
+
+web:
+  build: .
+  command: python manage.py runserver 0.0.0.0:8001
+  volumes:
+    - .:/opt/app/
+  volumes_from:
+    - public
+  ports:
+    - "8001:8001"
+  links:
+    - db
+  environment:
+    - DJANGO_SETTINGS_MODULE=pyment.settings
+    - DATABASE_URL=postgres://pyment:pyment_password@db:5432/pyment

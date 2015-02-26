@@ -343,8 +343,8 @@ class Sample(models.Model):
 
 
 class ActiveProductManager(models.Manager):
-    def get_query_set(self):
-        return super(ActiveProductManager, self).get_query_set().filter(is_active=True)
+    def get_queryset(self):
+        return super(ActiveProductManager, self).get_queryset().filter(is_active=True)
 
 
 class FeaturedProductManager(models.Manager):
@@ -353,8 +353,8 @@ class FeaturedProductManager(models.Manager):
 
 
 class InStockProductManager(models.Manager):
-    def get_query_set(self):
-        return super(InStockProductManager, self).get_query_set().filter(is_active=True, jar__is_active=True, jar__is_available=True).distinct()
+    def get_queryset(self):
+        return super(InStockProductManager, self).get_queryset().filter(is_active=True, jar__is_active=True, jar__is_available=True).distinct()
 
 
 class Product(SIPParent):

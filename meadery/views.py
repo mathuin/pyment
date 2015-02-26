@@ -8,7 +8,7 @@ from stats import stats
 from pyment.settings import PRODUCTS_PER_ROW, SITE_NAME
 from django.contrib.auth.decorators import login_required
 from django.template.loader import render_to_string
-from django.utils import simplejson
+import json
 
 
 def index(request, template_name='meadery/index.djhtml'):
