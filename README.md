@@ -75,6 +75,10 @@ PUBLIC_ROOT=/web/pyment-site
 # mail
 EMAIL_URL='smtps://username@domain.org:password@mailhost:port'
 EMAIL_SUBJECT_PREFIX='[Pyment] '
+
+# hosts
+USE_X_FORWARDED_HOST=True
+ALLOWED_HOSTS=.example.org,
 ```
 
 Modify the file to reflect your site's requirements.  Generate your own secret key for Django and use it in the file.  Sync the database and start the admin site.  Create flatpages for "about" and "contact".  This should be enough for the site itself to look right.
