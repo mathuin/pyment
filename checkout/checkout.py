@@ -3,8 +3,9 @@ from models import Order, OrderItem, PickList, PickListItem
 from forms import CheckoutForm
 from meadery.models import Product
 from django.core.exceptions import ValidationError
-from django.core.mail import mail_managers
+from django.core.mail import mail_managers, send_mail
 from django.core.urlresolvers import reverse
+from pyment import settings
 
 
 def get_checkout_url(request):
@@ -44,9 +45,15 @@ def create_order(request):
         from accounts import profile
         profile.set(request)
     # mail the managers
-    mail_subject = 'An order has been placed!'
-    mail_message = '{0} has been placed by {1}.\n\nClick here: {2}'.format(order, order.user if order.user else 'anonymous', request.build_absolute_uri(reverse('admin:checkout_order_change', args=(order.pk,))))
-    mail_managers(mail_subject, mail_message)
+    mail_manager_subject = '{0} has been placed!'.format(order)
+    mail_manager_message = '{0} has been placed by {1}.\n\nClick here: {2}'.format(order, order.user if order.user else 'anonymous', request.build_absolute_uri(reverse('admin:checkout_order_change', args=(order.pk,))))
+    mail_managers(mail_manager_subject, mail_manager_message)
+    # mail the customer
+    if order.email:
+        # FIXME: someday make templates for these emails
+        mail_customer_subject = 'Thank you for placing {0}!'.format(order.name)
+        mail_customer_message = '{0} was placed by you.  Click here for more details: {1}\n\nThank you for your order!\n\n{2}'.format(order.name, request.build_absolute_uri(order.get_absolute_url()), settings.SITE_NAME)
+        send_mail(mail_customer_subject, mail_customer_message, settings.DEFAULT_FROM_EMAIL, [order.email])
     # return the new order object
     return order
 
@@ -57,6 +64,12 @@ def cancel_order(self):
         OrderItem.objects.filter(order=self.pk).delete()
         self.status = Order.CANCELLED
         self.save()
+        # mail the customer
+        if self.email:
+            # FIXME: someday make templates for these emails
+            mail_customer_subject = '{0} has been cancelled'.format(self.name)
+            mail_customer_message = 'Our warehouse minions have cancelled {0}.  If you have any questions, please email us at {1}.\n\nWe apologize for any inconvenience!\n\n{2}'.format(self.name, settings.DEFAULT_FROM_EMAIL, settings.SITE_NAME)
+            send_mail(mail_customer_subject, mail_customer_message, settings.DEFAULT_FROM_EMAIL, [self.email])
         return True
     else:
         return False
@@ -83,6 +96,12 @@ def create_picklist(order):
         # on success, set picklist to Submitted and order to Processed
         order.status = Order.PROCESSED
         order.save()
+        # mail the customer
+        if order.email:
+            # FIXME: someday make templates for these emails
+            mail_customer_subject = '{0} is being processed!'.format(order.name)
+            mail_customer_message = 'Good news!  {0} has been generated from {1} which was placed by you.\n\nThank you again for your order!\n\n{2}'.format(picklist.name, order.name, settings.SITE_NAME)
+            send_mail(mail_customer_subject, mail_customer_message, settings.DEFAULT_FROM_EMAIL, [order.email])
         return picklist
     else:
         return None
@@ -109,6 +128,12 @@ def process_picklist(self):
             pli.jar.save()
         self.order.status = Order.DELIVERED
         self.order.save()
+        # mail the customer
+        if self.order.email:
+            # FIXME: someday make templates for these emails
+            mail_customer_subject = '{0} is available for pickup!'.format(self.order.name)
+            mail_customer_message = 'Good news!  Our friendly warehouse minions have processed {0} which was generated from {1} which was placed by you.\n\nPlease stop by and pick up your order soon!\n\n{2}'.format(self.name, self.order.name, settings.SITE_NAME)
+            send_mail(mail_customer_subject, mail_customer_message, settings.DEFAULT_FROM_EMAIL, [self.order.email])
         self.status = PickList.PROCESSED
         self.save()
         return True
@@ -127,6 +152,12 @@ def cancel_picklist(self):
         self.order.save()
         self.status = PickList.CANCELLED
         self.save()
+        # mail the customer
+        if self.order.email:
+            # FIXME: someday make templates for these emails
+            mail_customer_subject = '{0} is being reexamined'.format(self.order.name)
+            mail_customer_message = 'How unexpected!  {0} has been cancelled by our warehouse minions, but {1} is still active.\n\nWe apologize for any inconvenience, and we encourage you to watch your email for more details!\n\n{2}'.format(self.name, self.order.name, settings.SITE_NAME)
+            send_mail(mail_customer_subject, mail_customer_message, settings.DEFAULT_FROM_EMAIL, [self.order.email])
         return True
     else:
         return False
