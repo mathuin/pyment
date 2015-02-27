@@ -74,11 +74,41 @@ class SampleInline(admin.TabularInline):
     # readonly_fields = ('date', 'temp', 'sg', 'notes')
 
 
+class BatchActiveFilter(admin.SimpleListFilter):
+    # human-readable title in right sidebar
+    title = 'active'
+
+    parameter_name = 'jars'
+
+    def lookups(self, request, model_admin):
+        """
+        returns list of tuples.
+        first element: coded value for option
+        second element: human readable name for option
+        """
+        qs = model_admin.get_queryset(request)
+        if qs.filter(jars__gt=0).exists():
+            yield ('inactive', 'inactive')
+        if qs.filter(jars=0).exists():
+            yield ('active', 'active')
+
+    def queryset(self, request, queryset):
+        """
+        returns filtered queryset based on value provided in query
+        string
+        """
+        if self.value() == 'inactive':
+            return queryset.filter(jars__gt=0)
+        if self.value() == 'active':
+            return queryset.filter(jars=0)
+
+
 class BatchAdmin(ButtonAdmin):
     form = BatchAdminForm
     # list_display = ('name', 'recipe', 'all_natural', 'appellation', 'brew_sg', 'final_sg', 'link_samples', 'firstsg', 'lastsg', 'abv', 'jars', )
     list_display = ('name', 'recipe', 'all_natural', 'appellation', 'link_samples', 'firstsg', 'lastsg', 'abv', 'jars', )
     list_display_links = ('name', )
+    list_filter = (BatchActiveFilter,)
     inlines = [SampleInline, IngredientItemInline, ]
     readonly_fields = ('category', 'recipe', )
     fieldsets = (
