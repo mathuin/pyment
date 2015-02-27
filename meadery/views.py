@@ -2,7 +2,7 @@ from django.shortcuts import get_object_or_404, render
 from .models import Product, ProductReview
 from django.core import urlresolvers
 from cart.cart import add_to_cart
-from django.http import HttpResponseRedirect, HttpResponse
+from django.http import HttpResponseRedirect, HttpResponse, HttpResponseNotFound
 from .forms import ProductAddToCartForm, ProductReviewForm
 from stats import stats
 from pyment.settings import PRODUCTS_PER_ROW, SITE_NAME
@@ -21,8 +21,14 @@ def index(request, template_name='meadery/index.djhtml'):
 
 
 def show_category(request, category_value, template_name='meadery/category.djhtml'):
-    intcv = int(category_value)
-    name = [name for (value, name) in Product.MEAD_VIEWS if value == intcv][0]
+    try:
+        intcv = int(category_value)
+    except ValueError:
+        return HttpResponseNotFound('<h1>Invalid category</h1>')
+    names = [name for (value, name) in Product.MEAD_VIEWS if value == intcv]
+    if len(names) == 0:
+        return HttpResponseNotFound('<h1>Category not found</h1>')
+    name = names[0]
     description = Product.MEAD_DESCRIPTIONS[intcv]
     if intcv == Product.ALL:
         products = Product.instock.all()
