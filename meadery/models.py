@@ -133,9 +133,11 @@ class Parent(models.Model):
     CATEGORY_TRADITIONAL = 240
     CATEGORY_MELOMEL = 250
     CATEGORY_OTHER = 260
+    CATEGORY_ALL = 290
     MEAD_CATEGORIES = ((CATEGORY_TRADITIONAL, 'Traditional Mead'),
                        (CATEGORY_MELOMEL, 'Melomel'),
-                       (CATEGORY_OTHER, 'Other Meads'))
+                       (CATEGORY_OTHER, 'Other Meads'),
+                       (CATEGORY_ALL, 'All Meads'))
     TRADITIONAL_DRY = 241
     TRADITIONAL_SEMI_SWEET = 242
     TRADITIONAL_SWEET = 243
@@ -154,9 +156,13 @@ class Parent(models.Model):
     OTHER_CATEGORIES = ((OTHER_METHEGLIN, 'Metheglin'),
                         (OTHER_BRAGGOT, 'Braggot'),
                         (OTHER_OPEN_CATEGORY, 'Open Category Mead'))
+    ALL = 291
+    ALL_CATEGORIES = ((ALL, 'All'),)
+
     MEAD_SUBCATEGORIES = ((CATEGORY_TRADITIONAL, TRADITIONAL_CATEGORIES),
                           (CATEGORY_MELOMEL, MELOMEL_CATEGORIES),
-                          (CATEGORY_OTHER, OTHER_CATEGORIES))
+                          (CATEGORY_OTHER, OTHER_CATEGORIES),
+                          (CATEGORY_ALL, ALL_CATEGORIES))
     MEAD_CHOICES = tuple((b, d) for ((a, b), (c, d)) in zip(MEAD_CATEGORIES, MEAD_SUBCATEGORIES))
     # JMT: it would be awesome to redo categories to support two levels!
     MEAD_VIEWS = reduce(lambda t1, t2: t1+t2, [categories for (topvalue, categories) in MEAD_CHOICES])
@@ -168,7 +174,8 @@ class Parent(models.Model):
                          MELOMEL_OTHER: 'A mead made from honey and fruit (not grapes or apples).  (thanks to BJCP Style Guidelines 2008)',
                          OTHER_METHEGLIN: 'A spiced mead.  (thanks to BJCP Style Guidelines 2008)',
                          OTHER_BRAGGOT: 'A mead made with malt. (thanks to BJCP Style Guidelines 2008)',
-                         OTHER_OPEN_CATEGORY: 'A honey-based beverage that either combines ingredients from two or more of the other mead sub-categories, is a historical or indigenous mead (e.g., tej, Polish meads), or is a mead that does not fit into any other category.  Any specialty or experimental mead using additional sources of fermentables (e.g., maple syrup, molasses, brown sugar, or agave nectar), additional ingredients (e.g., vegetables, liquors, smoke, etc.), alternative processes (e.g., icing, oak-aging) or other unusual ingredient, process, or technique would also be appropriate in this category.'}
+                         OTHER_OPEN_CATEGORY: 'A honey-based beverage that either combines ingredients from two or more of the other mead sub-categories, is a historical or indigenous mead (e.g., tej, Polish meads), or is a mead that does not fit into any other category.  Any specialty or experimental mead using additional sources of fermentables (e.g., maple syrup, molasses, brown sugar, or agave nectar), additional ingredients (e.g., vegetables, liquors, smoke, etc.), alternative processes (e.g., icing, oak-aging) or other unusual ingredient, process, or technique would also be appropriate in this category.',
+                         ALL: 'Everything in the store!'}
 
     objects = ParentManager()
 

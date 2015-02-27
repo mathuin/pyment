@@ -21,9 +21,13 @@ def index(request, template_name='meadery/index.djhtml'):
 
 
 def show_category(request, category_value, template_name='meadery/category.djhtml'):
-    name = [name for (value, name) in Product.MEAD_VIEWS if value == int(category_value)][0]
-    description = Product.MEAD_DESCRIPTIONS[int(category_value)]
-    products = Product.instock.filter(category=category_value)
+    intcv = int(category_value)
+    name = [name for (value, name) in Product.MEAD_VIEWS if value == intcv][0]
+    description = Product.MEAD_DESCRIPTIONS[intcv]
+    if intcv == Product.ALL:
+        products = Product.instock.all()
+    else:
+        products = Product.instock.filter(category=category_value)
     page_title = name
     return render(request, template_name, locals())
 
