@@ -84,6 +84,9 @@ class Ingredient(models.Model):
     tolerance = models.IntegerField('Alcohol tolerance', default=12, help_text='Maximum alcohol tolerance in percent (only for yeast)')
     cpu = models.DecimalField('Cost Per Unit', max_digits=5, decimal_places=2, default=Decimal('1.00'), help_text='Cost in USD per unit (kilogram if solid, liter if liquid, other if other)')
 
+    class Meta:
+        ordering = ('state',)
+
     def __unicode__(self):
         return u'%s' % self.name
 
@@ -93,6 +96,9 @@ class IngredientItem(models.Model):
     ingredient = models.ForeignKey(Ingredient)
     amount = models.DecimalField(max_digits=5, decimal_places=3, help_text='Amount of ingredient (kilograms if solid, liters if liquid, units if other)')
     temp = models.IntegerField(help_text='Temperature of ingredient in degrees Fahrenheit')
+
+    class Meta:
+        ordering = ('ingredient', '-temp',)
 
     @property
     def to_mass(self):
@@ -331,6 +337,9 @@ class Sample(models.Model):
                0.0051,  0.0054,  0.0058,  0.0061,  0.0065,
                0.0069,  0.0073,  0.0077,  0.0081,  0.0085,
                0.0089,  0.0093,  0.0097,  0.0102,  0.0106]
+
+    class Meta:
+        ordering = ('date', )
 
     def __unicode__(self):
         return u'Sample #{0}'.format(self.pk)
