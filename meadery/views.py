@@ -31,9 +31,9 @@ def show_category(request, category_value, template_name='meadery/category.djhtm
     name = names[0]
     description = Product.MEAD_DESCRIPTIONS[intcv]
     if intcv == Product.ALL:
-        products = Product.instock.all()
+        products = Product.instock.exclude(thumbnail='')
     else:
-        products = Product.instock.filter(category=category_value)
+        products = Product.instock.filter(category=category_value).exclude(thumbnail='')
     page_title = name
     return render(request, template_name, locals())
 
