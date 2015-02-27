@@ -63,6 +63,7 @@ def create_product_from_batch(batch):
         product.meta_keywords = 'bogus'
         product.meta_description = 'bogus'
         product.category = batch.category
+        product.abv = batch.abv
         product.save()
         return product
 
