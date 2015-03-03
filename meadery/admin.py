@@ -1,4 +1,4 @@
-from django.contrib import admin
+from django.contrib import admin, messages
 from utils.buttonadmin import ButtonAdmin
 from .models import Ingredient, IngredientItem, Recipe, Batch, Sample, Product, ProductReview
 from .forms import IngredientAdminForm, IngredientItemFormset, RecipeAdminForm, BatchAdminForm, SampleAdminForm, ProductAdminForm, ProductReviewForm
@@ -72,13 +72,19 @@ class RecipeAdmin(ButtonAdmin):
                     brewname = form.cleaned_data['brewname']
                     batchletter = form.cleaned_data['batchletter']
                     event = form.cleaned_data['event']
-                    if create_batch_from_recipe(recipe, brewname, batchletter, event):
-                        self.message_user(request, 'One batch was created!')
+                    # JMT: if the batch exists, do not create the recipe
+                    # instead keep this page up and throw up a message
+                    # about how the values are no good
+                    if not Batch.objects.filter(brewname=brewname, batchletter=batchletter).exists():
+                        batch = create_batch_from_recipe(recipe, brewname, batchletter, event)
+                        self.message_user(request, 'One batch was created!', level=messages.SUCCESS)
+                        return HttpResponseRedirect(reverse('admin:meadery_batch_change', args=(batch.id,)))
                     else:
-                        self.message_user(request, 'No batch was created!')
+                        self.message_user(request, "A batch with that name and letter already exists!", level=messages.ERROR)
+                        return HttpResponseRedirect(reverse('admin:meadery_recipe_change', args=(recipe.id,)))
             if not form:
                 form = self.CreateBatchFromRecipeForm(initial={'_selected_action': recipe})
-            data = {'create_batch_from_recipe_form': form, }
+            data = {'create_batch_from_recipe_form': form, 'recipe': recipe}
             data.update(csrf(request))
             return render_to_response('admin/create_batch_from_recipe.djhtml', data)
         else:

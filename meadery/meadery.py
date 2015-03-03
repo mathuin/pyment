@@ -6,12 +6,9 @@ from labels import Sheet
 
 def create_batch_from_recipe(recipe, brewname, batchletter, event):
     batch = Batch()
-    #batch.brewname = 'CHANGEME'
     batch.brewname = brewname
-    #batch.batchletter = 'A'
     batch.batchletter = batchletter
     batch.recipe = None
-    #batch.event = 'Christmas'
     batch.event = event
     batch.jars = 0
     batch.save()
