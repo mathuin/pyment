@@ -7,6 +7,9 @@ from django.core.urlresolvers import reverse
 from decimal import Decimal
 from django.utils.safestring import mark_safe
 from django.http import HttpResponse, HttpResponseRedirect
+from django import forms
+from django.core.context_processors import csrf
+from django.shortcuts import render_to_response
 
 
 class IngredientAdmin(admin.ModelAdmin):
@@ -52,12 +55,32 @@ class RecipeAdmin(ButtonAdmin):
         return Decimal(obj.brew_sg - deltasg)
     final_sg.short_description = 'Projected FG'
 
+    class CreateBatchFromRecipeForm(forms.Form):
+        _selected_action = forms.CharField(widget=forms.HiddenInput)
+        brewname = forms.CharField(label='Brew Name', max_length=8, help_text='Unique value for brew name (e.g., SIP 99)')
+        batchletter = forms.CharField(label='Batch Letter', max_length=1, help_text='Letter corresponding to batch (e.g., A)')
+        event = forms.CharField(label='Brewing event', max_length=20, help_text='Brewing event (e.g., Lughnasadh 2013, Samhain 2012, Imbolc 2011, Beltane 2010)')
+
     def create_batch(self, request, recipe=None):
         if recipe is not None:
-            if create_batch_from_recipe(recipe):
-                self.message_user(request, 'One batch was created!')
-            else:
-                self.message_user(request, 'No batch was created!')
+            form = None
+
+            if 'apply' in request.POST:
+                form = self.CreateBatchFromRecipeForm(request.POST)
+
+                if form.is_valid():
+                    brewname = form.cleaned_data['brewname']
+                    batchletter = form.cleaned_data['batchletter']
+                    event = form.cleaned_data['event']
+                    if create_batch_from_recipe(recipe, brewname, batchletter, event):
+                        self.message_user(request, 'One batch was created!')
+                    else:
+                        self.message_user(request, 'No batch was created!')
+            if not form:
+                form = self.CreateBatchFromRecipeForm(initial={'_selected_action': recipe})
+            data = {'create_batch_from_recipe_form': form, }
+            data.update(csrf(request))
+            return render_to_response('admin/create_batch_from_recipe.djhtml', data)
         else:
             return None
     create_batch.short_description = 'Create batch from recipe'
