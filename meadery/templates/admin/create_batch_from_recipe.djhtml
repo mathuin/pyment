@@ -1,0 +1,15 @@
+{% extends "admin/base_site.html" %}
+
+{% block content %}
+
+<form action="" method="post">
+
+  {% csrf_token %}
+
+  {{ create_batch_from_recipe_form }}
+
+  <input type="hidden" name="action" value="create_batch_from_recipe" />
+  <input type="submit" name="apply" value="Create batch" />
+</form>
+
+{% endblock %}
