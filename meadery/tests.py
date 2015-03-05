@@ -62,7 +62,11 @@ class SeleniumTestCase(LiveServerTestCase):
                     break
                 except NoSuchElementException:
                     step = step + 1
-                    self.selenium.find_element_by_link_text('Add another Ingredient Item').click()
+                    try:
+                        self.selenium.find_element_by_link_text('Add another Ingredient Item').click()
+                    except NoSuchElementException:
+                        self.selenium.save_screenshot('insanity.png')
+                        raise
             self.assertTrue(found)
             self.pick_option('%s-ingredient' % idhead, name)
             amount_field = self.selenium.find_element_by_name('%s-amount' % idhead)
