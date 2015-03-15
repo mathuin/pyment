@@ -8,7 +8,9 @@
 
   {% csrf_token %}
 
+  <table>
   {{ create_batch_from_recipe_form }}
+  </table>
 
   <input type="hidden" name="action" value="create_batch_from_recipe" />
   <input type="submit" name="apply" value="Create batch" />
