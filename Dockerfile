@@ -1,19 +1,20 @@
 FROM phusion/baseimage:0.9.16
-MAINTAINER mathuin@gmail.com
-EXPOSE 8001
 
-# https://gist.github.com/dergachev/8441335
-# If host is running squid-deb-proxy on port 8000, populate /etc/apt/apt.conf.d/30proxy
-# By default, squid-deb-proxy 403s unknown sources, so apt shouldn't proxy ppa.launchpad.net
+MAINTAINER Jack Twilley <mathuin@gmail.com>
+
+# Port 8000 may be in use by squid-deb-proxy.
+ENV PORTNUM 8001
+
+# Use squid-deb-proxy if present.
+ENV DIRECT_HOSTS ppa.launchpad.net
+
 RUN route -n | awk '/^0.0.0.0/ {print $2}' > /tmp/host_ip.txt
 RUN echo "HEAD /" | nc `cat /tmp/host_ip.txt` 8000 | grep squid-deb-proxy \
   && (echo "Acquire::http::Proxy \"http://$(cat /tmp/host_ip.txt):8000\";" > /etc/apt/apt.conf.d/30proxy) \
-  && (echo "Acquire::http::Proxy::ppa.launchpad.net DIRECT;" >> /etc/apt/apt.conf.d/30proxy) \
+  && (for host in ${DIRECT_HOSTS}; do echo "Acquire::http::Proxy::$host DIRECT;" >> /etc/apt/apt.conf.d/30proxy; done) \
   || echo "No squid-deb-proxy detected on docker host"
 
-ENV DEBIAN_FRONTEND noninteractive
-#RUN echo 'debconf debconf/frontend select Noninteractive' | debconf-set-selections
-
+# Never ask for confirmations
 ENV DEBIAN_FRONTEND noninteractive
 
 RUN apt-get update && apt-get install -y \
@@ -34,4 +35,5 @@ COPY requirements.txt /opt/requirements.txt
 RUN pip install -r /opt/requirements.txt
 
 WORKDIR /opt/app
-CMD [ "python", "manage.py", "runserver", "0.0.0.0:8001" ]
+EXPOSE ${PORTNUM}
+CMD [ "python", "manage.py", "runserver", "0.0.0.0:${PORTNUM}" ]

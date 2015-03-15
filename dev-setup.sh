@@ -20,7 +20,7 @@ fig run web true
 # import fixtures
 #fig run web python manage.py syncdb --noinput  # <-- once fixtures are ready
 fig start db && \
-    sleep 15 && \
+    docker run --link pyment_db_1:pyment_db_1 aanand/wait && \
     docker exec -i pyment_db_1 psql -U pyment < pyment_db.bak && \
     fig stop db
 # to *export* fixtures, do this:
