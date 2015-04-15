@@ -1,6 +1,7 @@
 # .gitignore
 *~
 *.pyc
+docs/build/
 # stuff specific to instances
 pyment/settings_local.py
 *.sqlite3
