@@ -23,37 +23,31 @@ class Command(BaseCommand):
     )
 
     def handle(self, *args, **options):
-        if options['source']:
-            if isinstance(options['source'], (int, long)):
-                source_number = options['source']
-            else:
-                raise CommandError('Source crate is not an int: %s' % options['source'])
-        else:
+        try:
+            source = Crate.objects.get(number=options['source'])
+        except ValueError:
+            raise CommandError('Source crate is not an int: %s' % options['source'])
+        except KeyError:
             raise CommandError('Source crate required!')
-        if Crate.objects.filter(number=source_number).exists():
-            source = Crate.objects.get(number=source_number)
-        else:
-            raise CommandError('Source crate not valid: %d' % source_number)
+        except DoesNotExist:
+            raise CommandError('Source crate not valid: %s' % options['source'])
 
-        if options['dest']:
-            if isinstance(options['dest'], (int, long)):
-                dest_number = options['dest']
-            else:
-                raise CommandError('Destination crate is not an int: %s' % options['dest'])
-        else:
-            raise CommandError('Destination crate required!')
-        if Crate.objects.filter(number=dest_number).exists():
-            dest = Crate.objects.get(number=dest_number)
-        else:
-            raise CommandError('Destination crate not valid: %d' % dest_number)
+        try:
+            dest = Crate.objects.get(number=options['dest'])
+        except ValueError:
+            raise CommandError('Dest crate is not an int: %s' % options['dest'])
+        except KeyError:
+            raise CommandError('Dest crate required!')
+        except DoesNotExist:
+            raise CommandError('Dest crate not valid: %s' % options['dest'])
 
+        if source.jars == 0:
+            raise CommandError('Source crate is empty')
         if source.jars + dest.jars > dest.capacity:
             raise CommandError('Destination crate does not have enough room')
-        if not Jar.objects.filter(crate=source).exists():
-            raise CommandError('Source crate is empty')
         source_jars = Jar.objects.filter(crate=source)
         if not options['dryrun']:
             for jar in source_jars:
                 jar.crate = dest
                 jar.save()
-        self.stdout.write('%d jars were moved from crate %d to crate %d' % (len(source_jars), source_number, dest_number))
+        self.stdout.write('%d jars were moved from %s to %s' % (len(source_jars), source, dest))
