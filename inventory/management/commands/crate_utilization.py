@@ -21,17 +21,14 @@ class Command(BaseCommand):
     )
 
     def handle(self, *args, **options):
-        if options['warehouse']:
-            if isinstance(options['warehouse'], (int, long)):
-                warehouse = options['warehouse']
-            else:
-                raise CommandError('Warehouse not an int: %s' % args[0])
-        else:
+        try:
+            warehouse = Warehouse.objects.get(number=options['warehouse'])
+        except ValueError:
+            raise CommandError('Warehouse not an int: %s' % options['warehouse'])
+        except KeyError:
             raise CommandError('Warehouse required!')
-        if Warehouse.objects.filter(number=warehouse_number).exists():
-            warehouse = Warehouse.objects.get(number=warehouse_number)
-        else:
-            raise CommandError('Not a valid warehouse number: %d' % warehouse_number)
+        except DoesNotExist:
+            raise CommandError('Not a valid warehouse number: %s' % options['warehouse'])
         # actually do the work
         # NB: these values are hand-crafted
         # need to find a better way to calculate them on the fly
