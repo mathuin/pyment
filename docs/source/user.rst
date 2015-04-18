@@ -35,7 +35,7 @@ Production
 
 This section focuses on the basics of mead production: ingredients,
 recipes, batches, and products.  A discussion of samples is also
-included.  Each of these models is part of the ``meadery`` app.
+included.
 
 Ingredients
 ~~~~~~~~~~~
@@ -93,7 +93,7 @@ Recipes also have titles and descriptions for organizational purposes
 as well.
 
 Recipes can be created from the recipe select page as well as from
-existing batches by pressing the 'Create recipe from batch' button on
+existing batches by pressing the "Create recipe from batch" button on
 the batch's change page.
 
 Batches
@@ -109,16 +109,16 @@ batches also have names.  Batch names are composed of unique strings
 representing brewing events and a batch letter indicating the sequence
 in which the batch was brewed.  The author uses batch names like "SIP
 26 C", where "SIP 26" represents the brewing event and "C" indicates
-that this was the third batch brewed during that event.
-
-.. note:: Any non-empty string can be used as an event identifier.
+that this was the third batch brewed during that event.  Any non-empty
+string can be used as an event identifier.
 
 Batches can be created from the recipe's change page by pressing the
 'Create batch from recipe' button.  Placeholder values for the
 batch-specific information must be changed immediately to avoid
 conflict with other batches.
 
-.. todo:: There is an open issue about this problem.
+.. todo:: In the future, pressing this button will result in a dialog
+          box requesting user input for these values.
 
 Products
 ~~~~~~~~
@@ -135,7 +135,7 @@ labels and distribution.
 When a batch is bottled into jars, the Jars field of the batch's
 change page must be updated and the batch saved.  At this point labels
 can be printed and applied to the jars.  A product can then be created
-from that batch by pressing the 'Create product from batch` button on
+from that batch by pressing the "Create product from batch" button on
 the batch's change page.
 
 Samples
@@ -157,36 +157,39 @@ Storage
 
 Once the mead is produced, it must be stored in such a manner as to
 facilitate easy retrieval of specific jars.  This requires an
-inventory management system.  The largest unit of storage in the IMS
-is the warehouse.  Each warehouse is a collection of rows.  Each row
-is a collection of shelves.  Each shelf is a collection of crate-sized
-bins.  Each bin contains one or more crates.  Each crate contains one
-or more jars.  At least one bin and one crate must be created for the
-IMS to function.
+inventory management system (IMS).  The largest unit of storage in the
+IMS is the warehouse.  Each warehouse is a collection of rows.  Each
+row is a collection of shelves.  Each shelf is a collection of
+crate-sized bins.  Each bin contains one or more crates.  Each crate
+contains one or more jars.  At least one bin and one crate must be
+created for the IMS to function.
 
 Create jars
 ~~~~~~~~~~~
 
-To actually create the jars requires a management command.  Here is an example::
+Jar creation is done by running a Django management command.  This
+requires logging into the production server and activating a virtual
+environment if appropriate.  Here is an example::
 
   (venv)# python manage.py add_new_jars --product="SIP 26 C" --start-jar=1 --end-jar=12 --crate=37
   12 jars were created in SIP 26 C and placed in Crate 37
 
-The crate must exist and have sufficient capacity to contain the jars
-for this command to succeed.  At this point the jars are now available
-for distribution.
+The crate must exist and must have sufficient capacity to contain the
+jars for this command to succeed.  At this point the jars are now
+available for distribution.
 
 .. note:: If the producer wishes to protect a jar from being
           distributed, they should use the admin interface to set that
           jar's "is available" flag to False.
 
-Crate utilization and transfer
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Crate consolidation
+~~~~~~~~~~~~~~~~~~~
 
-Over time, crates will become partly empty and will need to be
-consolidated in order to make empty crates available for new product.
-Crate utilization is reported with a management command.  Here is an
-example::
+As jars are removed from the IMS, crates will become less full.
+Partially full crates will need to be consolidated in order to make
+empty crates available for new product.  Candidates for crate
+consolidation can be identified by running a Django management
+command.  Here is an example::
 
   (venv)# python manage.py crate_utilization --warehouse=2
   Crate ID |         Bin         | Capacity | Jars 
@@ -201,18 +204,18 @@ A number of crates in this example can be consolidated.  To transfer
 all the jars from crate 21 to crate 32, use the following command::
 
   (venv)# python manage.py crate_transfer --source=21 --dest=32
-  5 jars were moved from crate 21 to crate 32
+  5 jars were moved from Crate 21 to Crate 32
 
 Crate 21 is now considered empty and can be used for new product.
 
 Distribution
 ------------
 
-This section introduces a new role: the consumer.  The producer is the
-person who administers the software, while the consumer is the person
-who actually consumes the mead.  Typically, these people are both the
-same person who also made the mead in question.  However, each role
-performs different actions in this section.
+This section introduces a new role: the consumer, the person who
+actually orders and consumes the mead.  Typically, the producer and
+the consumer are both the same person who also made the mead in
+question.  However, each role performs different actions in this
+section.
 
 Order placement
 ~~~~~~~~~~~~~~~
