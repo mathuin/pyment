@@ -1,61 +1,27 @@
-User's Guide
+User's guide
 ============
 
-This document is designed to help the new user get acquainted with the
-project.  The first section describes how to use the software, while
-the remainder of the document breaks the software down into three
-basic parts: production, storage, and distribution.
+The purpose of this document is to walk the mead maker through all the
+major operations required to use the software.  Throughout this
+document, this role is referred to as the producer.  This is in
+contrast to the consumer, who plays a significant role in the
+distribution section.
 
-How to use the software
------------------------
+Setup
+-----
 
-Throughout this section, there are references to two roles: the
-producer and the consumer.  The producer is the person who administers
-the software, while the consumer is the person who actually consumes
-the mead.  Typically, these people are both the same person who also
-made the mead in question.  However, each role performs different
-actions in the distribution process.
-
-.. note:: While the distribution software components are based on
-          those found in traditional online storefronts, there is one
-          key difference: there are no prices, as selling home-brewed
-          mead is illegal in many jurisdictions.
-
-Order placement
-~~~~~~~~~~~~~~~
-
-The order placement process is similar to that in any other store on
-the web.
-
-#. (Optional) Accounts can be created by consumers, including
-   information such as email address and phone number.
-
-#. The consumer selects a product, modifies the quantity if
-   appropriate, and presses the "Add To Cart" button, repeating as
-   necessary.
-
-#. The consumer presses the "Checkout" button, possibly updates
-   contact info, then presses the "Place Order" button.
-
-This causes an order to be generated, and emails to be sent to the 
-consumer and the producer.
-
-Order fulfillment
-~~~~~~~~~~~~~~~~~
-
-#. The producer visits the relevant link in the email.  After
-   confirming the validity of the order, the producer then presses the
-   "Process order" button.  This marks the order as 'processed',
-   generates a pick list and sends another email to the consumer.
-
-#. The producer visits the pick list associated with the order.  After
-   retrieving each jar identified in the pick list from the warehouse,
-   the producer presses the "Process picklist" button.  This marks the
-   picklist as 'processed', marks the order as 'delivered', and sends
-   a final email to the consumer.
-
-Individual orders and pick lists can also be modified and/or cancelled by
-the producer.
+``pyment`` is like any other Django app in that it must be deployed in
+order to be useful.  Deployment specifics are beyond the scope of this
+document, but references such as `How to deploy with WSGI
+<https://docs.djangoproject.com/en/1.8/howto/deployment/wsgi/>`_ and
+tutorials such as `How To Deploy a Local Django App to a VPS
+<https://www.digitalocean.com/community/tutorials/how-to-deploy-a-local-django-app-to-a-vps>`_
+are available on the internet.  At the very minimum, the producer will
+need a Django user account in order to access the admin site to
+perform many of the operations listed below.  For more information
+about the admin site, including how to use it, please see `Chapter 6:
+The Django Admin Site
+<http://www.djangobook.com/en/2.0/chapter06.html>`_.
 
 Production
 ----------
@@ -67,8 +33,9 @@ Production
 	     find this software useful, and :doc:`pull requests <dev>`
 	     are cheerfully encouraged.
 
-The software components associated with mead production are primarily
-concentrated in the ``meadery`` app.
+This section focuses on the basics of mead production: ingredients,
+recipes, batches, and products.  A discussion of samples is also
+included.  Each of these models is part of the ``meadery`` app.
 
 Ingredients
 ~~~~~~~~~~~
@@ -94,6 +61,9 @@ solvents, "other" for flavor, and per packet or vial for yeast.
 "Natural" is defined as "does not contain added color, artificial
 flavors or synthetic substances" for these purposes.  Appellation
 describes the region from which the ingredient is sourced.
+
+Ingredients are created from the ingredient select page and can be
+changed at the ingredient change page.
 
 Recipes
 ~~~~~~~
@@ -122,6 +92,10 @@ appropriate BJCP category.  Here are some examples:
 Recipes also have titles and descriptions for organizational purposes
 as well.
 
+Recipes can be created from the recipe select page as well as from
+existing batches by pressing the 'Create recipe from batch' button on
+the batch's change page.
+
 Batches
 ~~~~~~~
 
@@ -139,17 +113,30 @@ that this was the third batch brewed during that event.
 
 .. note:: Any non-empty string can be used as an event identifier.
 
+Batches can be created from the recipe's change page by pressing the
+'Create batch from recipe' button.  Placeholder values for the
+batch-specific information must be changed immediately to avoid
+conflict with other batches.
+
+.. todo:: There is an open issue about this problem.
+
 Products
 ~~~~~~~~
 
 Products are batches which have been bottled.  Once the bottling is
 complete, labels can be generated based on the product's ingredients
-and other characteristics.  Products that have been labeled can be
-entered into the inventory management system.
+and other characteristics.  Jars of products that have been labeled
+can be entered into the inventory management system.
 
 Product names, titles, and descriptions are all inherited from their
 batches.  Product titles and descriptions are currently used for both
 labels and distribution.
+
+When a batch is bottled into jars, the Jars field of the batch's
+change page must be updated and the batch saved.  At this point labels
+can be printed and applied to the jars.  A product can then be created
+from that batch by pressing the 'Create product from batch` button on
+the batch's change page.
 
 Samples
 ~~~~~~~
@@ -168,97 +155,100 @@ when making labels.
 Storage
 -------
 
-The software components associated with mead storage are primarily
-concentrated in the ``inventory`` app.  The components are ordered
-from largest to smallest.
+Once the mead is produced, it must be stored in such a manner as to
+facilitate easy retrieval of specific jars.  This requires an
+inventory management system.  The largest unit of storage in the IMS
+is the warehouse.  Each warehouse is a collection of rows.  Each row
+is a collection of shelves.  Each shelf is a collection of crate-sized
+bins.  Each bin contains one or more crates.  Each crate contains one
+or more jars.  At least one bin and one crate must be created for the
+IMS to function.
 
-Warehouse
-~~~~~~~~~
+Create jars
+~~~~~~~~~~~
 
-A warehouse is a collection of rows of shelves.  Warehouses are
-identified by a sequence number, and optionally a title.  An example
-warehouse name would be "Warehouse 1".
+To actually create the jars requires a management command.  Here is an example::
 
-Row
-~~~
+  (venv)# python manage.py add_new_jars --product="SIP 26 C" --start-jar=1 --end-jar=12 --crate=37
+  12 jars were created in SIP 26 C and placed in Crate 37
 
-Shelves are ordered in rows.  Rows are identified by a sequence number
-indicated on the row of shelves and the identifier of the warehouse
-containing that row.  An example row name would be "Warehouse 1 Row
-2".
-
-Shelf
-~~~~~
-
-Shelves are identified by a sequence number indicated on the row of
-shelves.  An example shelf name would be "Warehouse 1 Row 2 Shelf 3".
-Shelves can be sections of floor -- in this case, the row would
-contain only one shelf.
-
-Bin
-~~~
-
-Bins are crate-sized portions of shelves -- if a shelf is long enough
-to store three crates, then that shelf has three bins.  Bins are
-identified by a sequence number indicated on the shelf, and the
-identifier of the particular shelf.  An example bin name would be
-"Warehouse 1 Row 2 Shelf 3 Bin 4".  If a shelf is tall enough to
-support multiple crates vertically, then those bins can contain
-multiple crates.
-
-Crate
-~~~~~
-
-Jars are stored in crates.  These crates are identified by a sequence
-number and should be included on its label.  An example crate name
-would be "Crate 42".
-
-Jar
-~~~
-
-The smallest unit of storage is the jar.  Batches become products as
-they are bottled into jars.  Each jar is identified by the product it
-contains and the sequence number it recieved when bottled.  This
-information is traditionally included on its label.  An example jar
-name would be "SIP 26 A10", where the product name is "SIP 26 A" and
-the sequence number is "10".
-
-Each jar has two flags associated with it:
-
-* "is active", which is True when the jar is still in a warehouse
-* "is available", which is True when the jar is available for distribution
+The crate must exist and have sufficient capacity to contain the jars
+for this command to succeed.  At this point the jars are now available
+for distribution.
 
 .. note:: If the producer wishes to protect a jar from being
           distributed, they should use the admin interface to set that
           jar's "is available" flag to False.
 
+Crate utilization and transfer
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Over time, crates will become partly empty and will need to be
+consolidated in order to make empty crates available for new product.
+Crate utilization is reported with a management command.  Here is an
+example::
+
+  (venv)# python manage.py crate_utilization --warehouse=2
+  Crate ID |         Bin         | Capacity | Jars 
+  ==================================================
+     21    | Row 1 Shelf 2 Bin 2 |    12    |  5   
+     39    | Row 1 Shelf 2 Bin 2 |    12    |  5   
+     44    | Row 2 Shelf 2 Bin 2 |    12    |  6   
+     32    | Row 1 Shelf 1 Bin 2 |    11    |  6   
+     33    | Row 1 Shelf 1 Bin 1 |    11    |  6   
+
+A number of crates in this example can be consolidated.  To transfer
+all the jars from crate 21 to crate 32, use the following command::
+
+  (venv)# python manage.py crate_transfer --source=21 --dest=32
+  5 jars were moved from crate 21 to crate 32
+
+Crate 21 is now considered empty and can be used for new product.
+
 Distribution
 ------------
 
-The software components associated with mead distribution are found in
-both the ``meadery`` app and the ``checkout`` app.
+This section introduces a new role: the consumer.  The producer is the
+person who administers the software, while the consumer is the person
+who actually consumes the mead.  Typically, these people are both the
+same person who also made the mead in question.  However, each role
+performs different actions in this section.
 
-Product review
-~~~~~~~~~~~~~~
+Order placement
+~~~~~~~~~~~~~~~
 
-Each product can have product reviews.  These reviews have the
-following attributes:
+The order placement process is similar to that in any other store on
+the web.
 
-* Title, describing the review
-* Rating, from 1 (fair) to 5 (outstanding)
-* Notes
+#. (Optional) Accounts can be created by consumers, including
+   information such as email address and phone number.
 
-Order
-~~~~~
+#. The consumer selects a product, modifies the quantity if
+   appropriate, and presses the "Add To Cart" button, repeating as
+   necessary.
 
-Orders are collections of products with amounts.  They are generated
-by consumers using the front end of the project.  They can have
-accounts as owners or can be anonymous.
+#. The consumer presses the "Checkout" button, possibly updates
+   contact info, then presses the "Place Order" button.
 
-Pick list
-~~~~~~~~~
+This causes an order to be generated, and emails to be sent to the 
+consumer and the producer.
 
-A "pick list" is a collection of jars generated from an order.  The
-pick list includes the location (crate and bin) of each jar to
-facilitate its retrieval.
+Order fulfillment
+~~~~~~~~~~~~~~~~~
+
+#. The producer visits the relevant link in the email.  After
+   confirming the validity of the order, the producer then presses the
+   "Process order" button.  This marks the order as 'processed',
+   generates a pick list and sends another email to the consumer.
+   This pick list has one line for each jar in the order, including
+   the name of that jar and its location (crate and bin).
+
+#. The producer visits the pick list associated with the order.  After
+   retrieving each jar identified in the pick list from the warehouse,
+   the producer presses the "Process picklist" button.  This marks the
+   picklist as 'processed', marks the order as 'delivered', and sends
+   a final email to the consumer.
+
+Individual orders and pick lists can also be modified and/or cancelled by
+the producer.
 
