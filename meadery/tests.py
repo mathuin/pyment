@@ -63,7 +63,7 @@ class SeleniumTestCase(LiveServerTestCase):
                 except NoSuchElementException:
                     step = step + 1
                     try:
-                        self.selenium.find_element_by_link_text('Add another Ingredient Item').click()
+                        self.selenium.find_element_by_link_text('Add another Ingredient item').click()
                     except NoSuchElementException:
                         self.selenium.save_screenshot('insanity.png')
                         raise
