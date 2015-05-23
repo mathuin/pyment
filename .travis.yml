@@ -20,7 +20,6 @@ env:
 before_script:
   - touch pyment/.env
   - mkdir -p /opt/public
-  - pip install -r requirements.txt
   - python manage.py collectstatic --noinput
   - python manage.py syncdb --noinput
 script:
