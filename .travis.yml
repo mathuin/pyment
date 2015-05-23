@@ -18,6 +18,9 @@ env:
     - USE_X_FORWARDED_HOST=False
     - ALLOWED_HOSTS=localhost,127.0.0.1
 before_script:
+  - touch pyment/.env
   - pip install -r requirements.txt
+  - python manage.py collectstatic --noinput
+  - python manage.py syncdb --noinput
 script:
   - python manage.py test
