@@ -1,6 +1,16 @@
 language: python
 python:
   - "2.7"
+env:
+  - SITE_NAME='Test Site'
+  - META_KEYWORDS='test'
+  - META_DESCRIPTION='Test'
+  - BREWER_NAME='Brewer Name'
+  - BREWER_EMAIL='brewer@example.org'
+  - BREWER_LOCATION='Somewhere, US'
+  - SITE_ID=1
+  - SECRET_KEY='*n4-$m9(fkr!ghro4=tz!%=0mkv5=90mi%8d$!p^ir@3mm@=zv'
+  - PUBLIC_ROOT=/opt/public
 before_script:
   - pip install -r requirements.txt
 script:
