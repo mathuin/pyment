@@ -60,7 +60,6 @@ class OrderTestCase(TestCase):
         # (should fail as no product exists)
         order2 = Order.objects.all()[1]
         picklist2 = create_picklist(order2)
-        print picklist2
         self.assertEqual(picklist2, None)
 
     # FIXME: check process_picklist

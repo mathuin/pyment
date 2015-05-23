@@ -110,9 +110,12 @@ def create_picklist(order):
 def all_in_stock(order):
     order_items = OrderItem.objects.filter(order=order)
     try:
-        for oi in order_items:
-            if Product.objects.get(id=oi.product_id).jars_in_stock() < oi.quantity:
-                raise ValidationError('Insufficient product in stock - please select another product')
+        if order_items.exists():
+            for oi in order_items:
+                if Product.objects.get(id=oi.product_id).jars_in_stock() < oi.quantity:
+                    raise ValidationError('Insufficient product in stock - please select another product')
+        else:
+            raise ValidationError('No items in order!')
     except ValidationError:
         return None
     else:
