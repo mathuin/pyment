@@ -45,11 +45,11 @@ class OrderTestCase(TestCase):
     def test_create_picklist(self):
         # confirm both jars are marked active and available
         sip1a = Product.active.get(slug='sip-1-a')
-        self.assertEqual(sip1a.jar_set.filter(is_active=True).count(), 2)
-        self.assertEqual(sip1a.jar_set.filter(is_available=True).count(), 2)
+        self.assertEqual(sip1a.jar_set.filter(is_active=True).count(), 14)
+        self.assertEqual(sip1a.jar_set.filter(is_available=True).count(), 14)
         # generate valid picklist from order #1
         picklist = create_picklist(self.order)
-        self.assertEqual(sip1a.jar_set.filter(is_available=True).count(), 0)
+        self.assertEqual(sip1a.jar_set.filter(is_available=True).count(), 12)
         self.assertEqual(picklist.status, PickList.SUBMITTED)
         self.assertEqual(self.order.status, Order.PROCESSED)
         # try to generate another picklist from order #1
@@ -66,14 +66,14 @@ class OrderTestCase(TestCase):
     def test_process_picklist(self):
         # confirm both jars are marked available and active
         sip1a = Product.active.get(slug='sip-1-a')
-        self.assertEqual(sip1a.jar_set.filter(is_active=True).count(), 2)
-        self.assertEqual(sip1a.jar_set.filter(is_available=True).count(), 2)
+        self.assertEqual(sip1a.jar_set.filter(is_active=True).count(), 14)
+        self.assertEqual(sip1a.jar_set.filter(is_available=True).count(), 14)
         # generate valid picklist from order #1
         picklist = create_picklist(self.order)
         retval = process_picklist(picklist)
         self.assertEqual(retval, True)
         # check that jars are no longer active
-        self.assertEqual(sip1a.jar_set.filter(is_active=True).count(), 0)
+        self.assertEqual(sip1a.jar_set.filter(is_active=True).count(), 12)
         # check status of picklist
         self.assertEqual(picklist.status, PickList.PROCESSED)
         # check status of order
@@ -87,16 +87,16 @@ class OrderTestCase(TestCase):
     def test_cancel_picklist(self):
         # confirm both jars are marked available and active
         sip1a = Product.active.get(slug='sip-1-a')
-        self.assertEqual(sip1a.jar_set.filter(is_active=True).count(), 2)
-        self.assertEqual(sip1a.jar_set.filter(is_available=True).count(), 2)
+        self.assertEqual(sip1a.jar_set.filter(is_active=True).count(), 14)
+        self.assertEqual(sip1a.jar_set.filter(is_available=True).count(), 14)
         # generate valid picklist from order #1
         picklist = create_picklist(self.order)
         # confirm jars are unavailable
-        self.assertEqual(sip1a.jar_set.filter(is_available=True).count(), 0)
+        self.assertEqual(sip1a.jar_set.filter(is_available=True).count(), 12)
         retval = cancel_picklist(picklist)
         self.assertEqual(retval, True)
         # check that jars are available again
-        self.assertEqual(sip1a.jar_set.filter(is_available=True).count(), 2)
+        self.assertEqual(sip1a.jar_set.filter(is_available=True).count(), 14)
         # check status of picklist
         self.assertEqual(picklist.status, PickList.CANCELLED)
         # check status of order
