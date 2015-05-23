@@ -6,3 +6,6 @@ docs/build/
 pyment/settings_local.py
 *.sqlite3
 .env
+# temporary!
+media.tar
+pyment_db.bak
