@@ -1,6 +1,8 @@
 language: python
 python:
   - "2.7"
+services:
+  - postgresql
 env: 
   global:
     - SITE_NAME='Test Site'
@@ -12,6 +14,7 @@ env:
     - SITE_ID=1
     - SECRET_KEY='*n4-$m9(fkr!ghro4=tz!%=0mkv5=90mi%8d$!p^ir@3mm@=zv'
     - PUBLIC_ROOT=/opt/public
+    - DATABASE_URL=postgres://pyment:pyment_user@pyment_host:5432/pyment_db    
 before_script:
   - pip install -r requirements.txt
 script:
