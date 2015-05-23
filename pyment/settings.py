@@ -24,9 +24,21 @@ ADMINS = (
 
 MANAGERS = ADMINS
 
-DATABASES = {
-    'default': env.db(),
-}
+import os
+if os.getenv('TRAVIS', None):
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql_psycopg2',
+            'NAME': 'travis_ci_db',
+            'USER': 'postgres',
+            'PASSWORD': '',
+            'HOST': '127.0.0.1',
+        }
+    }
+else:
+    DATABASES = {
+        'default': env.db(),
+    }
 
 # Hosts/domain names that are valid for this site; required if DEBUG is False
 # See https://docs.djangoproject.com/en/1.5/ref/settings/#allowed-hosts
