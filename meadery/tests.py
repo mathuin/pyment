@@ -345,7 +345,11 @@ class RecipeTestCase(SeleniumTestCase):
         self.go(reverse('admin:meadery_recipe_change', args=(pk,)))
         old_batch_count = Batch.objects.count()
         self.selenium.find_element_by_link_text('Create batch from recipe').click()
-        self.assertIn('One batch was created!', self.selenium.find_element_by_tag_name('body').text)
+        self.assertIn('Creating a batch from recipe', self.selenium.find_element_by_tag_name('body').text)
+        self.populate_object({'brewname': 'SIP 99',
+                              'batchletter': 'A',
+                              'event': 'Christmas'})
+        self.selenium.find_element_by_name('apply').click()
         new_batch_count = Batch.objects.count()
         self.assertEqual(new_batch_count, old_batch_count + 1)
 
