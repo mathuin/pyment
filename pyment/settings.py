@@ -24,7 +24,7 @@ ADMINS = (
 
 MANAGERS = ADMINS
 
-if os.getenv('BUILD_ON_TRAVIS', None):
+if os.getenv('TRAVIS', None):
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.postgresql_psycopg2',

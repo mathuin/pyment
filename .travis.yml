@@ -19,7 +19,7 @@ env:
     - USE_X_FORWARDED_HOST=False
     - ALLOWED_HOSTS=localhost,127.0.0.1
 before_script:
-  - psql -c 'create database travis_ci_test;' -U postgres
+  - psql -c 'create database travis_ci_db;' -U postgres
   - touch pyment/.env
   - mkdir -p /tmp/public
   - python manage.py collectstatic --noinput
