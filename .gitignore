@@ -9,3 +9,5 @@ pyment/settings_local.py
 # temporary!
 media.tar
 pyment_db.bak
+# test detritus
+ghostdriver.log
