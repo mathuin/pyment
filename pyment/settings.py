@@ -24,6 +24,7 @@ ADMINS = (
 
 MANAGERS = ADMINS
 
+import os
 if os.getenv('TRAVIS', None):
     DATABASES = {
         'default': {
