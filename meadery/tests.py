@@ -6,9 +6,9 @@ from django.core.urlresolvers import reverse
 from models import Ingredient, IngredientItem, Parent, Recipe, SIPParent, Batch, Sample, Product, ProductReview
 from inventory.models import Jar
 from selenium.common.exceptions import NoSuchElementException
-#from selenium.webdriver.firefox.webdriver import WebDriver
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.support.ui import Select
 
 
 class SeleniumTestCase(LiveServerTestCase):
@@ -17,7 +17,7 @@ class SeleniumTestCase(LiveServerTestCase):
 
     @classmethod
     def setUpClass(cls):
-        cls.selenium = webdriver.PhantomJS()  # WebDriver()
+        cls.selenium = webdriver.PhantomJS()
         cls.selenium.implicitly_wait(1)
         super(SeleniumTestCase, cls).setUpClass()
 
@@ -355,7 +355,7 @@ class RecipeTestCase(SeleniumTestCase):
 
 
 class BatchTestCase(SeleniumTestCase):
-    fixtures = ['meadery']
+    fixtures = ['meadery', 'inventory']
 
     def test_add(self):
         # JMT: in the far future, batchs may also require:
@@ -490,7 +490,24 @@ class BatchTestCase(SeleniumTestCase):
                 self.assertEqual(new_product_count, old_product_count)
 
     def test_make_labels(self):
-        # JMT: conventional wisdom on the internet says don't test file downloads
+        # Go to batch page.
+        self.go(reverse('admin:meadery_batch_changelist'))
+        # What batches have jars?  (hint: SIP 98 A and SIP 98 C)
+        batches = Batch.objects.filter(jars__gt=0).order_by('pk')
+        # Check the box for each batch that has jars.
+        for batch in batches:
+            self.selenium.find_element_by_xpath('//input[@value="{0}"]'.format(batch.pk)).click()
+        # In the select named "action", choose the option "make_labels".
+        Select(self.selenium.find_element_by_xpath('//select[@name="action"]')).select_by_value('make_labels')
+        # Click the button with the title "Run the selected action".
+        self.selenium.find_element_by_xpath('//button[@title="Run the selected action"]').click()
+        # Two things should occur:
+        # The body should contain a message referencing the labels.
+        batchnames = ', '.join("{0} {1}".format(batch.brewname, batch.batchletter) for batch in batches)
+        # XXX: this doesn't work
+        # self.assertIn('Labels were made for {0}'.format(batchnames), self.selenium.find_element_by_tag_name('body').text)
+        # A file should be downloaded with a name based on the labels.
+        filename = batchnames.lower().replace(', ', '-').replace(' ', '')
         pass
 
 
