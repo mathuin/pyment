@@ -219,15 +219,21 @@ class BatchAdmin(ButtonAdmin):
     # add_sample.short_description = 'Add sample'
 
     def make_old_labels(self, request, batch=None):
+        # JMT: consider complaining if batch has no jars!
         if batch is not None:
             pdf = make_labels_from_batch(batch)
             if pdf is not None:
                 self.message_user(request, 'Labels were made for batch {0}'.format(batch))
                 filename = ''.join([batch.brewname, batch.batchletter]).lower().replace(' ', '')
-                response = HttpResponse(content_type='application/pdf')
-                response['Content-Disposition'] = 'attachment; filename="{0}.pdf"'.format(filename)
-                response.write(pdf)
-                return response
+                import os
+                if os.getenv('TRAVIS', None):
+                    # Do not attach files during Travis runs.
+                    pass
+                else:
+                    response = HttpResponse(content_type='application/pdf')
+                    response['Content-Disposition'] = 'attachment; filename="{0}.pdf"'.format(filename)
+                    response.write(pdf)
+                    return response
             else:
                 self.message_user(request, 'No labels were made!')
         else:
@@ -235,6 +241,7 @@ class BatchAdmin(ButtonAdmin):
     make_old_labels.short_description = 'Make labels'
 
     def make_labels(self, request, queryset):
+        # JMT: consider complaining if batch has no jars!
         batches = list(queryset.order_by('id'))
         if batches != []:
             pdf = make_labels_from_batches(batches)
@@ -242,10 +249,15 @@ class BatchAdmin(ButtonAdmin):
                 batchnames = ', '.join("{0} {1}".format(batch.brewname, batch.batchletter) for batch in batches)
                 self.message_user(request, 'Labels were made for {0}'.format(batchnames))
                 filename = batchnames.lower().replace(', ', '-').replace(' ', '')
-                response = HttpResponse(content_type='application/pdf')
-                response['Content-Disposition'] = 'attachment; filename="{0}.pdf"'.format(filename)
-                response.write(pdf)
-                return response
+                import os
+                if os.getenv('TRAVIS', None):
+                    # Do not attach files during Travis runs.
+                    pass
+                else:
+                    response = HttpResponse(content_type='application/pdf')
+                    response['Content-Disposition'] = 'attachment; filename="{0}.pdf"'.format(filename)
+                    response.write(pdf)
+                    return response
             else:
                 self.message_user(request, 'No labels were made!')
         else:
