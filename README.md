@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/mathuin/pyment.svg?branch=master)](https://travis-ci.org/mathuin/pyment)
+
 # Welcome to Pyment!
 
 Pyment is a website that tracks the production, storage, and distribution of my home-brewed mead.
