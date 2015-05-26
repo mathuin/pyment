@@ -28,4 +28,4 @@ before_script:
   - python manage.py collectstatic --noinput
   - python manage.py syncdb --noinput
 script:
-  - travis_wait python manage.py test
+  - python manage.py test
