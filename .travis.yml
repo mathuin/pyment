@@ -27,5 +27,6 @@ before_script:
   - mkdir -p /tmp/public
   - python manage.py collectstatic --noinput
   - python manage.py syncdb --noinput
+  - pip install coveralls
 script:
-  - python manage.py test
+  - coverage run --source=. manage.py test

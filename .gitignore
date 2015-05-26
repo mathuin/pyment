@@ -11,3 +11,6 @@ media.tar
 pyment_db.bak
 # test detritus
 ghostdriver.log
+# coverage
+.coverage
+htmlcov/
