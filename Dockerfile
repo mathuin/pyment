@@ -18,15 +18,9 @@ RUN echo "HEAD /" | nc `cat /tmp/host_ip.txt` 8000 | grep squid-deb-proxy \
 ENV DEBIAN_FRONTEND noninteractive
 
 RUN apt-get update && apt-get install -y \
-    libfontconfig1 \
-    libfreetype6 \
     libpq-dev \
-    nodejs-legacy \
-    npm \
     python-dev \
     python-pip
-
-RUN npm -g install phantomjs
 
 ENV PYTHONUNBUFFERED 1
 
