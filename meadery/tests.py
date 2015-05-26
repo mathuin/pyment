@@ -7,30 +7,18 @@ from models import Ingredient, IngredientItem, Parent, Recipe, Batch, Sample, Pr
 
 
 class ViewTest(TestCase):
-    fixtures = ['meadery']
+    fixtures = ['meadery', 'inventory']
 
     def test_meadery_home(self):
         response = self.client.get(reverse('meadery_home'))
         self.assertEqual(response.status_code, 200)
 
     def test_meadery_category(self):
-        try:
-            data = Product.active.order_by().values_list('category').distinct('category')[0][0]
-        except IndexError:
-            self.fail('No active products found!')
-        kwargs = {}
-        kwargs['category_value'] = data
-        response = self.client.get(reverse('meadery_category', kwargs=kwargs))
+        response = self.client.get(reverse('meadery_category', kwargs={'category_value': Product.active.order_by().values_list('category').distinct('category')[0][0]}))
         self.assertEqual(response.status_code, 200)
 
     def test_meadery_product(self):
-        try:
-            data = Product.active.order_by().values_list('slug')[0][0]
-        except IndexError:
-            self.fail('No active products found!')
-        kwargs = {}
-        kwargs['product_slug'] = data
-        response = self.client.get(reverse('meadery_product', kwargs=kwargs))
+        response = self.client.get(reverse('meadery_product', kwargs={'product_slug': Product.active.order_by().values_list('slug')[0][0]}))
         self.assertEqual(response.status_code, 200)
 
     def test_product_add_review(self):
@@ -238,9 +226,7 @@ class RecipeTestCase(MeaderyTestCase):
 
     @staticmethod
     def build_recipe(fields, ingredients):
-        recipe = {}
-        for key, value in RecipeTestCase.fields.items():
-            recipe[key] = value
+        recipe = RecipeTestCase.fields
         recipe['ingredientitem_set-TOTAL_FORMS'] = len(ingredients)
         recipe['ingredientitem_set-INITIAL_FORMS'] = '0'
         recipe['ingredientitem_set-MIN_NUM_FORMS'] = '0'
@@ -698,49 +684,73 @@ class BatchModifyTestCase(BatchTestCase):
         new_recipe_count = Recipe.objects.count()
         self.assertEqual(new_recipe_count, old_recipe_count + 1)
 
-    @admin_login
-    def test_create_product_from_batch(self):
-        # First, remove all batches that have already been converted into products.
+
+class BatchCreateProductFromBatchTestCase(BatchModifyTestCase):
+
+    def setUp(self):
+        super(BatchModifyTestCase, self).setUp()
         batches = Batch.objects.annotate(num_samples=Count('sample'))
         for prod in Product.objects.all():
             batches = batches.exclude(brewname=prod.brewname, batchletter=prod.batchletter)
-        # What's left is available for testing.
-        try:
-            batch_with = batches.filter(num_samples__gt=0)[0]
-        except IndexError:
-            self.fail('There is no unconverted batch with samples in the fixture!')
-        try:
-            batch_without = batches.filter(num_samples=0)[0]
-        except IndexError:
-            self.fail('There is no unconverted batch without samples in the fixture!')
-        # Final test should fail because a batch cannot be turned into a product twice.
-        samples_jars_output = [[True, 0, 'No product was created!'],
-                               [False, 0, 'No product was created!'],
-                               [False, 24, 'No product was created!'],
-                               [True, 24, 'One product was created!'],
-                               [True, 24, 'No product was created!'], ]
-        for test in samples_jars_output:
-            samples, jars, output = test
-            batch = batch_with if samples else batch_without
-            batch.jars = jars
-            batch.save()
-            pk = batch.pk
-            old_product_count = Product.objects.count()
-            # JMT: must be a better way
-            button_url = '{0}create_product/'.format(self.url)
-            response = self.client.get(button_url, follow=True)
-            self.assertEqual(response.status_code, 302)
-            redirect_target = '{0}{1}'.format('http://testserver',
-                                              button_url)
-            redirect_chain = [(redirect_target, 302),
-                              (redirect_target, 302)]
-            self.assertEqual(response.redirect_chain, redirect_chain)
-            new_product_count = Product.objects.count()
-            if 'One product was created!' in response:
-                self.assertTrue(Product.objects.filter(title=batch.title).exists())
-                self.assertEqual(new_product_count, old_product_count + 1)
-            else:
-                self.assertEqual(new_product_count, old_product_count)
+        self.batch_with = batches.filter(num_samples__gt=0)[0]
+        self.batch_without = batches.filter(num_samples=0)[0]
+
+    def batch_create_product(samples, jars, success):
+        def real_decorator(func):
+            def _decorator(self, *args, **kwds):
+                func(self, *args, **kwds)
+                batch = self.batch_with if samples else self.batch_without
+                batch.jars = jars
+                batch.save()
+                old_product_count = Product.objects.count()
+                # JMT: must be a better way
+                url = reverse('admin:meadery_batch_change', args=(batch.pk,))
+                button_url = '{0}create_product/'.format(url)
+                response = self.client.get(button_url, follow=True)
+                self.assertEqual(response.status_code, 302)
+                redirect_target = '{0}{1}'.format('http://testserver',
+                                                  button_url)
+                redirect_chain = [(redirect_target, 302),
+                                  (redirect_target, 302)]
+                self.assertEqual(response.redirect_chain, redirect_chain)
+                new_product_count = Product.objects.count()
+                if success:
+                    self.assertNotEqual(new_product_count, old_product_count)
+                else:
+                    self.assertEqual(new_product_count, old_product_count)
+            return _decorator
+        return real_decorator
+
+    def test_modify(self):
+        pass
+
+    def test_create_recipe_from_batch(self):
+        pass
+
+    @admin_login
+    @batch_create_product(True, 0, False)
+    def test_samples_no_jars(self):
+        pass
+
+    @admin_login
+    @batch_create_product(False, 0, False)
+    def test_no_samples_no_jars(self):
+        pass
+
+    @admin_login
+    @batch_create_product(False, 24, False)
+    def test_jars_no_samples(self):
+        pass
+
+    @admin_login
+    @batch_create_product(True, 24, True)
+    def test_good_product_does_not_exist(self):
+        pass
+
+    @admin_login
+    @batch_create_product(True, 24, False)
+    def test_good_product_exists(self):
+        response = self.client.get('{0}create_product/'.format(reverse('admin:meadery_batch_change', args=(self.batch_with.pk,))), follow=True)
 
 
 class BatchDeleteTestCase(BatchTestCase):
@@ -824,13 +834,8 @@ class SampleTestCase(MeaderyTestCase):
 
     @staticmethod
     def build_sample(fields):
-        sample = {}
-        for key, value in SampleTestCase.fields.items():
-            sample[key] = value
-        try:
-            sample['batch'] = Batch.objects.all()[0].pk
-        except IndexError:
-            self.fail('No batch found!')
+        sample = SampleTestCase.fields
+        sample['batch'] = Batch.objects.all()[0].pk
         return sample
 
 
