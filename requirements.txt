@@ -5,6 +5,5 @@ gunicorn==19.2.1
 Pillow
 psycopg2==2.6
 reportlab==3.1.44
-selenium
 Sphinx
 hieroglyph

@@ -47,7 +47,8 @@ class ButtonAdmin(admin.ModelAdmin):
                     obj = self.model._default_manager.get(pk=res.group('id'))
                     response = getattr(self, res.group('command'))(request, obj)
                     if response is None:
-                        return HttpResponseRedirect(request.META['HTTP_REFERER'])
+                        referer = request.META.get('HTTP_REFERER', '')
+                        return HttpResponseRedirect(referer)
                     return response
             else:
                 res = re.match('(.*/)?(?P<command>.*)', url)
@@ -55,7 +56,8 @@ class ButtonAdmin(admin.ModelAdmin):
                     if res.group('command') in [b.func_name for b in self.list_buttons]:
                         response = getattr(self, res.group('command'))(request)
                         if response is None:
-                            return HttpResponseRedirect(request.META['HTTP_REFERER'])
+                            referer = request.META.get('HTTP_REFERER', '')
+                            return HttpResponseRedirect(referer)
                         return response
         # Delegate to the appropriate method, based on the URL.
         from django.contrib.admin.util import unquote

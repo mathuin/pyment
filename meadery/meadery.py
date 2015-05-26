@@ -1,6 +1,7 @@
 from models import Ingredient, IngredientItem, Recipe, Batch, Sample, Product
 from checkout.models import OrderItem
 from cStringIO import StringIO
+from itertools import chain
 from labels import Sheet
 
 
@@ -77,12 +78,15 @@ except ImportError:
         return [Label(seq, batch) for seq in xrange(batch.jars)]
 
 
-def make_labels_from_batch(batch):
+def make_labels_from_batches(batches):
     # Create buffer.
     buffer = StringIO()
 
     # Build the label objects.
-    labels = generate_labels(batch)
+    if isinstance(batches, list):
+        labels = list(chain.from_iterable([generate_labels(batch) for batch in batches]))
+    else:
+        labels = generate_labels(batches)
 
     # Generate label sheets.
     faux = Sheet(buffer)

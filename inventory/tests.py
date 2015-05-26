@@ -7,6 +7,7 @@ from meadery.models import Product
 from pyment import settings
 from datetime import datetime, timedelta
 from django.utils.timezone import utc
+from django.utils.six import StringIO
 
 
 class WarehouseTestCase(TestCase):
@@ -100,6 +101,7 @@ class JarTestCase(TestCase):
 
     def setUp(self):
         self.jar = Jar.objects.all()[0]
+        self.out = StringIO()
 
     def test_unicode(self):
         self.assertEqual(self.jar.__unicode__(), self.jar.name)
@@ -111,15 +113,12 @@ class JarTestCase(TestCase):
         remaining_count = all_count - deletable_count
         # Try with dry run enabled.
         # No error should be raised, no jars should be deleted.
-        args = []
         opts = {'dryrun': True}
-        call_command('delete_old_jars', *args, **opts)
+        call_command('delete_old_jars', stdout=self.out, **opts)
         self.assertEqual(Jar.objects.all().count(), all_count)
         # Try without dry run enabled.
         # No error should be raised, all jars should be deleted.
-        args = []
-        opts = {}
-        call_command('delete_old_jars', *args, **opts)
+        call_command('delete_old_jars', stdout=self.out)
         self.assertEqual(Jar.objects.all().count(), remaining_count)
 
     def test_add_new_jars(self):
@@ -140,13 +139,12 @@ class JarTestCase(TestCase):
         good_crate_jars = good_crate.jars
         # Try adding non-existent product to good crate.
         # CommandError should be raised, no new jars should be added.
-        args = []
         opts = {'product': bad_product_name,
                 'start_jar': start_jar,
                 'end_jar': end_jar,
                 'crate': good_crate_number}
         try:
-            call_command('add_new_jars', *args, **opts)
+            call_command('add_new_jars', stdout=self.out, **opts)
         except CommandError as e:
             self.assertEqual(e.args[0], 'Not a valid product: %s' % bad_product_name)
         else:
@@ -154,13 +152,12 @@ class JarTestCase(TestCase):
         self.assertEqual(good_crate.jars, good_crate_jars)
         # Try a start jar that's greater than an end jar.
         # CommandError should be raised, no new jars should be added.
-        args = []
         opts = {'product': good_product_name,
                 'start_jar': end_jar,
                 'end_jar': start_jar,
                 'crate': good_crate_number}
         try:
-            call_command('add_new_jars', *args, **opts)
+            call_command('add_new_jars', stdout=self.out, **opts)
         except CommandError as e:
             self.assertEqual(e.args[0], 'Start jar value must be less than or equal to end jar value')
         else:
@@ -168,22 +165,20 @@ class JarTestCase(TestCase):
         self.assertEqual(good_crate.jars, good_crate_jars)
         # Try with dry run enabled.
         # No error should be raised, no new jars should be added.
-        args = []
         opts = {'product': good_product_name,
                 'start_jar': start_jar,
                 'end_jar': end_jar,
                 'crate': good_crate_number,
                 'dryrun': True}
-        call_command('add_new_jars', *args, **opts)
+        call_command('add_new_jars', stdout=self.out, **opts)
         self.assertEqual(good_crate.jars, good_crate_jars)
         # Try without dry run enabled.
         # No error should be raised, but new jars should be added.
-        args = []
         opts = {'product': good_product_name,
                 'start_jar': start_jar,
                 'end_jar': end_jar,
                 'crate': good_crate_number}
-        call_command('add_new_jars', *args, **opts)
+        call_command('add_new_jars', stdout=self.out, **opts)
         self.assertEqual(good_crate.jars, good_crate_jars + num_jars)
         # Try adding one more jar to that full crate.
         # CommandError should be raised, no new jars should be added.
@@ -191,13 +186,12 @@ class JarTestCase(TestCase):
         num_jars = 1
         start_jar = end_jar + 1
         end_jar = start_jar + num_jars - 1
-        args = []
         opts = {'product': good_product_name,
                 'start_jar': start_jar,
                 'end_jar': end_jar,
                 'crate': good_crate_number}
         try:
-            call_command('add_new_jars', *args, **opts)
+            call_command('add_new_jars', stdout=self.out, **opts)
         except CommandError as e:
             self.assertEqual(e.args[0], 'Crate capacity would be exceeded: %d > %d' % (good_crate.capacity + num_jars, good_crate.capacity))
         else:
@@ -211,7 +205,7 @@ class JarTestCase(TestCase):
                 'end_jar': end_jar,
                 'crate': good_crate_number}
         try:
-            call_command('add_new_jars', *args, **opts)
+            call_command('add_new_jars', stdout=self.out, **opts)
         except CommandError as e:
             self.assertEqual(e.args[0], 'Not a valid crate: %d' % good_crate_number)
         else:
@@ -226,11 +220,10 @@ class JarTestCase(TestCase):
         partial_crate_jars = partial_crate.jars
         # Try using full crate as destination.
         # CommandError should be raised, no jars should move.
-        args = []
         opts = {'source': partial_crate.number,
                 'dest': full_crate.number}
         try:
-            call_command('crate_transfer', *args, **opts)
+            call_command('crate_transfer', stdout=self.out, **opts)
         except CommandError as e:
             self.assertEqual(e.args[0], 'Destination crate does not have enough room')
         else:
@@ -239,11 +232,10 @@ class JarTestCase(TestCase):
         self.assertEqual(full_crate.jars, full_crate_jars)
         # Try using empty crate as source.
         # CommandError should be raised, no jars should move.
-        args = []
         opts = {'source': empty_crate.number,
                 'dest': full_crate.number}
         try:
-            call_command('crate_transfer', *args, **opts)
+            call_command('crate_transfer', stdout=self.out, **opts)
         except CommandError as e:
             self.assertEqual(e.args[0], 'Source crate is empty')
         else:
@@ -252,19 +244,17 @@ class JarTestCase(TestCase):
         self.assertEqual(full_crate.jars, full_crate_jars)
         # Try with dry run enabled.
         # No error should be raised, but no jars should move.
-        args = []
         opts = {'source': partial_crate.number,
                 'dest': empty_crate.number,
                 'dryrun': True}
-        call_command('crate_transfer', *args, **opts)
+        call_command('crate_transfer', stdout=self.out, **opts)
         self.assertEqual(partial_crate.jars, partial_crate_jars)
         self.assertEqual(empty_crate.jars, empty_crate_jars)
         # Try without dry run enabled.
         # No error should be raised, and jars should move.
-        args = []
         opts = {'source': partial_crate.number,
                 'dest': empty_crate.number}
-        call_command('crate_transfer', *args, **opts)
+        call_command('crate_transfer', stdout=self.out, **opts)
         self.assertEqual(partial_crate.jars, empty_crate_jars)
         self.assertEqual(empty_crate.jars, partial_crate_jars)
 
