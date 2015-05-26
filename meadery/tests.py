@@ -9,16 +9,22 @@ from models import Ingredient, IngredientItem, Parent, Recipe, Batch, Sample, Pr
 class ViewTest(TestCase):
     fixtures = ['meadery', 'inventory']
 
+    def setUp(self):
+        self.product = Product.instock.all()[0]
+
     def test_meadery_home(self):
         response = self.client.get(reverse('meadery_home'))
         self.assertEqual(response.status_code, 200)
 
     def test_meadery_category(self):
-        response = self.client.get(reverse('meadery_category', kwargs={'category_value': Product.active.order_by().values_list('category').distinct('category')[0][0]}))
+        response = self.client.get(reverse('meadery_category', kwargs={'category_value': self.product.category}))
         self.assertEqual(response.status_code, 200)
+        self.assertContains(response, self.product.title)
+        self.assertContains(response, self.product.name)
+        self.assertContains(response, 'In Stock: {0}'.format(self.product.jars_in_stock()))
 
     def test_meadery_product(self):
-        response = self.client.get(reverse('meadery_product', kwargs={'product_slug': Product.active.order_by().values_list('slug')[0][0]}))
+        response = self.client.get(reverse('meadery_product', kwargs={'product_slug': self.product.slug}))
         self.assertEqual(response.status_code, 200)
 
     def test_product_add_review(self):

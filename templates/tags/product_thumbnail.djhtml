@@ -7,5 +7,7 @@
 		{{ p.title }} 
 		<br />
 		({{ p.name }})
+		<br />
+		<p>In Stock: {{ p.jars_in_stock }}</p>
 	</a>
 </div>
