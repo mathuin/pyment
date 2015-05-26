@@ -1,6 +1,8 @@
+{% load staticfiles %}
+
 <div class="product_thumbnail">
 	<a href="{{ p.get_absolute_url }}">
-		<img src="{{ p.thumbnail.url }}" alt="{{ p.name }}" class="bn" />
+		<img src="{% if p.thumbnail %}{{ p.thumbnail.url }}{% else %}{% static "meadery/thumbnails/ImageNotAvailable.png" %}{% endif %}" alt="{{ p.name }}" class="bn" />
 		<br />
 		{{ p.title }} 
 		<br />

@@ -1,10 +1,10 @@
 {% extends 'meadery.djhtml' %}
 
+{% load staticfiles %}
+
 {% block content %}
 	<div class="product_image" >
-                {% if p.image %}
-		<img src="{{ p.image.url }}" alt="{{ p.title }}" />
-                {% endif %}
+		<img src="{% if p.image %}{{ p.image.url }}{% else %}{% static "meadery/main/ImageNotAvailable.png" %}{% endif %}" alt="{{ p.title }}" />
 	</div>
 	<h3>Product</h3>
 	<h4>{{ p.title }} ({{ p.name }})</h4>
