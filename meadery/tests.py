@@ -796,7 +796,10 @@ class BatchMiscTestCase(BatchTestCase):
         # Two things should occur:
         # - a PDF file containing labels should be downloaded
         #   (check filename?  match file against known good file?)
-        self.assertContains(response, 'ReportLab Generated PDF document')
+        try:
+            self.assertContains(response, 'ReportLab Generated PDF document')
+        except AssertionError:
+            print response.content
         # - a message referencing success should appear in the body
         #   (less important)
 
