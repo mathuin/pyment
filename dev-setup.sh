@@ -31,3 +31,11 @@ while [ $retcode -ne 0 ]; do
     docker-compose run web python manage.py syncdb --noinput >/dev/null 2>/dev/null
     retcode=$?
 done
+
+# load fixtures
+apps="checkout meadery inventory"
+fixtures=`for app in $apps; do echo $app/fixtures/$app.json; done | xargs echo`
+docker-compose run web python manage.py loaddata $fixtures
+
+# populate media directory
+# docker-compose run web tar -C /opt/public -xf /opt/app/media.tar
