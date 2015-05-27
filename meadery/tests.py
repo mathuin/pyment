@@ -6,6 +6,14 @@ from django.core.urlresolvers import reverse
 from models import Ingredient, IngredientItem, Parent, Recipe, Batch, Sample, Product, ProductReview
 
 
+# views.py 
+# show_category edge cases
+# show_product post (add to cart)
+# add_review (ugh, all cases)
+
+
+
+
 class ViewTest(TestCase):
     fixtures = ['meadery', 'inventory']
 

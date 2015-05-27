@@ -10,6 +10,18 @@ from django.utils.timezone import utc
 from django.utils.six import StringIO
 
 
+# admin.py
+# link_rows in warehouse -- check admin page?
+# link_shelves link_bins  .. I sense a trend
+
+# add_new_jars.py
+# more edge cases on exceptions?
+# same for crate transfer
+
+# crate utilization isn't even tested!
+
+
+
 class WarehouseTestCase(TestCase):
     fixtures = ['inventory', 'meadery']
 
