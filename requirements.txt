@@ -1,5 +1,7 @@
 Django>=1.7,<1.8
-django-environ==0.3.0
+python-decouple==2.3
+unipath
+dj-database-url
 docker-compose==1.2.0
 gunicorn==19.2.1
 Pillow
