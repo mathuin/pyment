@@ -1,16 +1,12 @@
 # Django settings for pyment project.
 
-from decouple import config
+from decouple import config, Csv
 from unipath import Path
 from dj_database_url import parse as db_url
 
-BASE_DIR = Path(__file__).parent
+SITE_ROOT = Path(__file__).parent.parent
 
-site_root = Path(__file__) - 2
-
-public_root = config('PUBLIC_ROOT')
-
-PROJECT_ROOT = os.path.dirname(os.path.abspath(os.path.dirname(__file__)))
+PUBLIC_ROOT = Path(config('PUBLIC_ROOT'))
 
 DEBUG = config('DEBUG', default=False, cast=bool)
 TEMPLATE_DEBUG = DEBUG
@@ -68,7 +64,7 @@ USE_TZ = True
 
 # Absolute filesystem path to the directory that will hold user-uploaded files.
 # Example: "/home/media/media.lawrence.com/media/"
-MEDIA_ROOT = public_root('media')
+MEDIA_ROOT = PUBLIC_ROOT.child('media')
 
 # URL that handles the media served from MEDIA_ROOT. Make sure to use a
 # trailing slash.
@@ -79,7 +75,7 @@ MEDIA_URL = '/media/'
 # Don't put anything in this directory yourself; store your static files
 # in apps' "static/" subdirectories and in STATICFILES_DIRS.
 # Example: "/home/media/media.lawrence.com/static/"
-STATIC_ROOT = public_root('static')
+STATIC_ROOT = PUBLIC_ROOT.child('static')
 
 # URL prefix for static files.
 # Example: "http://media.lawrence.com/static/"
@@ -87,7 +83,7 @@ STATIC_URL = '/static/'
 
 # Additional locations of static files
 STATICFILES_DIRS = (
-    site_root('templates', 'static'),
+    SITE_ROOT.child('templates', 'static'),
 )
 
 # List of finder classes that know how to find static files in
@@ -134,7 +130,7 @@ ROOT_URLCONF = 'pyment.urls'
 WSGI_APPLICATION = 'pyment.wsgi.application'
 
 TEMPLATE_DIRS = (
-    site_root('templates'),
+    SITE_ROOT.child('templates'),
 )
 
 LOGIN_REDIRECT_URL = '/accounts/my_account'
