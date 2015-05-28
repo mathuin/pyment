@@ -22,7 +22,7 @@ class IngredientAdminForm(forms.ModelForm):
 
 class IngredientItemFormset(forms.models.BaseInlineFormSet):
     def clean(self):
-        items = [] 
+        items = []
         for form in self.forms:
             try:
                 if form.cleaned_data:
