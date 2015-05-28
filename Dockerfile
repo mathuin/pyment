@@ -24,6 +24,12 @@ RUN apt-get update && apt-get install -y \
 
 ENV PYTHONUNBUFFERED 1
 
+# Environment settings
+#ENV DEBUG True
+ENV SECRET_KEY 'qkmm6qcxz9npoCxtt8ofRu5vVFeTEfbDIJdmIKiEBIiVCi2ef9'
+ENV PUBLIC_ROOT /opt/public
+ENV ALLOWED_HOSTS localhost,127.0.0.1
+
 RUN mkdir -p /opt/app /opt/public
 COPY requirements.txt /opt/requirements.txt
 RUN pip install -r /opt/requirements.txt

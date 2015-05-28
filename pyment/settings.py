@@ -1,21 +1,31 @@
 # Django settings for pyment project.
 
-from environ import Path, Env
-env = Env(DEBUG=(bool, False),)
-Env.read_env()
+from decouple import config, Csv
+from unipath import Path
+from dj_database_url import parse as db_url
 
-site_root = Path(__file__) - 2
-public_root = Path(env('PUBLIC_ROOT'))
+SITE_ROOT = Path(__file__).parent.parent
 
-DEBUG = env('DEBUG')
+PUBLIC_ROOT = Path(config('PUBLIC_ROOT'))
+
+DEBUG = config('DEBUG', default=False, cast=bool)
 TEMPLATE_DEBUG = DEBUG
 
-SITE_NAME = env('SITE_NAME')
-META_KEYWORDS = env('META_KEYWORDS')
-META_DESCRIPTION = env('META_DESCRIPTION')
-BREWER_NAME = env('BREWER_NAME')
-BREWER_EMAIL = env('BREWER_EMAIL')
-BREWER_LOCATION = env('BREWER_LOCATION')
+TRAVIS = config('TRAVIS', default=False, cast=bool)
+
+DATABASES = {
+    'default': config(
+        'DATABASE_URL',
+        cast=db_url
+    )
+}
+
+SITE_NAME = config('SITE_NAME', default='Site Name')
+META_KEYWORDS = config('META_KEYWORDS', default='meta')
+META_DESCRIPTION = config('META_DESCRIPTION', default='meta description')
+BREWER_NAME = config('BREWER_NAME', default='Joe Brewer')
+BREWER_EMAIL = config('BREWER_EMAIL', default='brewer@example.com')
+BREWER_LOCATION = config('BREWER_LOCATION', default='Anywhere, USA')
 
 ADMINS = (
     # ('Your Name', 'your_email@example.com'),
@@ -24,31 +34,15 @@ ADMINS = (
 
 MANAGERS = ADMINS
 
-import os
-if os.getenv('TRAVIS', None):
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.postgresql_psycopg2',
-            'NAME': 'travis_ci_db',
-            'USER': 'postgres',
-            'PASSWORD': '',
-            'HOST': '127.0.0.1',
-        }
-    }
-else:
-    DATABASES = {
-        'default': env.db(),
-    }
-
 # Hosts/domain names that are valid for this site; required if DEBUG is False
 # See https://docs.djangoproject.com/en/1.5/ref/settings/#allowed-hosts
-ALLOWED_HOSTS = env.list('ALLOWED_HOSTS')
-USE_X_FORWARDED_HOST = env('USE_X_FORWARDED_HOST', default=False)
+ALLOWED_HOSTS = config('ALLOWED_HOSTS', cast=Csv())
+USE_X_FORWARDED_HOST = config('USE_X_FORWARDED_HOST', default=False)
 
 # Local time zone for this installation. Choices can be found here:
 # http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
 # although not all choices may be available on all operating systems.
-# In a Windows environment this must be set to your system time zone.
+# In a Windows configironment this must be set to your system time zone.
 TIME_ZONE = 'America/Los_Angeles'
 
 # Language code for this installation. All choices can be found here:
@@ -70,7 +64,7 @@ USE_TZ = True
 
 # Absolute filesystem path to the directory that will hold user-uploaded files.
 # Example: "/home/media/media.lawrence.com/media/"
-MEDIA_ROOT = public_root('media')
+MEDIA_ROOT = PUBLIC_ROOT.child('media')
 
 # URL that handles the media served from MEDIA_ROOT. Make sure to use a
 # trailing slash.
@@ -81,7 +75,7 @@ MEDIA_URL = '/media/'
 # Don't put anything in this directory yourself; store your static files
 # in apps' "static/" subdirectories and in STATICFILES_DIRS.
 # Example: "/home/media/media.lawrence.com/static/"
-STATIC_ROOT = public_root('static')
+STATIC_ROOT = PUBLIC_ROOT.child('static')
 
 # URL prefix for static files.
 # Example: "http://media.lawrence.com/static/"
@@ -89,10 +83,7 @@ STATIC_URL = '/static/'
 
 # Additional locations of static files
 STATICFILES_DIRS = (
-    # Put strings here, like "/home/html/static" or "C:/www/django/static".
-    # Always use forward slashes, even on Windows.
-    # Don't forget to use absolute paths, not relative paths.
-    site_root('templates', 'static'),
+    SITE_ROOT.child('templates', 'static'),
 )
 
 # List of finder classes that know how to find static files in
@@ -103,7 +94,7 @@ STATICFILES_FINDERS = (
 )
 
 # Make this unique, and don't share it with anybody.
-SECRET_KEY = env('SECRET_KEY')
+SECRET_KEY = config('SECRET_KEY')
 
 # List of callables that know how to import templates from various sources.
 TEMPLATE_LOADERS = (
@@ -139,11 +130,7 @@ ROOT_URLCONF = 'pyment.urls'
 WSGI_APPLICATION = 'pyment.wsgi.application'
 
 TEMPLATE_DIRS = (
-    # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
-    # Always use forward slashes, even on Windows.
-    # Don't forget to use absolute paths, not relative paths.
-    # os.path.join(PROJECT_ROOT, 'templates'),
-    site_root('templates'),
+    SITE_ROOT.child('templates'),
 )
 
 LOGIN_REDIRECT_URL = '/accounts/my_account'
@@ -206,15 +193,14 @@ LOGGING = {
 }
 
 # Email!
-email_config = env.email_url()
-EMAIL_HOST = email_config['EMAIL_HOST']
-EMAIL_PORT = email_config['EMAIL_PORT']
-EMAIL_HOST_USER = email_config['EMAIL_HOST_USER']
-EMAIL_HOST_PASSWORD = email_config['EMAIL_HOST_PASSWORD']
-EMAIL_USE_TLS = email_config['EMAIL_USE_TLS']
-EMAIL_SUBJECT_PREFIX = env('EMAIL_SUBJECT_PREFIX')
-SERVER_EMAIL = email_config['EMAIL_HOST_USER']
-DEFAULT_FROM_EMAIL = email_config['EMAIL_HOST_USER']
+EMAIL_HOST = config('EMAIL_HOST', default='localhost')
+EMAIL_PORT = config('EMAIL_PORT', default=25, cast=int)
+EMAIL_HOST_USER = config('EMAIL_HOST_USER', default='')
+EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD', default='')
+EMAIL_USE_TLS = config('EMAIL_USE_TLS', default=False, cast=bool)
+EMAIL_SUBJECT_PREFIX = config('EMAIL_SUBJECT_PREFIX', default='')
+SERVER_EMAIL = EMAIL_HOST_USER
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 
 # New test runner as of 1.6
 TEST_RUNNER = 'django.test.runner.DiscoverRunner'
