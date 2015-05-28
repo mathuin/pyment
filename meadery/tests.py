@@ -3,15 +3,13 @@ from django.db.models import Count
 from django.test import TestCase
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
-from models import Ingredient, IngredientItem, Parent, Recipe, Batch, Sample, Product, ProductReview
+from models import Ingredient, Parent, Recipe, Batch, Sample, Product
 
 
-# views.py 
+# views.py
 # show_category edge cases
 # show_product post (add to cart)
 # add_review (ugh, all cases)
-
-
 
 
 class ViewTest(TestCase):
@@ -63,6 +61,8 @@ def admin_login(func):
 
         if not User.objects.filter(username=username).exists():
             admin_user = User.objects.create_superuser(username, email, rawpass)
+            # need better test
+            self.assertTrue(admin_user)
         logged_in = self.client.login(username=username, password=rawpass)
         self.assertTrue(logged_in)
         func(self, *args, **kwds)
@@ -155,8 +155,8 @@ class IngredientAddTestCase(IngredientTestCase):
         pass
 
     @ingredient_exists(False, False)
-    @admin_login
-    @ingredient_add('1', '101', '2', 'Ingredient state does not match type.')  # Liquid is wrong state!
+    @ingredient_add
+    @admin_login('1', '101', '2', 'Ingredient state does not match type.')  # Liquid is wrong state!
     def test_bad_post_wrongstate(self):
         pass
 
@@ -448,6 +448,7 @@ class RecipeMiscTestCase(RecipeTestCase):
                 func(self, *args, **kwds)
                 recipe = RecipeTestCase.build_recipe(RecipeTestCase.fields, inglist)
                 response = self.client.post(self.url, recipe, follow=True)
+                self.assertTrue(response.return_code, 200)
                 new_recipe = Recipe.objects.get(title=recipe['title'])
                 self.assertEqual(new_recipe.category, category)
                 # hopefully not necessary
@@ -461,6 +462,7 @@ class RecipeMiscTestCase(RecipeTestCase):
                 func(self, *args, **kwds)
                 recipe = RecipeTestCase.build_recipe(RecipeTestCase.fields, inglist)
                 response = self.client.post(self.url, recipe, follow=True)
+                self.assertTrue(response.return_code, 200)
                 new_recipe = Recipe.objects.get(title=recipe['title'])
                 self.assertEqual(new_recipe.appellation, appellation)
                 # hopefully not necessary
@@ -474,6 +476,7 @@ class RecipeMiscTestCase(RecipeTestCase):
                 func(self, *args, **kwds)
                 recipe = RecipeTestCase.build_recipe(RecipeTestCase.fields, inglist)
                 response = self.client.post(self.url, recipe, follow=True)
+                self.assertTrue(response.return_code, 200)
                 new_recipe = Recipe.objects.get(title=recipe['title'])
                 self.assertEqual(new_recipe.all_natural, natural)
                 # hopefully not necessary
@@ -498,7 +501,7 @@ class RecipeMiscTestCase(RecipeTestCase):
 
     @admin_login
     @recipe_add_category(metheglin_ingredients, Parent.OTHER_METHEGLIN)
-    def test_category_open(self):
+    def test_category_metheglin(self):
         pass
 
     @admin_login
@@ -764,7 +767,15 @@ class BatchCreateProductFromBatchTestCase(BatchModifyTestCase):
     @admin_login
     @batch_create_product(True, 24, False)
     def test_good_product_exists(self):
-        response = self.client.get('{0}create_product/'.format(reverse('admin:meadery_batch_change', args=(self.batch_with.pk,))), follow=True)
+        url = reverse('admin:meadery_batch_change', args=(self.batch_with.pk,))
+        button_url = '{0}create_product/'.format(url)
+        response = self.client.get(button_url, follow=True)
+        self.assertEqual(response.status_code, 302)
+        redirect_target = '{0}{1}'.format('http://testserver',
+                                          button_url)
+        redirect_chain = [(redirect_target, 302),
+                          (redirect_target, 302)]
+        self.assertEqual(response.redirect_chain, redirect_chain)
 
 
 class BatchDeleteTestCase(BatchTestCase):
@@ -811,7 +822,7 @@ class BatchMiscTestCase(BatchTestCase):
         # What batches have jars?  (hint: SIP 98 A and SIP 98 C)
         batches = Batch.objects.filter(jars__gt=0).order_by('pk')
         batchnames = ', '.join("{0} {1}".format(batch.brewname, batch.batchletter) for batch in batches)
-        filename = batchnames.lower().replace(', ', '-').replace(' ', '')
+        # filename = batchnames.lower().replace(', ', '-').replace(' ', '')
 
         fields['_selected_action'] = tuple([str(batch.pk) for batch in batches])
 

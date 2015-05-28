@@ -14,7 +14,7 @@ urlpatterns = patterns(
 
     # (r'^inventory/$', 'inventory.views.home'),
     # (r'^brewery/$', 'meadery.views.home'),
-    
+
     url(r'^admin/', include(admin.site.urls)),
 )
 

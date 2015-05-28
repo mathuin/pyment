@@ -1,6 +1,6 @@
 from django import forms
 from django.core.exceptions import ValidationError
-from .models import Ingredient, IngredientItem, Parent, Recipe, Batch, Sample, Product, ProductReview
+from .models import Ingredient, Recipe, Batch, Sample, Product, ProductReview
 
 
 class IngredientAdminForm(forms.ModelForm):
@@ -22,14 +22,14 @@ class IngredientAdminForm(forms.ModelForm):
 
 class IngredientItemFormset(forms.models.BaseInlineFormSet):
     def clean(self):
-        items = []
+        items = {}
         for form in self.forms:
             try:
                 if form.cleaned_data:
-                    item = {'ingredient': form.cleaned_data.get('ingredient'),
-                            'amount': form.cleaned_data.get('amount'),
-                            'temp': form.cleaned_data.get('temp')}
-                    items.append(item)
+                    form_item = {'ingredient': form.cleaned_data.get('ingredient'),
+                                 'amount': form.cleaned_data.get('amount'),
+                                 'temp': form.cleaned_data.get('temp')}
+                    items.append(form_item)
             except AttributeError:
                 pass
         sugar_types = set([item['ingredient'].subtype for item in items if item['ingredient'].type == Ingredient.TYPE_SUGAR])

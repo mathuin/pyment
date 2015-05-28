@@ -29,7 +29,7 @@ class Command(BaseCommand):
             raise CommandError('Source crate is not an int: %s' % options['source'])
         except KeyError:
             raise CommandError('Source crate required!')
-        except DoesNotExist:
+        except Crate.DoesNotExist:
             raise CommandError('Source crate not valid: %s' % options['source'])
 
         try:
@@ -38,7 +38,7 @@ class Command(BaseCommand):
             raise CommandError('Dest crate is not an int: %s' % options['dest'])
         except KeyError:
             raise CommandError('Dest crate required!')
-        except DoesNotExist:
+        except Crate.DoesNotExist:
             raise CommandError('Dest crate not valid: %s' % options['dest'])
 
         if source.jars == 0:

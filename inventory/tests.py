@@ -21,7 +21,6 @@ from django.utils.six import StringIO
 # crate utilization isn't even tested!
 
 
-
 class WarehouseTestCase(TestCase):
     fixtures = ['inventory', 'meadery']
 

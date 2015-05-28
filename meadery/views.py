@@ -51,7 +51,6 @@ def show_product(request, product_slug, template_name="meadery/product.djhtml"):
         form = ProductAddToCartForm(request, postdata)
         # check if posted data is valid
         if form.is_valid():
-            #add to cart and redirect to cart page
             add_to_cart(request)
             # if test cookie worked, get rid of it
             if request.session.test_cookie_worked():
@@ -89,11 +88,11 @@ def add_review(request):
 
             template = "meadery/product_review.djhtml"
             html = render_to_string(template, {'review': review})
-            response = simplejson.dumps({'success': 'True', 'html': html})
+            response = json.dumps({'success': 'True', 'html': html})
 
         else:
             html = form.errors.as_ul()
-            response = simplejson.dumps({'success': 'False', 'html': html})
+            response = json.dumps({'success': 'False', 'html': html})
 
         if request.is_ajax():
             return HttpResponse(response, content_type="application/javascript")
