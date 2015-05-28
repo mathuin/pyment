@@ -2,6 +2,7 @@ Django>=1.7,<1.8
 python-decouple==2.3
 unipath
 dj-database-url
+dj-email-url
 docker-compose==1.2.0
 gunicorn==19.2.1
 Pillow
