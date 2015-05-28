@@ -3,6 +3,7 @@
 from decouple import config, Csv
 from unipath import Path
 from dj_database_url import parse as db_url
+from dj_email_url import parse as email_url
 
 SITE_ROOT = Path(__file__).parent.parent
 
@@ -193,11 +194,15 @@ LOGGING = {
 }
 
 # Email!
-EMAIL_HOST = config('EMAIL_HOST', default='localhost')
-EMAIL_PORT = config('EMAIL_PORT', default=25, cast=int)
-EMAIL_HOST_USER = config('EMAIL_HOST_USER', default='')
-EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD', default='')
-EMAIL_USE_TLS = config('EMAIL_USE_TLS', default=False, cast=bool)
+EMAIL_URL = config('EMAIL_URL', default='')
+email_config = email_url(EMAIL_URL)
+EMAIL_FILE_PATH = email_config['EMAIL_FILE_PATH']
+EMAIL_HOST_USER = email_config['EMAIL_HOST_USER']
+EMAIL_HOST_PASSWORD = email_config['EMAIL_HOST_PASSWORD']
+EMAIL_HOST = email_config['EMAIL_HOST']
+EMAIL_PORT = email_config['EMAIL_PORT']
+# EMAIL_BACKEND = email_config['EMAIL_BACKEND']
+EMAIL_USE_TLS = email_config['EMAIL_USE_TLS']
 EMAIL_SUBJECT_PREFIX = config('EMAIL_SUBJECT_PREFIX', default='')
 SERVER_EMAIL = EMAIL_HOST_USER
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
