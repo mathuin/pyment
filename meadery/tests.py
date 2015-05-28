@@ -155,8 +155,8 @@ class IngredientAddTestCase(IngredientTestCase):
         pass
 
     @ingredient_exists(False, False)
-    @ingredient_add
-    @admin_login('1', '101', '2', 'Ingredient state does not match type.')  # Liquid is wrong state!
+    @admin_login
+    @ingredient_add('1', '101', '2', 'Ingredient state does not match type.')  # Liquid is wrong state!
     def test_bad_post_wrongstate(self):
         pass
 
@@ -448,7 +448,7 @@ class RecipeMiscTestCase(RecipeTestCase):
                 func(self, *args, **kwds)
                 recipe = RecipeTestCase.build_recipe(RecipeTestCase.fields, inglist)
                 response = self.client.post(self.url, recipe, follow=True)
-                self.assertTrue(response.return_code, 200)
+                self.assertTrue(response.status_code, 200)
                 new_recipe = Recipe.objects.get(title=recipe['title'])
                 self.assertEqual(new_recipe.category, category)
                 # hopefully not necessary
@@ -462,7 +462,7 @@ class RecipeMiscTestCase(RecipeTestCase):
                 func(self, *args, **kwds)
                 recipe = RecipeTestCase.build_recipe(RecipeTestCase.fields, inglist)
                 response = self.client.post(self.url, recipe, follow=True)
-                self.assertTrue(response.return_code, 200)
+                self.assertTrue(response.status_code, 200)
                 new_recipe = Recipe.objects.get(title=recipe['title'])
                 self.assertEqual(new_recipe.appellation, appellation)
                 # hopefully not necessary
@@ -476,7 +476,7 @@ class RecipeMiscTestCase(RecipeTestCase):
                 func(self, *args, **kwds)
                 recipe = RecipeTestCase.build_recipe(RecipeTestCase.fields, inglist)
                 response = self.client.post(self.url, recipe, follow=True)
-                self.assertTrue(response.return_code, 200)
+                self.assertTrue(response.status_code, 200)
                 new_recipe = Recipe.objects.get(title=recipe['title'])
                 self.assertEqual(new_recipe.all_natural, natural)
                 # hopefully not necessary
