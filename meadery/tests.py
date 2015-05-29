@@ -1,7 +1,6 @@
 from decimal import Decimal
 from django.db.models import Count
 from django.test import TestCase
-from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 from models import Ingredient, Parent, Recipe, Batch, Sample, Product
 
@@ -56,13 +55,8 @@ class ProductReviewTestCase(TestCase):
 def admin_login(func):
     def _decorator(self, *args, **kwds):
         username = 'admin'
-        rawpass = 'passw0rd'
-        email = 'admin@example.com'
+        rawpass = 'p@ssword'
 
-        if not User.objects.filter(username=username).exists():
-            admin_user = User.objects.create_superuser(username, email, rawpass)
-            # need better test
-            self.assertTrue(admin_user)
         logged_in = self.client.login(username=username, password=rawpass)
         self.assertTrue(logged_in)
         func(self, *args, **kwds)
@@ -71,7 +65,7 @@ def admin_login(func):
 
 
 class MeaderyTestCase(TestCase):
-    fixtures = ['meadery']
+    fixtures = ['meadery', 'accounts', 'inventory']
 
     @classmethod
     def setUpClass(cls):
@@ -844,7 +838,6 @@ class BatchMiscTestCase(BatchTestCase):
 
 
 class SampleTestCase(MeaderyTestCase):
-    fixtures = ['meadery']
 
     fields = {
         'date': '2012-05-31',
@@ -931,7 +924,6 @@ class SampleDeleteTestCase(SampleTestCase):
 
 
 class ProductTestCase(MeaderyTestCase):
-    fixtures = ['meadery', 'inventory']
 
     fields = {
         'title': 'Test Product',
