@@ -1,7 +1,8 @@
 {% load staticfiles %}
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "XHTML1-s.dtd" ><html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "XHTML1-s.dtd" >
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
 <head>
-    <link rel="Stylesheet" type="text/css" href="{% static "css.css" %}" />
+    <link rel="stylesheet" type="text/css" href="{% static "main.css" %}" />
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 	<title>{% block title %}{% if page_title %}{{ page_title }} - {% endif %} {{ site_name }}{% endblock %}</title>
 	<meta name="keywords" content="{{ meta_keywords }}" />
@@ -11,4 +12,5 @@
 	{% block site_wrapper %}{% endblock %}
 	<script type="text/javascript" src="{% static "jquery-1.8.2.min.js" %}"></script>
 	<script type="text/javascript" src="{% static "scripts.js" %}"></script>
-</body></html>
+</body>
+</html>
