@@ -7,7 +7,7 @@ urlpatterns = patterns('accounts.views',
                         {'template_name': 'registration/my_account.djhtml'}, 'my_account'),
                        (r'^order_details/(?P<order_id>[-\w]+)/$', 'order_details',
                         {'template_name': 'registration/order_details.djhtml'}, 'order_details'),
-                       (r'^order_info//$', 'order_info',
+                       (r'^order_info/$', 'order_info',
                         {'template_name': 'registration/order_info.djhtml'}, 'order_info'), )
 
 urlpatterns += patterns('django.contrib.auth.views',

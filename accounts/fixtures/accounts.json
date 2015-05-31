@@ -1,38 +1,47 @@
 [
 {
-    "fields": {
-        "username": "user",
-        "first_name": "",
-        "last_name": "",
-        "is_active": true,
-        "is_superuser": false,
-        "is_staff": false,
-        "last_login": "2015-05-29T21:18:07.470Z",
-        "groups": [],
-        "user_permissions": [],
-        "password": "pbkdf2_sha256$15000$hflhUywIR068$amPcc34KMFERYRLFibjhY2K/O84Q4Ig9yJSbPUMZliw=",
-        "email": "user@example.org",
-        "date_joined": "2015-05-29T21:18:07.289Z"
-    },
-    "model": "auth.user",
-    "pk": 1
+  "fields": {
+    "username": "user",
+    "first_name": "",
+    "last_name": "",
+    "is_active": true,
+    "is_superuser": false,
+    "is_staff": false,
+    "last_login": "2015-05-31T19:19:13.069Z",
+    "groups": [],
+    "user_permissions": [],
+    "password": "pbkdf2_sha256$15000$hflhUywIR068$amPcc34KMFERYRLFibjhY2K/O84Q4Ig9yJSbPUMZliw=",
+    "email": "user@example.org",
+    "date_joined": "2015-05-29T21:18:07.289Z"
+  },
+  "model": "auth.user",
+  "pk": 1
 },
 {
-    "fields": {
-        "username": "admin",
-        "first_name": "",
-        "last_name": "",
-        "is_active": true,
-        "is_superuser": true,
-        "is_staff": true,
-        "last_login": "2015-05-29T21:33:16.877Z",
-        "groups": [],
-        "user_permissions": [],
-        "password": "pbkdf2_sha256$15000$JI985WVhdY4K$NxQDnwtHcaTzfsTwPWqFfhFJngKpS54Gbw3J2vgZ/i0=",
-        "email": "admin@example.org",
-        "date_joined": "2015-05-29T21:33:16.701Z"
-    },
-    "model": "auth.user",
-    "pk": 2
+  "fields": {
+    "username": "admin",
+    "first_name": "",
+    "last_name": "",
+    "is_active": true,
+    "is_superuser": true,
+    "is_staff": true,
+    "last_login": "2015-05-29T21:33:16.877Z",
+    "groups": [],
+    "user_permissions": [],
+    "password": "pbkdf2_sha256$15000$JI985WVhdY4K$NxQDnwtHcaTzfsTwPWqFfhFJngKpS54Gbw3J2vgZ/i0=",
+    "email": "admin@example.org",
+    "date_joined": "2015-05-29T21:33:16.701Z"
+  },
+  "model": "auth.user",
+  "pk": 2
+},
+{
+  "fields": {
+    "phone": "202-555-1212",
+    "email": "user@example.org",
+    "user": 1
+  },
+  "model": "accounts.userprofile",
+  "pk": 1
 }
 ]

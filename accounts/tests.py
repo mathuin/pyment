@@ -1,16 +1,6 @@
 from django.test import TestCase
-# from django.core.management import call_command
-# from django.core.management.base import CommandError
-# from django.core.exceptions import ValidationError
+from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
-
-# profile.py
-# testing order_info below covers this
-
-# views.py
-# test my_account (just get)
-# test order_details
-# test order_info (get and post)
 
 
 class RegisterTestCase(TestCase):
@@ -48,7 +38,7 @@ def user_login(func):
 
 
 class MyAccountTestCase(TestCase):
-    fixtures = ['accounts']
+    fixtures = ['accounts', 'checkout', 'meadery']
 
     def setUp(self):
         self.url = reverse('my_account')
@@ -67,3 +57,38 @@ class MyAccountTestCase(TestCase):
         response = self.client.get(self.url, follow=True)
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, 'Welcome, User!')
+        self.assertContains(response, 'Order #1 - Oct. 27, 2012 (view)')
+
+
+class OrderDetailsTestCase(TestCase):
+    fixtures = ['accounts', 'checkout', 'meadery']
+
+    def setUp(self):
+        self.orderpk = 1
+        self.url = reverse('order_details', args=[self.orderpk, ])
+
+    @user_login
+    def test_orderdetails(self):
+        response = self.client.get(self.url, follow=True)
+        self.assertContains(response, "Details for Order # {}".format(self.orderpk))
+
+
+class OrderInfoTestCase(TestCase):
+    fixtures = ['accounts', 'checkout', 'meadery']
+
+    def setUp(self):
+        self.url = reverse('order_info')
+
+    @user_login
+    def test_orderinfo_get_then_post(self):
+        old_email = User.objects.get(username='user').email
+        new_email = 'user2@example.org'
+        response = self.client.get(self.url, follow=True)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'Edit Order Information')
+        fields = response.context['form'].initial
+        self.assertEqual(fields['email'], old_email)
+        fields['email'] = new_email
+        response = self.client.post(self.url, fields, follow=True)
+        self.assertEqual(response.status_code, 200)
+        self.assertNotEqual(old_email, new_email)
