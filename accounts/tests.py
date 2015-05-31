@@ -33,3 +33,37 @@ class RegisterTestCase(TestCase):
         response = self.client.post(self.url, fields, follow=True)
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, 'Welcome, Testuser!')
+
+
+def user_login(func):
+    def _decorator(self, *args, **kwds):
+        username = 'user'
+        rawpass = 'p@ssword'
+
+        logged_in = self.client.login(username=username, password=rawpass)
+        self.assertTrue(logged_in)
+        func(self, *args, **kwds)
+        self.client.logout()
+    return _decorator
+
+
+class MyAccountTestCase(TestCase):
+    fixtures = ['accounts']
+
+    def setUp(self):
+        self.url = reverse('my_account')
+
+    def test_myaccount_notloggedin(self):
+        response = self.client.get(self.url, follow=True)
+        self.assertEqual(response.status_code, 200)
+        redirect_target = '{0}{1}?next={2}'.format('http://testserver',
+                                                   reverse('login'),
+                                                   self.url)
+        redirect_chain = [(redirect_target, 302)]
+        self.assertEqual(response.redirect_chain, redirect_chain)
+
+    @user_login
+    def test_myaccount_loggedin(self):
+        response = self.client.get(self.url, follow=True)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'Welcome, User!')
