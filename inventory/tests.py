@@ -268,6 +268,7 @@ class AddNewJarsTestCase(TestCase):
         call_command('add_new_jars', stdout=self.out, **opts)
         self.assertEqual(self.good_crate.jars, self.good_crate_jars + self.num_jars)
 
+
 class DeleteOldJarsTestCase(TestCase):
     fixtures = ['inventory', 'meadery']
 
@@ -331,12 +332,10 @@ class CrateUtilizationTestCase(TestCase):
         except CommandError as e:
             self.fail("Failed with {0}".format(e.args[0]))
         # JMT: this "expected output" is very lame.
-        expected = 'Crate ID |         Bin         | Capacity | Jars \n==================================================\n'
-        self.assertEqual(expected, self.out.getvalue())
         # it would be Smart to have the following:
         # one full crate
         # one empty crate
         # one half-full crate
         # I could then test full and empty as well as normal
-        pass
-
+        expected = 'Crate ID |         Bin         | Capacity | Jars \n==================================================\n'
+        self.assertEqual(expected, self.out.getvalue())
