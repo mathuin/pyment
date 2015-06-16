@@ -14,13 +14,6 @@ from django.utils.six import StringIO
 # link_rows in warehouse -- check admin page?
 # link_shelves link_bins  .. I sense a trend
 
-# add_new_jars.py
-# more edge cases on exceptions?
-# same for crate transfer
-
-# crate utilization isn't even tested!
-
-
 class WarehouseTestCase(TestCase):
     fixtures = ['inventory', 'meadery']
 
@@ -117,52 +110,72 @@ class JarTestCase(TestCase):
     def test_unicode(self):
         self.assertEqual(self.jar.__unicode__(), self.jar.name)
 
-    def test_crate_transfer(self):
-        full_crate = Crate.objects.get(slug='c3')
-        full_crate_jars = full_crate.jars
-        empty_crate = Crate.objects.get(slug='c2')
-        empty_crate_jars = empty_crate.jars
-        partial_crate = Crate.objects.get(slug='c1')
-        partial_crate_jars = partial_crate.jars
+
+class CrateTransferTestCase(TestCase):
+    fixtures = ['inventory', 'meadery']
+
+    def setUp(self):
+        self.out = StringIO()
+
+        # Full crate
+        self.full_crate = Crate.objects.get(slug='c3')
+        self.empty_crate = Crate.objects.get(slug='c2')
+        self.partial_crate = Crate.objects.get(slug='c1')
+
+    def ct_ce(func):
+        def _decorator(self, *args, **kwds):
+            source_jars = self.source.jars
+            dest_jars = self.dest.jars
+            opts = {
+                'source': self.source.number,
+                'dest': self.dest.number,
+            }
+            try:
+                call_command('crate_transfer', stdout=self.out, **opts)
+            except CommandError as e:
+                self.assertEqual(e.args[0], self.error)
+            else:
+                self.fail('Should have failed with {}'.format(self.error))
+            self.assertEqual(self.source.jars, source_jars)
+            self.assertEqual(self.dest.jars, dest_jars)
+        return _decorator
+
+    @ct_ce
+    def ct_ce_no_room(self):
         # Try using full crate as destination.
-        # CommandError should be raised, no jars should move.
-        opts = {'source': partial_crate.number,
-                'dest': full_crate.number}
-        try:
-            call_command('crate_transfer', stdout=self.out, **opts)
-        except CommandError as e:
-            self.assertEqual(e.args[0], 'Destination crate does not have enough room')
-        else:
-            self.fail('A full destination crate should have failed.')
-        self.assertEqual(partial_crate.jars, partial_crate_jars)
-        self.assertEqual(full_crate.jars, full_crate_jars)
-        # Try using empty crate as source.
-        # CommandError should be raised, no jars should move.
-        opts = {'source': empty_crate.number,
-                'dest': full_crate.number}
-        try:
-            call_command('crate_transfer', stdout=self.out, **opts)
-        except CommandError as e:
-            self.assertEqual(e.args[0], 'Source crate is empty')
-        else:
-            self.fail('An empty source crate should have failed.')
-        self.assertEqual(empty_crate.jars, empty_crate_jars)
-        self.assertEqual(full_crate.jars, full_crate_jars)
+        self.source = self.partial_crate
+        self.dest = self.full_crate
+        self.error = 'Destination crate does not have enough room'
+
+    @ct_ce
+    def ct_ce_no_jars(self):
+        # Try using full crate as destination.
+        self.source = self.empty_crate
+        self.dest = self.full_crate
+        self.error = 'Source crate is empty'
+
+    def test_crate_transfer_dryrun(self):
         # Try with dry run enabled.
         # No error should be raised, but no jars should move.
-        opts = {'source': partial_crate.number,
-                'dest': empty_crate.number,
+        partial_crate_jars = self.partial_crate.jars
+        empty_crate_jars = self.empty_crate.jars
+        opts = {'source': self.partial_crate.number,
+                'dest': self.empty_crate.number,
                 'dryrun': True}
         call_command('crate_transfer', stdout=self.out, **opts)
-        self.assertEqual(partial_crate.jars, partial_crate_jars)
-        self.assertEqual(empty_crate.jars, empty_crate_jars)
+        self.assertEqual(self.partial_crate.jars, partial_crate_jars)
+        self.assertEqual(self.empty_crate.jars, empty_crate_jars)
+
+    def test_crate_transfer_good(self):
         # Try without dry run enabled.
         # No error should be raised, and jars should move.
-        opts = {'source': partial_crate.number,
-                'dest': empty_crate.number}
+        partial_crate_jars = self.partial_crate.jars
+        empty_crate_jars = self.empty_crate.jars
+        opts = {'source': self.partial_crate.number,
+                'dest': self.empty_crate.number}
         call_command('crate_transfer', stdout=self.out, **opts)
-        self.assertEqual(partial_crate.jars, empty_crate_jars)
-        self.assertEqual(empty_crate.jars, partial_crate_jars)
+        self.assertEqual(self.partial_crate.jars, empty_crate_jars)
+        self.assertEqual(self.empty_crate.jars, partial_crate_jars)
 
 
 class AddNewJarsTestCase(TestCase):
@@ -224,6 +237,33 @@ class AddNewJarsTestCase(TestCase):
         self.error = 'Not a valid product: {0}'.format(self.product)
 
     @anj_ce
+    def test_anj_ce_start_jar_not_int(self):
+        # Start jar is not an int.
+        self.product = self.good_product_name
+        self.start_jar = 'x'
+        self.end_jar = self.good_end_jar
+        self.crate_number = self.good_crate_number
+        self.error = 'Start jar and end jar must be ints!'
+
+    @anj_ce
+    def test_anj_ce_end_jar_not_int(self):
+        # End jar is not an int.
+        self.product = self.good_product_name
+        self.start_jar = self.good_start_jar
+        self.end_jar = 'x'
+        self.crate_number = self.good_crate_number
+        self.error = 'Start jar and end jar must be ints!'
+
+    @anj_ce
+    def test_anj_ce_start_and_end_jar_both_not_ints(self):
+        # End jar is not an int.
+        self.product = self.good_product_name
+        self.start_jar = ''
+        self.end_jar = ''
+        self.crate_number = self.good_crate_number
+        self.error = 'Start jar and end jar must be ints!'
+
+    @anj_ce
     def test_anj_ce_start_not_less_than_end(self):
         # Try a start jar that's greater than an end jar.
         self.product = self.good_product_name
@@ -231,6 +271,22 @@ class AddNewJarsTestCase(TestCase):
         self.end_jar = self.good_start_jar
         self.crate_number = self.good_crate_number
         self.error = 'Start jar value must be less than or equal to end jar value'
+
+    @anj_ce
+    def test_anj_ce_crate_not_int(self):
+        self.product = self.good_product_name
+        self.start_jar = self.good_start_jar
+        self.end_jar = self.good_end_jar
+        self.crate_number = 'x'
+        self.error = 'Crate value is not an int: {0}'.format(self.crate_number)
+
+    @anj_ce
+    def test_anj_ce_already_exist(self):
+        self.product = self.good_product_name
+        self.start_jar = self.good_start_jar - 1
+        self.end_jar = self.good_end_jar
+        self.crate_number = self.good_crate_number
+        self.error = 'Jars already exist in this product within this range'
 
     @anj_ce
     def test_anj_ce_exceed_capacity(self):
@@ -249,7 +305,7 @@ class AddNewJarsTestCase(TestCase):
         self.crate_number = self.good_crate_number + 10
         self.error = 'Not a valid crate: {0}'.format(self.crate_number)
 
-    def test_add_new_jars(self):
+    def test_add_new_jars_dry_run(self):
         # Try with dry run enabled.
         # No error should be raised, no new jars should be added.
         opts = {'product': self.good_product_name,
@@ -259,7 +315,8 @@ class AddNewJarsTestCase(TestCase):
                 'dryrun': True}
         call_command('add_new_jars', stdout=self.out, **opts)
         self.assertEqual(self.good_crate.jars, self.good_crate_jars)
-        # Try without dry run enabled.
+
+    def test_add_new_jars_good(self):
         # No error should be raised, but new jars should be added.
         opts = {'product': self.good_product_name,
                 'start_jar': self.good_start_jar,
@@ -296,7 +353,7 @@ class CrateUtilizationTestCase(TestCase):
 
     def setUp(self):
         self.out = StringIO()
-        self.good_warehouse_number = Warehouse.objects.get(number=1).number
+        self.good_warehouse_number = Warehouse.objects.get(number=2).number
 
     # crate_utilization_commanderror
     def cu_ce(func):
@@ -325,17 +382,37 @@ class CrateUtilizationTestCase(TestCase):
         self.warehouse_number = self.good_warehouse_number + 10
         self.error = 'Not a valid warehouse number: {0}'.format(self.warehouse_number)
 
-    def test_crate_utilization(self):
-        opts = {'warehouse': self.good_warehouse_number}
-        try:
-            call_command('crate_utilization', stdout=self.out, **opts)
-        except CommandError as e:
-            self.fail("Failed with {0}".format(e.args[0]))
-        # JMT: this "expected output" is very lame.
-        # it would be Smart to have the following:
-        # one full crate
-        # one empty crate
-        # one half-full crate
-        # I could then test full and empty as well as normal
-        expected = 'Crate ID |         Bin         | Capacity | Jars \n==================================================\n'
-        self.assertEqual(expected, self.out.getvalue())
+    def cu_good(empty, full):
+        def real_decorator(func):
+            def _decorator(self, *args, **kwds):
+                func(self, *args, **kwds)
+                opts = {
+                    'warehouse': self.good_warehouse_number
+                }
+                if empty:
+                    opts['empty'] = True
+                if full:
+                    opts['full'] = True
+                try:
+                    call_command('crate_utilization', stdout=self.out, **opts)
+                except CommandError as e:
+                    self.fail("Failed with {0}".format(e.args[0]))
+                self.assertEqual(self.expected_default, self.out.getvalue())
+            return _decorator
+        return real_decorator
+
+    @cu_good(False, False)
+    def test_crate_utilization_neither(self):
+        self.expected_default = 'Crate ID |         Bin         | Capacity | Jars \n==================================================\n    1    | Row 1 Shelf 2 Bin 1 |    11    |  3   \n'
+
+    @cu_good(True, False)
+    def test_crate_utilization_empty(self):
+        self.expected_default = 'Crate ID |         Bin         | Capacity | Jars \n==================================================\n    2    | Row 2 Shelf 1 Bin 1 |    12    |  0   \n    1    | Row 1 Shelf 2 Bin 1 |    11    |  3   \n'
+
+    @cu_good(False, True)
+    def test_crate_utilization_full(self):
+        self.expected_default = 'Crate ID |         Bin         | Capacity | Jars \n==================================================\n    1    | Row 1 Shelf 2 Bin 1 |    11    |  3   \n    3    | Row 1 Shelf 1 Bin 1 |    12    |  12  \n'
+
+    @cu_good(True, True)
+    def test_crate_utilization_both(self):
+        self.expected_default = 'Crate ID |         Bin         | Capacity | Jars \n==================================================\n    2    | Row 2 Shelf 1 Bin 1 |    12    |  0   \n    1    | Row 1 Shelf 2 Bin 1 |    11    |  3   \n    3    | Row 1 Shelf 1 Bin 1 |    12    |  12  \n'
