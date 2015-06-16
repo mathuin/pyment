@@ -17,6 +17,10 @@ class ViewTest(TestCase):
     def setUp(self):
         self.product = Product.instock.all()[0]
 
+    def test_not_found(self):
+        response = self.client.get('/notfound')
+        self.assertEqual(response.status_code, 404)
+
     def test_meadery_home(self):
         response = self.client.get(reverse('meadery_home'))
         self.assertEqual(response.status_code, 200)
