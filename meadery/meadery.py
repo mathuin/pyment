@@ -1,5 +1,4 @@
-from models import Ingredient, IngredientItem, Recipe, Batch, Sample, Product
-from checkout.models import OrderItem
+from models import IngredientItem, Recipe, Batch, Product
 from cStringIO import StringIO
 from itertools import chain
 from labels import Sheet

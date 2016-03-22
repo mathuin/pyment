@@ -1,5 +1,5 @@
 from django.core.management.base import BaseCommand, CommandError
-from inventory.models import Warehouse, Row, Shelf, Bin, Crate, Jar
+from inventory.models import Warehouse, Row, Shelf, Bin, Crate
 from optparse import make_option
 
 
@@ -27,7 +27,7 @@ class Command(BaseCommand):
             raise CommandError('Warehouse not an int: %s' % options['warehouse'])
         except KeyError:
             raise CommandError('Warehouse required!')
-        except DoesNotExist:
+        except Warehouse.DoesNotExist:
             raise CommandError('Not a valid warehouse number: %s' % options['warehouse'])
         # actually do the work
         # NB: these values are hand-crafted

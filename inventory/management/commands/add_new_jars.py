@@ -43,7 +43,11 @@ class Command(BaseCommand):
         except ValueError:
             raise CommandError('Start jar value is not an int: %s' % options['start_jar'])
         try:
-            jar_list = [x for x in xrange(options['start_jar'], options['end_jar']+1)]
+            end_jar = options['end_jar']
+        except ValueError:
+            raise CommandError('End jar value is not an int: %s' % options['end_jar'])
+        try:
+            jar_list = [x for x in xrange(start_jar, end_jar+1)]
         except NameError:
             raise CommandError('Start jar and end jar required!')
         except TypeError:

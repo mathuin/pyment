@@ -4,7 +4,6 @@ from django.shortcuts import get_object_or_404
 import random
 from django.conf import settings
 from django.db.models import Max
-from pyment.settings import SESSION_AGE_DAYS
 from datetime import datetime, timedelta
 
 CART_ID_SESSION_KEY = 'cart_id'
@@ -40,7 +39,7 @@ def add_to_cart(request):
     quantity = postdata.get('quantity', 1)
     # fetch the product or return a missing page error
     p = get_object_or_404(Product, slug=product_slug)
-    #get products in cart
+    # get products in cart
     cart_products = get_cart_items(request)
     product_in_cart = False
     # check to see if item is already in cart

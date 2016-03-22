@@ -25,7 +25,7 @@ RUN apt-get update && apt-get install -y \
 ENV PYTHONUNBUFFERED 1
 
 # Environment settings
-#ENV DEBUG True
+ENV DEBUG True
 ENV SECRET_KEY 'qkmm6qcxz9npoCxtt8ofRu5vVFeTEfbDIJdmIKiEBIiVCi2ef9'
 ENV PUBLIC_ROOT /opt/public
 ENV ALLOWED_HOSTS localhost,127.0.0.1
@@ -36,4 +36,4 @@ RUN pip install -r /opt/requirements.txt
 
 WORKDIR /opt/app
 EXPOSE ${PORTNUM}
-CMD [ "python", "manage.py", "runserver", "0.0.0.0:${PORTNUM}" ]
+CMD [ "python", "manage.py", "runserver", "--insecure", "0.0.0.0:${PORTNUM}" ]

@@ -5,7 +5,7 @@ from unipath import Path
 from dj_database_url import parse as db_url
 from dj_email_url import parse as email_url
 
-SITE_ROOT = Path(__file__).parent.parent
+BASE_DIR = Path(__file__).parent.parent
 
 PUBLIC_ROOT = Path(config('PUBLIC_ROOT'))
 
@@ -84,7 +84,7 @@ STATIC_URL = '/static/'
 
 # Additional locations of static files
 STATICFILES_DIRS = (
-    SITE_ROOT.child('templates', 'static'),
+    BASE_DIR.child('static'),
 )
 
 # List of finder classes that know how to find static files in
@@ -131,7 +131,7 @@ ROOT_URLCONF = 'pyment.urls'
 WSGI_APPLICATION = 'pyment.wsgi.application'
 
 TEMPLATE_DIRS = (
-    SITE_ROOT.child('templates'),
+    BASE_DIR.child('templates'),
 )
 
 LOGIN_REDIRECT_URL = '/accounts/my_account'

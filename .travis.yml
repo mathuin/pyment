@@ -12,14 +12,18 @@ env:
     - SECRET_KEY='*n4-$m9(fkr!ghro4=tz!%=0mkv5=90mi%8d$!p^ir@3mm@=zv'
     - PUBLIC_ROOT=/tmp/public
     - ALLOWED_HOSTS=localhost,127.0.0.1
+install:
+  - pip install -r requirements.txt
+  - pip install coveralls
+  - pip install flake8
 before_script:
   - psql -c 'create database travis_ci_db;' -U postgres
-  - touch pyment/.env
+  - touch pyment/.envp
   - mkdir -p /tmp/public
   - python manage.py collectstatic --noinput
   - python manage.py syncdb --noinput
-  - pip install coveralls
 script:
+  - flake8 --max-line-length=1200 .
   - coverage run --source=. manage.py test
 after_success:
   - coveralls

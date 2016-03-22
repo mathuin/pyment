@@ -22,7 +22,7 @@ def recommended_from_search(request):
     for word in common_words:
         results = search.products(word).get('products', [])
         for r in results:
-            if len(matching) < PRODUCTS_PER_ROW and not r in matching:
+            if len(matching) < PRODUCTS_PER_ROW and r not in matching:
                 matching.append(r)
     return matching
 
@@ -66,7 +66,8 @@ def log_product_view(request, product):
 
 
 def recommended_from_views(request):
-    t_id = tracking_id(request)
+    # JMT: t_id wasn't used, figure out why
+    # t_id = tracking_id(request)
     # get recently viewed products
     viewed = get_recently_viewed(request)
     # if there are previously viewed products, get other tracking ids that have

@@ -6,10 +6,10 @@
       "status": 1,
       "last_updated": "2012-10-28T01:28:58.125Z",
       "phone": "202-555-1212",
-      "user": null,
+      "user": 1,
       "date": "2012-10-27T17:15:50.295Z",
       "ip_address": "169.254.12.34", 
-      "email": "foo@example.com"
+      "email": "user@example.org"
     }
   },
   {

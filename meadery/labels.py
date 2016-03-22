@@ -1,8 +1,6 @@
-from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
-from reportlab.platypus import BaseDocTemplate, Paragraph, Frame, PageTemplate, FrameBreak, Table, Image
+from reportlab.lib.styles import getSampleStyleSheet
+from reportlab.platypus import BaseDocTemplate, Frame, PageTemplate, Table
 from pyment.settings import SITE_NAME, BREWER_NAME, BREWER_LOCATION
-from cStringIO import StringIO
-from django.http import HttpResponse
 
 
 class Sheet:

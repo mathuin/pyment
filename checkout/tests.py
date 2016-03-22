@@ -4,6 +4,33 @@ from models import Order, PickList
 from meadery.models import Product
 from checkout import all_in_stock, create_picklist, process_picklist, cancel_picklist
 
+# admin.py
+# write tests for processing and cancelling orders from web
+# write silly test identifying an order's picklist
+# write test for processing and cancelling picklists from web
+# write silly test identifying a picklist's order
+
+# checkout.py
+# write test for creating and cancelling order
+# - bonus points for doing email right
+# write silly test trying to cancel a fulfilled picklist
+
+# forms.py
+# test clean_phone, which will test strip_non_numbers
+
+# models.py
+# printstatus for orders
+# orderitems properties
+# picklist unicode and absoluteurl (email!)
+# picklistitem properties and absoluteurl (email!)
+
+# checkout_tags.py
+# having a real order will be enough I suspect
+
+# views
+# showcheckout (get and post, logged in and not)
+# receipt?!?
+
 
 class OrderTestCase(TestCase):
     fixtures = ['meadery', 'inventory', 'checkout']

@@ -1,16 +1,11 @@
-"""
-This file demonstrates writing tests using the unittest module. These will pass
-when you run "manage.py test".
+# from django.test import TestCase
+# from django.core.management import call_command
+# from django.core.management.base import CommandError
+# from django.core.exceptions import ValidationError
+# from django.core.urlresolvers import reverse
 
-Replace this with more appropriate tests for your application.
-"""
-
-from django.test import TestCase
-
-
-class SimpleTest(TestCase):
-    def test_basic_addition(self):
-        """
-        Tests that 1 + 1 always equals 2.
-        """
-        self.assertEqual(1 + 1, 2)
+# stats.py
+# recommended_from_search
+# (probably best solved in search/tests.py)
+# recommended_from_views
+# (hopefully just comes up after viewing)

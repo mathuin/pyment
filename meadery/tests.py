@@ -1,9 +1,14 @@
 from decimal import Decimal
 from django.db.models import Count
 from django.test import TestCase
-from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
-from models import Ingredient, IngredientItem, Parent, Recipe, Batch, Sample, Product, ProductReview
+from models import Ingredient, Parent, Recipe, Batch, Sample, Product
+
+
+# views.py
+# show_category edge cases
+# show_product post (add to cart)
+# add_review (ugh, all cases)
 
 
 class ViewTest(TestCase):
@@ -11,6 +16,10 @@ class ViewTest(TestCase):
 
     def setUp(self):
         self.product = Product.instock.all()[0]
+
+    def test_not_found(self):
+        response = self.client.get('/notfound')
+        self.assertEqual(response.status_code, 404)
 
     def test_meadery_home(self):
         response = self.client.get(reverse('meadery_home'))
@@ -50,11 +59,8 @@ class ProductReviewTestCase(TestCase):
 def admin_login(func):
     def _decorator(self, *args, **kwds):
         username = 'admin'
-        rawpass = 'passw0rd'
-        email = 'admin@example.com'
+        rawpass = 'p@ssword'
 
-        if not User.objects.filter(username=username).exists():
-            admin_user = User.objects.create_superuser(username, email, rawpass)
         logged_in = self.client.login(username=username, password=rawpass)
         self.assertTrue(logged_in)
         func(self, *args, **kwds)
@@ -63,7 +69,7 @@ def admin_login(func):
 
 
 class MeaderyTestCase(TestCase):
-    fixtures = ['meadery']
+    fixtures = ['meadery', 'accounts', 'inventory']
 
     @classmethod
     def setUpClass(cls):
@@ -440,6 +446,7 @@ class RecipeMiscTestCase(RecipeTestCase):
                 func(self, *args, **kwds)
                 recipe = RecipeTestCase.build_recipe(RecipeTestCase.fields, inglist)
                 response = self.client.post(self.url, recipe, follow=True)
+                self.assertTrue(response.status_code, 200)
                 new_recipe = Recipe.objects.get(title=recipe['title'])
                 self.assertEqual(new_recipe.category, category)
                 # hopefully not necessary
@@ -453,6 +460,7 @@ class RecipeMiscTestCase(RecipeTestCase):
                 func(self, *args, **kwds)
                 recipe = RecipeTestCase.build_recipe(RecipeTestCase.fields, inglist)
                 response = self.client.post(self.url, recipe, follow=True)
+                self.assertTrue(response.status_code, 200)
                 new_recipe = Recipe.objects.get(title=recipe['title'])
                 self.assertEqual(new_recipe.appellation, appellation)
                 # hopefully not necessary
@@ -466,6 +474,7 @@ class RecipeMiscTestCase(RecipeTestCase):
                 func(self, *args, **kwds)
                 recipe = RecipeTestCase.build_recipe(RecipeTestCase.fields, inglist)
                 response = self.client.post(self.url, recipe, follow=True)
+                self.assertTrue(response.status_code, 200)
                 new_recipe = Recipe.objects.get(title=recipe['title'])
                 self.assertEqual(new_recipe.all_natural, natural)
                 # hopefully not necessary
@@ -490,7 +499,7 @@ class RecipeMiscTestCase(RecipeTestCase):
 
     @admin_login
     @recipe_add_category(metheglin_ingredients, Parent.OTHER_METHEGLIN)
-    def test_category_open(self):
+    def test_category_metheglin(self):
         pass
 
     @admin_login
@@ -756,7 +765,15 @@ class BatchCreateProductFromBatchTestCase(BatchModifyTestCase):
     @admin_login
     @batch_create_product(True, 24, False)
     def test_good_product_exists(self):
-        response = self.client.get('{0}create_product/'.format(reverse('admin:meadery_batch_change', args=(self.batch_with.pk,))), follow=True)
+        url = reverse('admin:meadery_batch_change', args=(self.batch_with.pk,))
+        button_url = '{0}create_product/'.format(url)
+        response = self.client.get(button_url, follow=True)
+        self.assertEqual(response.status_code, 302)
+        redirect_target = '{0}{1}'.format('http://testserver',
+                                          button_url)
+        redirect_chain = [(redirect_target, 302),
+                          (redirect_target, 302)]
+        self.assertEqual(response.redirect_chain, redirect_chain)
 
 
 class BatchDeleteTestCase(BatchTestCase):
@@ -803,7 +820,7 @@ class BatchMiscTestCase(BatchTestCase):
         # What batches have jars?  (hint: SIP 98 A and SIP 98 C)
         batches = Batch.objects.filter(jars__gt=0).order_by('pk')
         batchnames = ', '.join("{0} {1}".format(batch.brewname, batch.batchletter) for batch in batches)
-        filename = batchnames.lower().replace(', ', '-').replace(' ', '')
+        # filename = batchnames.lower().replace(', ', '-').replace(' ', '')
 
         fields['_selected_action'] = tuple([str(batch.pk) for batch in batches])
 
@@ -825,7 +842,6 @@ class BatchMiscTestCase(BatchTestCase):
 
 
 class SampleTestCase(MeaderyTestCase):
-    fixtures = ['meadery']
 
     fields = {
         'date': '2012-05-31',
@@ -912,7 +928,6 @@ class SampleDeleteTestCase(SampleTestCase):
 
 
 class ProductTestCase(MeaderyTestCase):
-    fixtures = ['meadery', 'inventory']
 
     fields = {
         'title': 'Test Product',

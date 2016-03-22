@@ -33,7 +33,7 @@ while [ $retcode -ne 0 ]; do
 done
 
 # load fixtures
-apps="checkout meadery inventory"
+apps="accounts checkout meadery inventory"
 fixtures=`for app in $apps; do echo $app/fixtures/$app.json; done | xargs echo`
 docker-compose run web python manage.py loaddata $fixtures
 
