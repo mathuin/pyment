@@ -5,6 +5,7 @@ machine:
         SECRET_KEY:  'qkmm6qcxz9npoCxtt8ofRu5vVFeTEfbDIJdmIKiEBIiVCi2ef9'
         PUBLIC_ROOT: /public
         ALLOWED_HOSTS: localhost,127.0.0.1
+        DATABASE_URL: postgres://ubuntu:@127.0.0.1:5432/circle_test
 
 dependencies:
     pre:
