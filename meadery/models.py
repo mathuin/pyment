@@ -110,7 +110,7 @@ class IngredientItem(models.Model):
 
     @property
     def to_c(self):
-        return Decimal((self.temp-32)/1.8).quantize(Decimal('0.1'))
+        return Decimal((self.temp - 32) / 1.8).quantize(Decimal('0.1'))
 
 
 class ParentManager(models.Manager):
@@ -165,7 +165,7 @@ class Parent(models.Model):
                           (CATEGORY_ALL, ALL_CATEGORIES))
     MEAD_CHOICES = tuple((b, d) for ((a, b), (c, d)) in zip(MEAD_CATEGORIES, MEAD_SUBCATEGORIES))
     # JMT: it would be awesome to redo categories to support two levels!
-    MEAD_VIEWS = reduce(lambda t1, t2: t1+t2, [categories for (topvalue, categories) in MEAD_CHOICES])
+    MEAD_VIEWS = reduce(lambda t1, t2: t1 + t2, [categories for (topvalue, categories) in MEAD_CHOICES])
     MEAD_DESCRIPTIONS = {TRADITIONAL_DRY: 'A traditional mead with subtle honey aroma but no significant aromatics. Minimal residual sweetness with a dry finish, and a light to medium body. Similar to a dry white wine. (Based on BJCP Style Guidelines 2008)',
                          TRADITIONAL_SEMI_SWEET: 'A traditional mead with noticeable honey aroma and subtle to moderate residual sweetness with a medium-dry finish.  Body is medium-light to medium-full.  Similar to a semi-sweet (or medium-dry) white wine.  (thanks to BJCP Style Guidelines 2008)',
                          TRADITIONAL_SWEET: 'A traditional mead with dominating honey aroma, often moderately to strongly sweet.  The body is generally medium-full to full, and may seem like a dessert wine.  (thanks to BJCP Style Guidelines 2008)',
@@ -319,7 +319,7 @@ class Batch(SIPParent):
             firstsg = self.sample_set.order_by('date')[0].corrsg
             lastsg = self.sample_set.order_by('-date')[0].corrsg
             if firstsg != zero and lastsg != zero and firstsg > lastsg:
-                return Decimal(Decimal('100')*(firstsg - lastsg)/Decimal('0.75')).quantize(Decimal('0.01'))
+                return Decimal(Decimal('100') * (firstsg - lastsg) / Decimal('0.75')).quantize(Decimal('0.01'))
             else:
                 return None
         else:
@@ -337,13 +337,13 @@ class Sample(models.Model):
     deltasg = [-0.0007, -0.0008, -0.0008, -0.0009, -0.0009,
                -0.0009, -0.0008, -0.0008, -0.0007, -0.0007,
                -0.0006, -0.0005, -0.0004, -0.0003, -0.0001,
-               0.0000,  0.0002,  0.0003,  0.0005,  0.0007,
-               0.0009,  0.0011,  0.0013,  0.0016,  0.0018,
-               0.0021,  0.0023,  0.0026,  0.0029,  0.0032,
-               0.0035,  0.0038,  0.0041,  0.0044,  0.0047,
-               0.0051,  0.0054,  0.0058,  0.0061,  0.0065,
-               0.0069,  0.0073,  0.0077,  0.0081,  0.0085,
-               0.0089,  0.0093,  0.0097,  0.0102,  0.0106]
+               0.0000, 0.0002, 0.0003, 0.0005, 0.0007,
+               0.0009, 0.0011, 0.0013, 0.0016, 0.0018,
+               0.0021, 0.0023, 0.0026, 0.0029, 0.0032,
+               0.0035, 0.0038, 0.0041, 0.0044, 0.0047,
+               0.0051, 0.0054, 0.0058, 0.0061, 0.0065,
+               0.0069, 0.0073, 0.0077, 0.0081, 0.0085,
+               0.0089, 0.0093, 0.0097, 0.0102, 0.0106]
 
     class Meta:
         ordering = ('date', )
@@ -354,7 +354,7 @@ class Sample(models.Model):
     @property
     def corrsg(self):
         # Convert temperature from Fahrenheit to Celsius first.
-        tempC = int((self.temp-32)/1.8)
+        tempC = int((self.temp - 32) / 1.8)
         return Decimal(self.sg + Decimal(str(Sample.deltasg[tempC]))).quantize(Decimal('0.001'))
 
 

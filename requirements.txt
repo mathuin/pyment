@@ -3,11 +3,8 @@ python-decouple==2.3
 unipath
 dj-database-url
 dj-email-url
-docker-compose==1.2.0
-gunicorn==19.2.1
 Pillow
 psycopg2==2.6
 reportlab==3.1.44
 Sphinx
 hieroglyph
-coverage

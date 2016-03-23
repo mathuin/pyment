@@ -16,11 +16,7 @@ An inventory management system has been implemented, including support for multi
 
 # Requirements
 
-Pyment now runs on Django 1.5.1.  This required minimal changes to the codebase, which is now PEP8-compliant except for line length.  
-
-Pyment is my first experience with virtualenv.  I have created a requirements.txt file from the output of 'pip freeze' which should be enough to recreate my environment.  Please let me know if anything is missing!
-
-In addition to the packages listed in the requirements file, pyment requires python 2.6 or greater.
+Pyment requires Docker Engine 1.10.0+ and Docker Compose 1.6.0+.
 
 # Standard workflow
 
@@ -34,7 +30,7 @@ The first step is to create or select a recipe.  The recipes all follow the same
 4.  (Optional) Add some flavoring to the bucket.
 5.  Take sample, and record observations.
 6.  Pitch yeast.
-	
+
 The information stored in the app focuses on the ingredients.  For instance, multiple types of honey could be used for a particular recipe, or perhaps apple juice instead of water, or maybe some spices for flavor in the case of a metheglin.
 
 The next step is to create a batch based on that recipe.  The values for the recipe will be copied into the batch where they can be modified when the mead is actually brewed.  If the batch's ingredients change significantly, a new recipe can be created.  The batch includes space for observations such as temperature, specific gravity, and tasting notes.  These observations will be useful for determining the strength of the mead and the flavor text for the labels among other factors.  As the batch progresses, it will be updated with samples from time to time.
@@ -47,11 +43,9 @@ The site works like a standard e-commerce site, where orders can be placed.  Fro
 
 # Initial Configuration
 
-Copy pyment/settings.py to pyment/settings_local.py and modify it to suit your environment.
+Copy `pyment/settings.py` to `pyment/settings_local.py` and modify it to suit your environment.
 
-Use the text editor of your choice to create a new file named
-```pyment/.env```.  The following is an example env file which
-includes all the required variables:
+Use the text editor of your choice to create a new file named `pyment/.env`.  The following is an example env file which includes all the required variables:
 
 ```
 # DEBUG must be false for production
@@ -97,45 +91,6 @@ Once all the mead has been entered into the database, take another tour of the s
 
 Simple labels are created by default.  Custom labels can be produced by creating a file 'meadery\_local.py' in the meadery app which contains a 'generate\_labels(batch)' function, plus any supporting code.  If images are used on labels, they must be copied into the static directory and 'collectstatic' must be run.
 
-# Development
-
-Docker and fig are used to assist with developing this software.  Both of these tools should be installed on the host server.  Some variables have required values for development:
-
-```
-# DEBUG must be True when using fig
-DEBUG=True
-
-# Container uses this value
-PUBLIC_ROOT=/opt/public
-```
-
-If ```squid-deb-proxy``` is running on port 8000, the Dockerfile will access the cache when retrieving packages from the Internet.  This can save considerable time when rebuilding images.
-
-The containers can be built using the following command:
-
-```
-$ ./dev-setup.sh
-```
-
-A database dump and collection of media files are both required to construct the containers.  These are not currently supplied, but fixing that has a high priority!
-
-To run the existing test suite, use the following command:
-
-```
-$ fig run web python manage.py shell
-```
-
-To bring up the web site on port 8001:
-
-```
-$ fig up
-```
-
-Thanks!
-
 # License
 
 This software is released under the [MIT license](http://opensource.org/licenses/mit-license.php).
-
-
-

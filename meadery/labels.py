@@ -30,8 +30,8 @@ class Sheet:
         self.col_gutter = 9
 
         # Calculate label width and height.
-        self.labelw = int((self.width - self.left_margin - self.right_margin - (self.cols - 1)*self.col_gutter) / self.cols)
-        self.labelh = int((self.height - self.top_margin - self.bottom_margin - (self.rows - 1)*self.row_gutter) / self.rows)
+        self.labelw = int((self.width - self.left_margin - self.right_margin - (self.cols - 1) * self.col_gutter) / self.cols)
+        self.labelh = int((self.height - self.top_margin - self.bottom_margin - (self.rows - 1) * self.row_gutter) / self.rows)
 
         # Get sample style sheet from styles.
         self.styles = getSampleStyleSheet()
@@ -41,7 +41,7 @@ class Sheet:
         self.doc = BaseDocTemplate(self.buffer, pagesize=(self.width, self.height))
 
         # Construct page template of "frames".  Each frame contains one label.
-        self.framelist = [(self.left_margin+y*(self.col_gutter+self.labelw), self.height-self.bottom_margin-self.labelh-x*(self.row_gutter+self.labelh), self.labelw, self.labelh) for x in xrange(self.rows) for y in xrange(self.cols)]
+        self.framelist = [(self.left_margin + y * (self.col_gutter + self.labelw), self.height - self.bottom_margin - self.labelh - x * (self.row_gutter + self.labelh), self.labelw, self.labelh) for x in xrange(self.rows) for y in xrange(self.cols)]
         self.doc.addPageTemplates([PageTemplate(frames=[Frame(a, b, c, d, leftPadding=0, bottomPadding=0, rightPadding=0, topPadding=0, showBoundary=(1 if self.debug else 0)) for (a, b, c, d) in self.framelist])])
 
     def __call__(self, data):
@@ -71,7 +71,7 @@ class Label:
 
     # init
     def __init__(self, seq, batch, debug=False):
-        self.seq = '{0}{1}'.format(batch.batchletter, seq+1)
+        self.seq = '{0}{1}'.format(batch.batchletter, seq + 1)
         self.batch = batch
         self.debug = debug
 
