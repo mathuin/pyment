@@ -4,7 +4,7 @@ from checkout.models import BaseOrderInfo
 
 
 class UserProfile(BaseOrderInfo):
-    user = models.ForeignKey(User, unique=True)
+    user = models.OneToOneField(User)
 
     def __unicode__(self):
         return 'User Profile for: ' + self.user.username

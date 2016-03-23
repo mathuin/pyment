@@ -1,5 +1,6 @@
-from django.conf.urls import patterns
+from django.conf.urls import url
+from views import results
 
-urlpatterns = patterns('search.views',
-                       (r'^results/$', 'results', {'template_name': 'search/results.djhtml'}, 'search_results'),
-                       )
+urlpatterns = [
+    url(r'^results/$', results, {'template_name': 'search/results.djhtml'}, 'search_results'),
+]

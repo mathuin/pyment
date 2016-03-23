@@ -8,7 +8,7 @@ class PageView(models.Model):
         abstract = True
 
     date = models.DateTimeField(auto_now=True)
-    ip_address = models.IPAddressField()
+    ip_address = models.GenericIPAddressField()
     user = models.ForeignKey(User, null=True)
     tracking_id = models.CharField(max_length=50, default='')
 

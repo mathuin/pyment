@@ -28,7 +28,7 @@ class Order(BaseOrderInfo):
     # order info
     date = models.DateTimeField(auto_now_add=True)
     status = models.IntegerField(choices=ORDER_STATUSES, default=SUBMITTED)
-    ip_address = models.IPAddressField()
+    ip_address = models.GenericIPAddressField()
     last_updated = models.DateTimeField(auto_now=True)
     user = models.ForeignKey(User, null=True)
 
