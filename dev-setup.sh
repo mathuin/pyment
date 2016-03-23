@@ -18,4 +18,4 @@ fixtures=`for app in $apps; do echo $app/fixtures/$app.json; done | xargs echo`
 docker-compose run --rm web python manage.py loaddata $fixtures
 
 # populate media directory
-# docker-compose run web tar -C /opt/public -xf /opt/app/media.tar
+# docker-compose run web tar -C /public -xf /code/media.tar

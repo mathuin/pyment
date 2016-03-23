@@ -1,7 +1,7 @@
 Copyright
 =========
 
-Copyright 2012-2015 Jack Twilley <mathuin@gmail.com>
+Copyright 2012-2016 Jack Twilley <mathuin@gmail.com>
 
 Contributors
 ------------

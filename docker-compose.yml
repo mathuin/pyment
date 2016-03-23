@@ -10,7 +10,7 @@ services:
             - POSTGRES_DATABASE=pyment
     web:
         build: .
-        command: ./wait-for-it.sh db:5432 -- python manage.py runserver 0.0.0.0:8000
+        command: ./wait-for-it.sh db:5432 -- python manage.py runserver --insecure 0.0.0.0:8000
         volumes:
             - public:/public
             - .:/code
@@ -19,7 +19,7 @@ services:
         depends_on:
             - db
         environment:
-            -  DATABASE_URL=postgres://pyment:pyment_password@db:5432/pyment
+            - DATABASE_URL=postgres://pyment:pyment_password@db:5432/pyment
 volumes:
     dbdata:
         driver: local
