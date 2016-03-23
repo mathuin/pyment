@@ -6,4 +6,4 @@ urlpatterns = [
     url(r'^category/(?P<category_value>[-\w]+)/$', show_category, {'template_name': 'meadery/category.djhtml'}, name='meadery_category'),
     url(r'^product/(?P<product_slug>[-\w]+)/$', show_product, {'template_name': 'meadery/product.djhtml'}, name='meadery_product'),
     url(r'^review/product/add/$', add_review, {}, name='product_add_review'),
-    ]
+]
