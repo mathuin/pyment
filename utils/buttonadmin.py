@@ -60,7 +60,7 @@ class ButtonAdmin(admin.ModelAdmin):
                             return HttpResponseRedirect(referer)
                         return response
         # Delegate to the appropriate method, based on the URL.
-        from django.contrib.admin.util import unquote
+        from django.contrib.admin.utils import unquote
         if url is None:
             return self.changelist_view(request)
         elif url == "add":
@@ -73,7 +73,7 @@ class ButtonAdmin(admin.ModelAdmin):
             return self.change_view(request, unquote(url))
 
     def get_urls(self):
-        from django.conf.urls import url, patterns
+        from django.conf.urls import url
         from functools import update_wrapper
 
         # Define a wrapper view
@@ -82,7 +82,7 @@ class ButtonAdmin(admin.ModelAdmin):
                 return self.admin_site.admin_view(view)(*args, **kwargs)
             return update_wrapper(wrapper, view)
         #  Add the custom button url
-        urlpatterns = patterns('', url(r'^(.+)/$', wrap(self.button_view_dispatcher), ))
+        urlpatterns = [url(r'^(.+)/$', wrap(self.button_view_dispatcher))]
         return urlpatterns + super(ButtonAdmin, self).get_urls()
 
     def change_view(self, request, object_id, form_url='', extra_context=None):
