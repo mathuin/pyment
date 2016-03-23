@@ -1,6 +1,10 @@
 machine:
     python:
         version: 2.7.6
+    environment:
+        SECRET_KEY:  'qkmm6qcxz9npoCxtt8ofRu5vVFeTEfbDIJdmIKiEBIiVCi2ef9'
+        PUBLIC_ROOT: /public
+        ALLOWED_HOSTS: localhost,127.0.0.1
 
 dependencies:
     pre:
