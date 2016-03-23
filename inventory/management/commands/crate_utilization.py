@@ -38,9 +38,9 @@ class Command(BaseCommand):
         dataformat = '{0:^%dd}|{1:^%ds}|{2:^%dd}|{3:^%dd}\n' % fieldwidths
         headerline = headerformat.format('Crate ID', 'Bin', 'Capacity', 'Jars')
         self.stdout.write(headerline)
-        self.stdout.write('='*len(headerline))
-        for crate in sorted(Crate.objects.filter(bin__in=Bin.objects.filter(shelf__in=Shelf.objects.filter(row__in=Row.objects.filter(warehouse=warehouse)))), key=lambda c: c.jars*1.0/c.capacity):
+        self.stdout.write('=' * len(headerline))
+        for crate in sorted(Crate.objects.filter(bin__in=Bin.objects.filter(shelf__in=Shelf.objects.filter(row__in=Row.objects.filter(warehouse=warehouse)))), key=lambda c: c.jars * 1.0 / c.capacity):
             if (crate.jars != crate.capacity and crate.jars != 0) or (options['full'] and crate.jars == crate.capacity) or (options['empty'] and crate.jars == 0):
                 # The warehouse is superfluous here
-                loc = crate.bin.longname[len(warehouse.longname)+1:]
+                loc = crate.bin.longname[len(warehouse.longname) + 1:]
                 self.stdout.write(dataformat.format(crate.id, loc, crate.capacity, crate.jars))
