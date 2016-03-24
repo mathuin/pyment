@@ -10,6 +10,6 @@ urlpatterns = [
 ]
 
 urlpatterns += [
-    url(r'^login/$', login, {'template_name': 'registration/login.djhtml'}),
-    url(r'^logout/$', logout, {'template_name': 'registration/logout.djhtml'}),
+    url(r'^login/$', login, {'template_name': 'registration/login.djhtml'}, name='login'),
+    url(r'^logout/$', logout, {'template_name': 'registration/logout.djhtml'}, name='logout'),
 ]
