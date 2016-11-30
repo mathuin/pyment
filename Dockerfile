@@ -1,5 +1,4 @@
 FROM python:2.7
-MAINTAINER Jack Twilley <mathuin@gmail.com>
 ENV PYTHONUNBUFFERED 1
 
 # Environment settings
