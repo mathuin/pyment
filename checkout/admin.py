@@ -78,6 +78,7 @@ class OrderAdmin(ButtonAdmin):
         else:
             return ''
 
+
 admin.site.register(Order, OrderAdmin)
 
 
@@ -148,5 +149,6 @@ class PickListAdmin(ButtonAdmin):
         myorder = obj.order
         return mark_safe('<a href="%s">%s</a>' % (reverse('admin:checkout_order_change', args=(myorder.pk,)), myorder.name))
     link_order.short_description = 'Order'
+
 
 admin.site.register(PickList, PickListAdmin)

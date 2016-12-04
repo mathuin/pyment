@@ -24,6 +24,7 @@ class WarehouseAdmin(admin.ModelAdmin):
             return howmany
     link_rows.short_description = 'Rows'
 
+
 admin.site.register(Warehouse, WarehouseAdmin)
 
 
@@ -44,6 +45,7 @@ class RowAdmin(admin.ModelAdmin):
         else:
             return howmany
     link_shelves.short_description = 'Shelves'
+
 
 admin.site.register(Row, RowAdmin)
 
@@ -66,6 +68,7 @@ class ShelfAdmin(admin.ModelAdmin):
             return howmany
     link_bins.short_description = 'Bins'
 
+
 admin.site.register(Shelf, ShelfAdmin)
 
 
@@ -86,6 +89,7 @@ class BinAdmin(admin.ModelAdmin):
         else:
             return howmany
     link_crates.short_description = 'Crates'
+
 
 admin.site.register(Bin, BinAdmin)
 
@@ -108,6 +112,7 @@ class CrateAdmin(admin.ModelAdmin):
             return howmany
     link_jars.short_description = 'Jars'
 
+
 admin.site.register(Crate, CrateAdmin)
 
 
@@ -121,5 +126,6 @@ class JarAdmin(SmarterModelAdmin):
     ordering = ['-created_at', 'is_active']
     search_fields = ['product', 'crate']
     readonly_fields = ('created_at', 'updated_at',)
+
 
 admin.site.register(Jar, JarAdmin)

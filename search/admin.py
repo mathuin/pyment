@@ -7,4 +7,5 @@ class SearchTermAdmin(admin.ModelAdmin):
     list_filter = ('ip_address', 'user', 'q')
     exclude = ('user',)
 
+
 admin.site.register(SearchTerm, SearchTermAdmin)

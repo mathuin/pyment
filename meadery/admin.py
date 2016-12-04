@@ -18,6 +18,7 @@ class IngredientAdmin(admin.ModelAdmin):
     list_display_links = ('name', )
     list_filter = ('is_natural', 'appellation', 'type')
 
+
 admin.site.register(Ingredient, IngredientAdmin)
 
 
@@ -245,6 +246,7 @@ class BatchAdmin(ButtonAdmin):
     # change_buttons = [make_labels, add_sample, create_recipe, create_product]
     change_buttons = [create_recipe, create_product]
 
+
 admin.site.register(Batch, BatchAdmin)
 
 
@@ -254,6 +256,7 @@ class SampleAdmin(admin.ModelAdmin):
     list_display_links = ('__unicode__', )
     list_filter = ('batch', 'date')
     ordering = ['-date', 'batch']
+
 
 admin.site.register(Sample, SampleAdmin)
 
@@ -278,6 +281,7 @@ class ProductAdmin(admin.ModelAdmin):
             return howmany
     link_jars.short_description = 'Jars'
 
+
 admin.site.register(Product, ProductAdmin)
 
 
@@ -287,5 +291,6 @@ class ProductReviewAdmin(admin.ModelAdmin):
     list_filter = ('product', 'user', 'is_approved')
     ordering = ['date']
     search_fields = ['user', 'content', 'title']
+
 
 admin.site.register(ProductReview, ProductReviewAdmin)
