@@ -9,10 +9,8 @@ machine:
 
 dependencies:
     pre:
-        - cd django
-        - pip install -r requirements.txt
+        - cd django && pip install -r requirements.txt
 
 test:
     override:
-        - cd django
-        - python manage.py test
+        - cd django && python manage.py test
