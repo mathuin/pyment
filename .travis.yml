@@ -13,6 +13,7 @@ env:
     - PUBLIC_ROOT=/tmp/public
     - ALLOWED_HOSTS=localhost,127.0.0.1
 install:
+  - cd django
   - pip install -r requirements.txt
   - pip install coveralls
   - pip install flake8
