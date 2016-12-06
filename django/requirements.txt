@@ -1,4 +1,5 @@
 Django>=1.8,<1.9
+gunicorn
 python-decouple==2.3
 unipath
 dj-database-url

@@ -4,22 +4,28 @@ services:
         image: postgres:9.4
         volumes:
             - dbdata:/var/lib/postgresql/data
-        environment:
-            - POSTGRES_USER=pyment
-            - POSTGRES_PASSWORD=pyment_password
-            - POSTGRES_DATABASE=pyment
     web:
-        build: .
-        command: ./wait-for-it.sh db:5432 -- python manage.py runserver --insecure 0.0.0.0:8000
-        volumes:
-            - public:/public
-            - .:/code
-        ports:
-            - "8000:8000"
+        build: ./django
+        entrypoint: ./wait-for-it.sh -q db:5432 -- 
+        command: gunicorn -b ":8000" pyment.wsgi
         depends_on:
             - db
         environment:
-            - DATABASE_URL=postgres://pyment:pyment_password@db:5432/pyment
+            - PUBLIC_ROOT=/public
+            - ALLOWED_HOSTS=web
+        expose:
+            - "8000"
+        volumes:
+            - public:/public
+    nginx:
+        image: nginx:latest
+        depends_on:
+            - web
+        ports:
+            - "8000:8000"
+        volumes:
+            - public:/public
+            - ./nginx:/etc/nginx/conf.d
 volumes:
     dbdata:
         driver: local

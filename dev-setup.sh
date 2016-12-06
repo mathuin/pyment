@@ -10,7 +10,7 @@ docker-compose build
 docker-compose run --rm web python manage.py collectstatic --noinput
 
 # create database
-docker-compose run --rm web ./wait-for-it.sh db:5432 -- python manage.py migrate
+docker-compose run --rm web python manage.py migrate
 
 # load fixtures
 apps="accounts checkout meadery inventory"

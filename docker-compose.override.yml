@@ -1,0 +1,12 @@
+version: '2'
+services:
+    db:
+        environment:
+            - POSTGRES_USER=pyment
+            - POSTGRES_PASSWORD=pyment_password
+            - POSTGRES_DATABASE=pyment
+    web:
+        command: gunicorn --access-logfile "-" -b ":8000" pyment.wsgi
+        environment:
+            - DATABASE_URL=postgres://pyment:pyment_password@db:5432/pyment
+            - SECRET_KEY='qkmm6qcxz9npoCxtt8ofRu5vVFeTEfbDIJdmIKiEBIiVCi2ef9'
