@@ -19,7 +19,7 @@
 <fieldset class="my_account">
 	<legend>Account Settings</legend>
 	<ul>
-		<li><a href="{% url 'django.contrib.auth.views.password_change' %}">Change Password</a></li>
+		<li><a href="{% url 'password_change' %}">Change Password</a></li>
 		<li><a href="{% url 'order_info' %}">Edit Billing/Shipping Information</a></li>
 	</ul>
 </fieldset>

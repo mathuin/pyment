@@ -1,24 +1,23 @@
 from django.core.management.base import BaseCommand, CommandError
 from inventory.models import Warehouse, Row, Shelf, Bin, Crate
-from optparse import make_option
 
 
 class Command(BaseCommand):
     help = 'Generates a crate utilization table for the specified warehouse.'
-    option_list = BaseCommand.option_list + (
-        make_option('--warehouse',
-                    help='Warehouse for which table is generated.'),
-        make_option('--full',
-                    action='store_true',
-                    dest='full',
-                    default=False,
-                    help='Include full crates in table'),
-        make_option('--empty',
-                    action='store_true',
-                    dest='empty',
-                    default=False,
-                    help='Include empty crates in table'),
-    )
+
+    def add_arguments(self, parser):
+        parser.add_argument('--warehouse',
+                            help='Warehouse for which table is generated.')
+        parser.add_argument('--full',
+                            action='store_true',
+                            dest='full',
+                            default=False,
+                            help='Include full crates in table')
+        parser.add_argument('--empty',
+                            action='store_true',
+                            dest='empty',
+                            default=False,
+                            help='Include empty crates in table')
 
     def handle(self, *args, **options):
         try:

@@ -22,17 +22,17 @@ class Warehouse(models.Model):
 
     @property
     def shortname(self):
-        return u"W%d" % self.number
+        return "W%d" % self.number
 
     @property
     def longname(self):
-        return u"Warehouse %d" % self.number
+        return "Warehouse %d" % self.number
 
     @property
     def name(self):
         return self.longname
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
     def save(self, *args, **kwargs):
@@ -62,17 +62,17 @@ class Row(models.Model):
 
     @property
     def shortname(self):
-        return u"%sR%d" % (self.warehouse.shortname, self.number)
+        return "%sR%d" % (self.warehouse.shortname, self.number)
 
     @property
     def longname(self):
-        return u"%s Row %d" % (self.warehouse.longname, self.number)
+        return "%s Row %d" % (self.warehouse.longname, self.number)
 
     @property
     def name(self):
         return self.longname
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
     def save(self, *args, **kwargs):
@@ -107,17 +107,17 @@ class Shelf(models.Model):
 
     @property
     def shortname(self):
-        return u"%sS%d" % (self.row.shortname, self.number)
+        return "%sS%d" % (self.row.shortname, self.number)
 
     @property
     def longname(self):
-        return u"%s Shelf %d" % (self.row.longname, self.number)
+        return "%s Shelf %d" % (self.row.longname, self.number)
 
     @property
     def name(self):
         return self.longname
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
     def save(self, *args, **kwargs):
@@ -158,17 +158,17 @@ class Bin(models.Model):
 
     @property
     def shortname(self):
-        return u"%sB%d" % (self.shelf.shortname, self.number)
+        return "%sB%d" % (self.shelf.shortname, self.number)
 
     @property
     def longname(self):
-        return u"%s Bin %d" % (self.shelf.longname, self.number)
+        return "%s Bin %d" % (self.shelf.longname, self.number)
 
     @property
     def name(self):
         return self.longname
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
     def save(self, *args, **kwargs):
@@ -203,17 +203,17 @@ class Crate(models.Model):
 
     @property
     def shortname(self):
-        return u"C%d" % self.number
+        return "C%d" % self.number
 
     @property
     def longname(self):
-        return u"Crate %d" % self.number
+        return "Crate %d" % self.number
 
     @property
     def name(self):
         return self.longname
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
     def save(self, *args, **kwargs):
@@ -257,9 +257,9 @@ class Jar(models.Model):
 
     @property
     def name(self):
-        return u"%s%d" % (self.product, self.number)
+        return "%s%d" % (self.product, self.number)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
     def save(self, *args, **kwargs):

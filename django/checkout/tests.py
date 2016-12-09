@@ -1,8 +1,8 @@
 from django.test import TestCase, Client
-import httplib
-from models import Order, PickList
+import http.client
+from checkout.models import Order, PickList
 from meadery.models import Product
-from checkout import all_in_stock, create_picklist, process_picklist, cancel_picklist
+from checkout.checkout import all_in_stock, create_picklist, process_picklist, cancel_picklist
 
 # admin.py
 # write tests for processing and cancelling orders from web
@@ -21,7 +21,7 @@ from checkout import all_in_stock, create_picklist, process_picklist, cancel_pic
 # models.py
 # printstatus for orders
 # orderitems properties
-# picklist unicode and absoluteurl (email!)
+# picklist str and absoluteurl (email!)
 # picklistitem properties and absoluteurl (email!)
 
 # checkout_tags.py
@@ -42,13 +42,13 @@ class OrderTestCase(TestCase):
     def test_permalink(self):
         url = self.order.get_absolute_url()
         response = self.client.get(url)
-        self.failUnless(response)
+        self.assertTrue(response)
         # not OK, but FOUND (302, redirect)
-        self.assertEqual(response.status_code, httplib.FOUND)
+        self.assertEqual(response.status_code, http.client.FOUND)
         # FIXME: check that it redirects the right place
 
-    def test_unicode(self):
-        self.assertEqual(self.order.__unicode__(), 'Order #' + str(self.order.id))
+    def test_str(self):
+        self.assertEqual(self.order.__str__(), 'Order #' + str(self.order.id))
 
     # FIXME: test show_checkout somehow?
 

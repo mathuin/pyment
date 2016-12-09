@@ -2,9 +2,9 @@ from django.shortcuts import render
 from django.core import urlresolvers
 from django.http import HttpResponseRedirect
 
-from forms import CheckoutForm
-from models import Order, OrderItem
-import checkout
+from checkout.forms import CheckoutForm
+from checkout.models import Order, OrderItem
+from checkout import checkout
 from cart import cart
 from accounts import profile
 

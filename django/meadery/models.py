@@ -1,4 +1,4 @@
-from __future__ import division
+
 from django.db import models
 from django.template.defaultfilters import slugify
 from decimal import Decimal
@@ -87,8 +87,8 @@ class Ingredient(models.Model):
     class Meta:
         ordering = ('state',)
 
-    def __unicode__(self):
-        return u'%s' % self.name
+    def __str__(self):
+        return '%s' % self.name
 
 
 class IngredientItem(models.Model):
@@ -121,7 +121,7 @@ class ParentManager(models.Manager):
 
 def set_category(sender, **kwargs):
     instance = kwargs.pop('instance', False)
-    if instance.items() is not []:
+    if list(instance.items()) is not []:
         sugar_types = set([item.ingredient.subtype for item in instance.items(Ingredient.TYPE_SUGAR)])
         solvent_types = set([item.ingredient.subtype for item in instance.items(Ingredient.TYPE_SOLVENT)])
         flavor_types = set([item.ingredient.subtype for item in instance.items(Ingredient.TYPE_FLAVOR)])
@@ -165,7 +165,7 @@ class Parent(models.Model):
                           (CATEGORY_ALL, ALL_CATEGORIES))
     MEAD_CHOICES = tuple((b, d) for ((a, b), (c, d)) in zip(MEAD_CATEGORIES, MEAD_SUBCATEGORIES))
     # JMT: it would be awesome to redo categories to support two levels!
-    MEAD_VIEWS = reduce(lambda t1, t2: t1 + t2, [categories for (topvalue, categories) in MEAD_CHOICES])
+    MEAD_VIEWS = [item for sublist in [categories for (topvalue, categories) in MEAD_CHOICES] for item in sublist]
     MEAD_DESCRIPTIONS = {TRADITIONAL_DRY: 'A traditional mead with subtle honey aroma but no significant aromatics. Minimal residual sweetness with a dry finish, and a light to medium body. Similar to a dry white wine. (Based on BJCP Style Guidelines 2008)',
                          TRADITIONAL_SEMI_SWEET: 'A traditional mead with noticeable honey aroma and subtle to moderate residual sweetness with a medium-dry finish.  Body is medium-light to medium-full.  Similar to a semi-sweet (or medium-dry) white wine.  (thanks to BJCP Style Guidelines 2008)',
                          TRADITIONAL_SWEET: 'A traditional mead with dominating honey aroma, often moderately to strongly sweet.  The body is generally medium-full to full, and may seem like a dessert wine.  (thanks to BJCP Style Guidelines 2008)',
@@ -187,8 +187,8 @@ class Parent(models.Model):
     def name(self):
         return self.title
 
-    def __unicode__(self):
-        return u'%s' % self.title
+    def __str__(self):
+        return '%s' % self.title
 
     def items(self, type=None):
         if type is None:
@@ -302,7 +302,7 @@ class SIPParent(Parent):
     def name(self):
         return '%s %s' % (self.brewname, self.batchletter)
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
 
@@ -348,8 +348,8 @@ class Sample(models.Model):
     class Meta:
         ordering = ('date', )
 
-    def __unicode__(self):
-        return u'Sample #{0}'.format(self.pk)
+    def __str__(self):
+        return 'Sample #{0}'.format(self.pk)
 
     @property
     def corrsg(self):

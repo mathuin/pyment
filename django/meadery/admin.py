@@ -1,14 +1,14 @@
 from django.contrib import admin, messages
 from utils.buttonadmin import ButtonAdmin
-from .models import Ingredient, IngredientItem, Recipe, Batch, Sample, Product, ProductReview
-from .forms import IngredientAdminForm, IngredientItemFormset, RecipeAdminForm, BatchAdminForm, SampleAdminForm, ProductAdminForm
-from meadery import create_batch_from_recipe, create_recipe_from_batch, create_product_from_batch, make_labels_from_batches
+from meadery.models import Ingredient, IngredientItem, Recipe, Batch, Sample, Product, ProductReview
+from meadery.forms import IngredientAdminForm, IngredientItemFormset, RecipeAdminForm, BatchAdminForm, SampleAdminForm, ProductAdminForm
+from meadery.meadery import create_batch_from_recipe, create_recipe_from_batch, create_product_from_batch, make_labels_from_batches
 from django.core.urlresolvers import reverse
 from decimal import Decimal
 from django.utils.safestring import mark_safe
 from django.http import HttpResponse, HttpResponseRedirect
 from django import forms
-from django.core.context_processors import csrf
+from django.template.context_processors import csrf
 from django.shortcuts import render_to_response
 
 
@@ -40,7 +40,7 @@ class RecipeAdmin(ButtonAdmin):
     all_natural.boolean = True
 
     def total_cost(self, obj):
-        return Decimal(sum([(item.amount * item.ingredient.cpu) for item in obj.items()])).quantize(Decimal('0.01'))
+        return Decimal(sum([(item.amount * item.ingredient.cpu) for item in list(obj.items())])).quantize(Decimal('0.01'))
 
     # JMT: disabled temporarily
     def brew_sg(self, obj):
@@ -252,8 +252,8 @@ admin.site.register(Batch, BatchAdmin)
 
 class SampleAdmin(admin.ModelAdmin):
     form = SampleAdminForm
-    list_display = ('__unicode__', 'batch', 'date', 'temp', 'sg', 'notes', )
-    list_display_links = ('__unicode__', )
+    list_display = ('__str__', 'batch', 'date', 'temp', 'sg', 'notes', )
+    list_display_links = ('__str__', )
     list_filter = ('batch', 'date')
     ordering = ['-date', 'batch']
 
