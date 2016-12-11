@@ -1,8 +1,8 @@
 machine:
     python:
-        version: 2.7.6
+        version: 3.5.2
     environment:
-        SECRET_KEY:  'qkmm6qcxz9npoCxtt8ofRu5vVFeTEfbDIJdmIKiEBIiVCi2ef9'
+        SECRET_KEY: 'qkmm6qcxz9npoCxtt8ofRu5vVFeTEfbDIJdmIKiEBIiVCi2ef9'
         PUBLIC_ROOT: /public
         ALLOWED_HOSTS: localhost,127.0.0.1
         DATABASE_URL: postgres://ubuntu:@127.0.0.1:5432/circle_test

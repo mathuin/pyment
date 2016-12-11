@@ -1,33 +1,32 @@
 from django.core.management.base import BaseCommand, CommandError
 from inventory.models import Jar, Crate
 from meadery.models import Product
-from optparse import make_option
 
 
 class Command(BaseCommand):
     args = '<product> <start_jar> <end_jar> <crate number>'
     help = 'Creates new jars in a particular product placing them in a particular crate'
-    option_list = BaseCommand.option_list + (
-        make_option('--dry-run',
-                    action='store_true',
-                    dest='dryrun',
-                    default=False,
-                    help='Simulate the command'),
-        make_option('--product',
-                    dest='product',
-                    help='Product to be added'),
-        make_option('--start-jar',
-                    dest='start_jar',
-                    type='int',
-                    help='First jar sequence number to be added'),
-        make_option('--end-jar',
-                    dest='end_jar',
-                    type='int',
-                    help='Last jar sequence number to be added'),
-        make_option('--crate',
-                    type='int',
-                    help='Crate number where new product will be added'),
-    )
+
+    def add_arguments(self, parser):
+        parser.add_argument('--dry-run',
+                            action='store_true',
+                            dest='dryrun',
+                            default=False,
+                            help='Simulate the command')
+        parser.add_argument('--product',
+                            dest='product',
+                            help='Product to be added')
+        parser.add_argument('--start-jar',
+                            dest='start_jar',
+                            type=int,
+                            help='First jar sequence number to be added')
+        parser.add_argument('--end-jar',
+                            dest='end_jar',
+                            type=int,
+                            help='Last jar sequence number to be added')
+        parser.add_argument('--crate',
+                            type=int,
+                            help='Crate number where new product will be added')
 
     def handle(self, *args, **options):
         try:
@@ -47,7 +46,7 @@ class Command(BaseCommand):
         except ValueError:
             raise CommandError('End jar value is not an int: %s' % options['end_jar'])
         try:
-            jar_list = [x for x in xrange(start_jar, end_jar + 1)]
+            jar_list = [x for x in range(start_jar, end_jar + 1)]
         except NameError:
             raise CommandError('Start jar and end jar required!')
         except TypeError:

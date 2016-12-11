@@ -1,6 +1,6 @@
 from django.conf.urls import url
 from accounts.views import register, my_account, order_details, order_info
-from django.contrib.auth.views import login, logout
+from django.contrib.auth.views import login, logout, password_change
 
 urlpatterns = [
     url(r'^register/$', register, {'template_name': 'registration/register.djhtml'}, name='register'),
@@ -12,4 +12,5 @@ urlpatterns = [
 urlpatterns += [
     url(r'^login/$', login, {'template_name': 'registration/login.djhtml'}, name='login'),
     url(r'^logout/$', logout, {'template_name': 'registration/logout.djhtml'}, name='logout'),
+    url(r'^password_change/$', password_change, name='password_change')
 ]

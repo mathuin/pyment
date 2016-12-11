@@ -1,4 +1,4 @@
-from models import CartItem
+from cart.models import CartItem
 from meadery.models import Product
 from django.shortcuts import get_object_or_404
 import random
@@ -17,12 +17,9 @@ def _cart_id(request):
 
 
 def _generate_cart_id():
-    cart_id = ''
     characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890!@#$%^&*()'
     cart_id_length = 50
-    for y in range(cart_id_length):
-        cart_id += characters[random.randint(0, len(characters) - 1)]
-    return cart_id
+    return ''.join(characters[random.randint(0, len(characters) - 1)] for _ in range(cart_id_length))
 
 
 # return all items from the current user's cart
@@ -99,7 +96,7 @@ def empty_cart(request):
 
 
 def remove_old_cart_items():
-    print "Removing old carts"
+    print("Removing old carts")
     # calculate date of SESSION_AGE_DAYS days ago
     remove_before = datetime.now() + timedelta(days=-settings.SESSION_AGE_DAYS)
     cart_ids = []
@@ -110,4 +107,4 @@ def remove_old_cart_items():
     to_remove = CartItem.objects.filter(cart_id__in=cart_ids)
     # delete those CartItem instances
     to_remove.delete()
-    print str(len(cart_ids)) + " carts were removed"
+    print((str(len(cart_ids)) + " carts were removed"))

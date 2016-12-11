@@ -8,7 +8,7 @@ urlpatterns = [
     url(r'^cart/', include('cart.urls')),
     url(r'^checkout/', include('checkout.urls')),
     url(r'^accounts/', include('accounts.urls')),
-    url(r'^accounts/', include('django.contrib.auth.urls')),
+    # url(r'^accounts/', include('django.contrib.auth.urls')),
     url(r'^search/', include('search.urls')),
 
     # (r'^inventory/$', 'inventory.views.home'),

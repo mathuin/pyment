@@ -1,4 +1,4 @@
-from models import SearchTerm
+from search.models import SearchTerm
 from django import forms
 
 

@@ -2,10 +2,6 @@
 *~
 *.pyc
 docs/build/
-# stuff specific to instances
-pyment/settings_local.py
-*.sqlite3
-.env
 # temporary!
 media.tar
 pyment_db.bak

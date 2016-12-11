@@ -51,7 +51,7 @@ def order_info(request, template_name="registration/order_info.djhtml"):
         postdata = request.POST.copy()
         form = UserProfileForm(postdata)
         if form.is_valid():
-            profile.set(request)
+            profile.fill(request)
             url = urlresolvers.reverse('my_account')
             return HttpResponseRedirect(url)
     else:

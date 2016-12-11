@@ -41,7 +41,7 @@ class Sheet:
         self.doc = BaseDocTemplate(self.buffer, pagesize=(self.width, self.height))
 
         # Construct page template of "frames".  Each frame contains one label.
-        self.framelist = [(self.left_margin + y * (self.col_gutter + self.labelw), self.height - self.bottom_margin - self.labelh - x * (self.row_gutter + self.labelh), self.labelw, self.labelh) for x in xrange(self.rows) for y in xrange(self.cols)]
+        self.framelist = [(self.left_margin + y * (self.col_gutter + self.labelw), self.height - self.bottom_margin - self.labelh - x * (self.row_gutter + self.labelh), self.labelw, self.labelh) for x in range(self.rows) for y in range(self.cols)]
         self.doc.addPageTemplates([PageTemplate(frames=[Frame(a, b, c, d, leftPadding=0, bottomPadding=0, rightPadding=0, topPadding=0, showBoundary=(1 if self.debug else 0)) for (a, b, c, d) in self.framelist])])
 
     def __call__(self, data):

@@ -3,7 +3,7 @@ branches:
   only:
     - master
 python:
-  - "2.7"
+  - "3.5"
 services:
   - postgresql
 env:
@@ -22,7 +22,7 @@ before_script:
   - touch pyment/.envp
   - mkdir -p /tmp/public
   - python manage.py collectstatic --noinput
-  - python manage.py syncdb --noinput
+  - python manage.py migrate
 script:
   - flake8 --ignore=E402 --max-line-length=1200 .
   - coverage run --source=. manage.py test

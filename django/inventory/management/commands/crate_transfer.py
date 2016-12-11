@@ -1,26 +1,25 @@
 from django.core.management.base import BaseCommand, CommandError
 from inventory.models import Jar, Crate
-from optparse import make_option
 
 
 class Command(BaseCommand):
     args = '<source number> <dest number>'
     help = 'Move jars from one crate to another.'
-    option_list = BaseCommand.option_list + (
-        make_option('--dry-run',
-                    action='store_true',
-                    dest='dryrun',
-                    default=False,
-                    help='Simulate the command'),
-        make_option('--source',
-                    dest='source',
-                    type='int',
-                    help='Crate from which jars are moved'),
-        make_option('--dest',
-                    dest='dest',
-                    type='int',
-                    help='Crate to which jars are moved'),
-    )
+
+    def add_arguments(self, parser):
+        parser.add_argument('--dry-run',
+                            action='store_true',
+                            dest='dryrun',
+                            default=False,
+                            help='Simulate the command')
+        parser.add_argument('--source',
+                            dest='source',
+                            type=int,
+                            help='Crate from which jars are moved')
+        parser.add_argument('--dest',
+                            dest='dest',
+                            type=int,
+                            help='Crate to which jars are moved')
 
     def handle(self, *args, **options):
         try:

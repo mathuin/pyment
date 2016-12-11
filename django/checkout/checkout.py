@@ -1,6 +1,6 @@
 from cart import cart
-from models import Order, OrderItem, PickList, PickListItem
-from forms import CheckoutForm
+from checkout.models import Order, OrderItem, PickList, PickListItem
+from checkout.forms import CheckoutForm
 from meadery.models import Product
 from django.core.exceptions import ValidationError
 from django.core.mail import mail_managers, send_mail
@@ -43,7 +43,7 @@ def create_order(request):
     # save profile info for future orders
     if request.user.is_authenticated():
         from accounts import profile
-        profile.set(request)
+        profile.fill(request)
     # mail the managers
     mail_manager_subject = '{0} has been placed!'.format(order)
     mail_manager_message = '{0} has been placed by {1}.\n\nClick here: {2}'.format(order, order.user if order.user else 'anonymous', request.build_absolute_uri(reverse('admin:checkout_order_change', args=(order.pk,))))

@@ -1,5 +1,5 @@
 from django.conf.urls import url
-from views import index, show_category, show_product, add_review
+from meadery.views import index, show_category, show_product, add_review
 
 urlpatterns = [
     url(r'^$', index, {'template_name': 'meadery/index.djhtml'}, name='meadery_home'),

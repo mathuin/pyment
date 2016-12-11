@@ -12,7 +12,7 @@ def retrieve(request):
     return profile
 
 
-def set(request):
+def fill(request):
     profile = retrieve(request)
     profile_form = UserProfileForm(request.POST, instance=profile)
     profile_form.save()

@@ -2,7 +2,7 @@ from decimal import Decimal
 from django.db.models import Count
 from django.test import TestCase
 from django.core.urlresolvers import reverse
-from models import Ingredient, Parent, Recipe, Batch, Sample, Product
+from meadery.models import Ingredient, Parent, Recipe, Batch, Sample, Product
 from unittest import skipIf
 
 
@@ -80,9 +80,7 @@ class MeaderyTestCase(TestCase):
         # Get the ingredient page without logging in.
         response = self.client.get(self.url, follow=True)
         self.assertEqual(response.status_code, 200)
-        redirect_target = '{0}{1}?next={2}'.format('http://testserver',
-                                                   reverse('admin:login'),
-                                                   self.url)
+        redirect_target = '{0}?next={1}'.format(reverse('admin:login'), self.url)
         redirect_chain = [(redirect_target, 302)]
         self.assertEqual(response.redirect_chain, redirect_chain)
 
@@ -99,7 +97,7 @@ class IngredientTestCase(MeaderyTestCase):
     }
 
     def setUp(self):
-        # super(MeaderyTestCase, self).setUp()
+        super(IngredientTestCase, self).setUp()
         self.url = reverse('admin:meadery_ingredient_changelist')
         self.fields = IngredientTestCase.fields
 
@@ -107,7 +105,7 @@ class IngredientTestCase(MeaderyTestCase):
 class IngredientAddTestCase(IngredientTestCase):
 
     def setUp(self):
-        super(IngredientTestCase, self).setUp()
+        super(IngredientAddTestCase, self).setUp()
         self.url = reverse('admin:meadery_ingredient_add')
 
     def ingredient_exists(before, after):
@@ -127,7 +125,7 @@ class IngredientAddTestCase(IngredientTestCase):
                 fields['subtype'] = subtype
                 fields['state'] = state
                 response = self.client.post(self.url, fields, follow=True)
-                self.assertContains(response, respstr)
+                self.assertRegex(response.content, bytes(respstr, 'utf8'))
                 func(self, *args, **kwds)
             return _decorator
         return real_decorator
@@ -161,14 +159,14 @@ class IngredientAddTestCase(IngredientTestCase):
 
     @ingredient_exists(False, True)
     @admin_login
-    @ingredient_add('1', '101', '1', 'The ingredient &quot;{0}&quot; was added successfully.'.format(IngredientTestCase.fields['name']))  # All good!
+    @ingredient_add('1', '101', '1', 'The ingredient .*{0}.* was added successfully.'.format(IngredientTestCase.fields['name']))  # All good!
     def test_good_post(self):
         pass
 
 
 class IngredientModifyTestCase(IngredientTestCase):
     def setUp(self):
-        super(IngredientTestCase, self).setUp()
+        super(IngredientModifyTestCase, self).setUp()
         self.ingredient = Ingredient.objects.all()[0]
         self.pk = self.ingredient.pk
         self.fields = {
@@ -192,7 +190,8 @@ class IngredientModifyTestCase(IngredientTestCase):
         fields = self.fields
         fields['cpu'] = str(new_cpu)
         response = self.client.post(self.url, fields, follow=True)
-        self.assertContains(response, 'The ingredient &quot;{0}&quot; was changed successfully.'.format(self.ingredient.name))
+        respstr = 'The ingredient .*{0}.* was changed successfully.'.format(self.ingredient.name)
+        self.assertRegex(response.content, bytes(respstr, 'utf8'))
         ingredient = Ingredient.objects.get(pk=self.pk)
         self.assertNotEqual(old_cpu, ingredient.cpu)
         self.assertEqual(new_cpu, ingredient.cpu)
@@ -201,7 +200,7 @@ class IngredientModifyTestCase(IngredientTestCase):
 class IngredientDeleteTestCase(IngredientTestCase):
 
     def setUp(self):
-        super(IngredientTestCase, self).setUp()
+        super(IngredientDeleteTestCase, self).setUp()
         self.ingredient = Ingredient.objects.all()[0]
         self.pk = self.ingredient.pk
         self.url = reverse('admin:meadery_ingredient_delete', args=(self.pk,))
@@ -234,7 +233,7 @@ class RecipeTestCase(MeaderyTestCase):
                    ['Red Star Champagne Yeast', '1', '100']]
 
     def setUp(self):
-        super(MeaderyTestCase, self).setUp()
+        super(RecipeTestCase, self).setUp()
         self.url = reverse('admin:meadery_recipe_changelist')
 
     @staticmethod
@@ -264,7 +263,7 @@ class RecipeTestCase(MeaderyTestCase):
 class RecipeAddTestCase(RecipeTestCase):
 
     def setUp(self):
-        super(RecipeTestCase, self).setUp()
+        super(RecipeAddTestCase, self).setUp()
         self.url = reverse('admin:meadery_recipe_add')
         self.recipe = RecipeTestCase.build_recipe(RecipeTestCase.fields, RecipeTestCase.ingredients)
 
@@ -283,7 +282,7 @@ class RecipeAddTestCase(RecipeTestCase):
                 recipe = RecipeTestCase.build_recipe(RecipeTestCase.fields, [RecipeTestCase.ingredients[x] for x in ings])
                 func(self, *args, **kwds)
                 response = self.client.post(self.url, recipe, follow=True)
-                self.assertContains(response, respstr)
+                self.assertRegex(response.content, bytes(respstr, 'utf8'))
             return _decorator
         return real_decorator
 
@@ -319,14 +318,14 @@ class RecipeAddTestCase(RecipeTestCase):
 
     @recipe_exists(False, True)
     @admin_login
-    @recipe_add([0, 1, 2, 3], 'The recipe &quot;{0}&quot; was added successfully.'.format(RecipeTestCase.fields['title']))
+    @recipe_add([0, 1, 2, 3], 'The recipe .*{0}.* was added successfully.'.format(RecipeTestCase.fields['title']))
     def test_good_post(self):
         pass
 
 
 class RecipeModifyTestCase(RecipeTestCase):
     def setUp(self):
-        super(RecipeTestCase, self).setUp()
+        super(RecipeModifyTestCase, self).setUp()
         self.recipe = Recipe.objects.all()[0]
         self.pk = self.recipe.pk
         self.url = reverse('admin:meadery_recipe_change', args=(self.pk,))
@@ -340,11 +339,13 @@ class RecipeModifyTestCase(RecipeTestCase):
         recipe = RecipeTestCase.build_recipe(RecipeTestCase.fields, RecipeTestCase.ingredients)
         recipe['description'] = new_description
         response = self.client.post(self.url, recipe, follow=True)
-        self.assertContains(response, 'The recipe &quot;{0}&quot; was changed successfully.'.format(RecipeTestCase.fields['title']))
+        respstr = 'The recipe .*{0}.* was changed successfully.'.format(RecipeTestCase.fields['title'])
+        self.assertRegex(response.content, bytes(respstr, 'utf8'))
         recipe = Recipe.objects.get(pk=self.pk)
         self.assertNotEqual(old_description, recipe.description)
         self.assertEqual(new_description, recipe.description)
 
+    # @skipIf(True, "Django 1.10 does not pass this test -- change batch page comes up")
     @admin_login
     def test_create_batch_from_recipe(self):
         old_batch_count = Batch.objects.count()
@@ -352,7 +353,8 @@ class RecipeModifyTestCase(RecipeTestCase):
         button_url = '{0}create_batch/'.format(self.url)
         response = self.client.get(button_url, follow=True)
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, 'Creating a batch from recipe {0}:'.format(self.recipe.title))
+        respstr = 'Creating a batch from recipe .*{0}.*:'.format(self.recipe.title)
+        self.assertRegex(response.content, bytes(respstr, 'utf8'))
         # Now that we're here, it's just another POST.
         fields = {
             'brewname': 'SIP 97',
@@ -371,7 +373,7 @@ class RecipeModifyTestCase(RecipeTestCase):
 class RecipeDeleteTestCase(RecipeTestCase):
 
     def setUp(self):
-        super(RecipeTestCase, self).setUp()
+        super(RecipeDeleteTestCase, self).setUp()
         self.recipe = Recipe.objects.all()[0]
         self.pk = self.recipe.pk
         self.url = reverse('admin:meadery_recipe_delete', args=(self.pk,))
@@ -436,7 +438,7 @@ class RecipeMiscTestCase(RecipeTestCase):
                          ['Red Star Champagne Yeast', '1', '100']]
 
     def setUp(self):
-        super(RecipeTestCase, self).setUp()
+        super(RecipeMiscTestCase, self).setUp()
         self.recipe = Recipe.objects.all()[0]
         self.pk = self.recipe.pk
         self.url = reverse('admin:meadery_recipe_add')
@@ -552,13 +554,13 @@ class BatchTestCase(MeaderyTestCase):
     samples = []
 
     def setUp(self):
-        super(MeaderyTestCase, self).setUp()
+        super(BatchTestCase, self).setUp()
         self.url = reverse('admin:meadery_batch_changelist')
 
     @staticmethod
     def build_batch(fields, ingredients, samples):
         batch = {}
-        for key, value in BatchTestCase.fields.items():
+        for key, value in list(BatchTestCase.fields.items()):
             batch[key] = value
         batch['ingredientitem_set-TOTAL_FORMS'] = len(ingredients)
         batch['ingredientitem_set-INITIAL_FORMS'] = '0'
@@ -604,7 +606,7 @@ class BatchTestCase(MeaderyTestCase):
 class BatchAddTestCase(BatchTestCase):
 
     def setUp(self):
-        super(BatchTestCase, self).setUp()
+        super(BatchAddTestCase, self).setUp()
         self.url = reverse('admin:meadery_batch_add')
         self.batch = BatchTestCase.build_batch(BatchTestCase.fields, BatchTestCase.ingredients, BatchTestCase.samples)
 
@@ -622,7 +624,7 @@ class BatchAddTestCase(BatchTestCase):
             def _decorator(self, *args, **kwds):
                 batch = BatchTestCase.build_batch(BatchTestCase.fields, [BatchTestCase.ingredients[x] for x in ings], [])
                 response = self.client.post(self.url, batch, follow=True)
-                self.assertContains(response, respstr)
+                self.assertRegex(response.content, bytes(respstr, 'utf8'))
                 func(self, *args, **kwds)
             return _decorator
         return real_decorator
@@ -659,14 +661,14 @@ class BatchAddTestCase(BatchTestCase):
 
     @batch_exists(False, True)
     @admin_login
-    @batch_add([0, 1, 2, 3], 'The batch &quot;{0} {1}&quot; was added successfully.'.format(BatchTestCase.fields['brewname'], BatchTestCase.fields['batchletter']))
+    @batch_add([0, 1, 2, 3], 'The batch .*{0} {1}.* was added successfully.'.format(BatchTestCase.fields['brewname'], BatchTestCase.fields['batchletter']))
     def test_good_post(self):
         pass
 
 
 class BatchModifyTestCase(BatchTestCase):
     def setUp(self):
-        super(BatchTestCase, self).setUp()
+        super(BatchModifyTestCase, self).setUp()
         self.batch = Batch.objects.all()[0]
         self.pk = self.batch.pk
         self.url = reverse('admin:meadery_batch_change', args=(self.pk,))
@@ -680,7 +682,8 @@ class BatchModifyTestCase(BatchTestCase):
         batch = BatchTestCase.build_batch(BatchTestCase.fields, BatchTestCase.ingredients, [])
         batch['description'] = new_description
         response = self.client.post(self.url, batch, follow=True)
-        self.assertContains(response, 'The batch &quot;{0} {1}&quot; was changed successfully.'.format(BatchTestCase.fields['brewname'], BatchTestCase.fields['batchletter']))
+        respstr = 'The batch .*{0} {1}.* was changed successfully.'.format(BatchTestCase.fields['brewname'], BatchTestCase.fields['batchletter'])
+        self.assertRegex(response.content, bytes(respstr, 'utf8'))
         batch = Batch.objects.get(pk=self.pk)
         self.assertNotEqual(old_description, batch.description)
         self.assertEqual(new_description, batch.description)
@@ -693,8 +696,7 @@ class BatchModifyTestCase(BatchTestCase):
         button_url = '{0}create_recipe/'.format(self.url)
         response = self.client.get(button_url, follow=True)
         self.assertEqual(response.status_code, 302)
-        redirect_target = '{0}{1}'.format('http://testserver',
-                                          button_url)
+        redirect_target = button_url
         redirect_chain = [(redirect_target, 302),
                           (redirect_target, 302)]
         self.assertEqual(response.redirect_chain, redirect_chain)
@@ -705,7 +707,7 @@ class BatchModifyTestCase(BatchTestCase):
 class BatchCreateProductFromBatchTestCase(BatchModifyTestCase):
 
     def setUp(self):
-        super(BatchModifyTestCase, self).setUp()
+        super(BatchCreateProductFromBatchTestCase, self).setUp()
         batches = Batch.objects.annotate(num_samples=Count('sample'))
         for prod in Product.objects.all():
             batches = batches.exclude(brewname=prod.brewname, batchletter=prod.batchletter)
@@ -725,8 +727,7 @@ class BatchCreateProductFromBatchTestCase(BatchModifyTestCase):
                 button_url = '{0}create_product/'.format(url)
                 response = self.client.get(button_url, follow=True)
                 self.assertEqual(response.status_code, 302)
-                redirect_target = '{0}{1}'.format('http://testserver',
-                                                  button_url)
+                redirect_target = button_url
                 redirect_chain = [(redirect_target, 302),
                                   (redirect_target, 302)]
                 self.assertEqual(response.redirect_chain, redirect_chain)
@@ -776,8 +777,7 @@ class BatchCreateProductFromBatchTestCase(BatchModifyTestCase):
         button_url = '{0}create_product/'.format(url)
         response = self.client.get(button_url, follow=True)
         self.assertEqual(response.status_code, 302)
-        redirect_target = '{0}{1}'.format('http://testserver',
-                                          button_url)
+        redirect_target = button_url
         redirect_chain = [(redirect_target, 302),
                           (redirect_target, 302)]
         self.assertEqual(response.redirect_chain, redirect_chain)
@@ -786,7 +786,7 @@ class BatchCreateProductFromBatchTestCase(BatchModifyTestCase):
 class BatchDeleteTestCase(BatchTestCase):
 
     def setUp(self):
-        super(BatchTestCase, self).setUp()
+        super(BatchDeleteTestCase, self).setUp()
         self.batch = Batch.objects.all()[0]
         self.pk = self.batch.pk
         self.url = reverse('admin:meadery_batch_delete', args=(self.pk,))
@@ -805,17 +805,17 @@ class BatchDeleteTestCase(BatchTestCase):
 
 class BatchMiscTestCase(BatchTestCase):
     def setUp(self):
-        super(BatchTestCase, self).setUp()
+        super(BatchMiscTestCase, self).setUp()
         self.url = reverse('admin:meadery_batch_changelist')
 
     @admin_login
     def test_make_labels(self):
         # Monkey patch generate_labels to use the generic one.
-        from . import meadery
-        from labels import Label
+        from meadery import meadery
+        from meadery.labels import Label
 
         def generate_labels(batch):
-            return [Label(seq, batch) for seq in xrange(batch.jars)]
+            return [Label(seq, batch) for seq in range(batch.jars)]
         meadery.generate_labels = generate_labels
 
         fields = {
@@ -845,7 +845,7 @@ class BatchMiscTestCase(BatchTestCase):
         if os.getenv('TRAVIS', None):
             self.assertContains(response, 'Labels were made for {0}'.format(batchnames))
         else:
-            self.assertContains(response, 'ReportLab Generated PDF document')
+            self.assertEquals(response.get('Content-Type'), "application/pdf")
 
 
 class SampleTestCase(MeaderyTestCase):
@@ -858,7 +858,7 @@ class SampleTestCase(MeaderyTestCase):
     }
 
     def setUp(self):
-        super(MeaderyTestCase, self).setUp()
+        super(SampleTestCase, self).setUp()
         self.url = reverse('admin:meadery_sample_changelist')
 
     @staticmethod
@@ -871,7 +871,7 @@ class SampleTestCase(MeaderyTestCase):
 class SampleAddTestCase(SampleTestCase):
 
     def setUp(self):
-        super(SampleTestCase, self).setUp()
+        super(SampleAddTestCase, self).setUp()
         self.url = reverse('admin:meadery_sample_add')
 
     def sample_exists(before, after):
@@ -889,12 +889,13 @@ class SampleAddTestCase(SampleTestCase):
     def test_good_post(self):
         sample = SampleTestCase.build_sample(SampleTestCase.fields)
         response = self.client.post(self.url, sample, follow=True)
-        self.assertContains(response, 'The sample &quot;{0}&quot; was added successfully.'.format(Sample.objects.get(notes=self.fields['notes'])))
+        respstr = 'The sample .*{0}.* was added successfully.'.format(Sample.objects.get(notes=self.fields['notes']))
+        self.assertRegex(response.content, bytes(respstr, 'utf8'))
 
 
 class SampleModifyTestCase(SampleTestCase):
     def setUp(self):
-        super(SampleTestCase, self).setUp()
+        super(SampleModifyTestCase, self).setUp()
         self.sample = Sample.objects.all()[0]
         self.pk = self.sample.pk
         self.url = reverse('admin:meadery_sample_change', args=(self.pk,))
@@ -908,7 +909,8 @@ class SampleModifyTestCase(SampleTestCase):
         sample = SampleTestCase.build_sample(SampleTestCase.fields)
         sample['notes'] = new_notes
         response = self.client.post(self.url, sample, follow=True)
-        self.assertContains(response, 'The sample &quot;{0}&quot; was changed successfully.'.format(self.sample))
+        respstr = 'The sample .*{0}.* was changed successfully.'.format(self.sample)
+        self.assertRegex(response.content, bytes(respstr, 'utf8'))
         sample = Sample.objects.get(pk=self.pk)
         self.assertNotEqual(old_notes, sample.notes)
         self.assertEqual(new_notes, sample.notes)
@@ -917,7 +919,7 @@ class SampleModifyTestCase(SampleTestCase):
 class SampleDeleteTestCase(SampleTestCase):
 
     def setUp(self):
-        super(SampleTestCase, self).setUp()
+        super(SampleDeleteTestCase, self).setUp()
         self.sample = Sample.objects.all()[0]
         self.pk = self.sample.pk
         self.url = reverse('admin:meadery_sample_delete', args=(self.pk,))
@@ -953,20 +955,20 @@ class ProductTestCase(MeaderyTestCase):
     }
 
     def setUp(self):
-        super(MeaderyTestCase, self).setUp()
+        super(ProductTestCase, self).setUp()
         self.url = reverse('admin:meadery_product_changelist')
 
     @staticmethod
     def build_product(fields):
         product = {}
-        for key, value in ProductTestCase.fields.items():
+        for key, value in list(ProductTestCase.fields.items()):
             product[key] = value
         return product
 
 
 class ProductAddTestCase(ProductTestCase):
     def setUp(self):
-        super(ProductTestCase, self).setUp()
+        super(ProductAddTestCase, self).setUp()
         self.url = reverse('admin:meadery_product_add')
         self.product = ProductTestCase.build_product(ProductTestCase.fields)
 
@@ -985,12 +987,13 @@ class ProductAddTestCase(ProductTestCase):
     def test_good_post(self):
         product = ProductTestCase.build_product(ProductTestCase.fields)
         response = self.client.post(self.url, product, follow=True)
-        self.assertContains(response, 'The product &quot;{0} {1}&quot; was added successfully.'.format(ProductTestCase.fields['brewname'], ProductTestCase.fields['batchletter']))
+        respstr = 'The product .*{0} {1}.* was added successfully.'.format(ProductTestCase.fields['brewname'], ProductTestCase.fields['batchletter'])
+        self.assertRegex(response.content, bytes(respstr, 'utf8'))
 
 
 class ProductModifyTestCase(ProductTestCase):
     def setUp(self):
-        super(ProductTestCase, self).setUp()
+        super(ProductModifyTestCase, self).setUp()
         self.product = Product.objects.all()[0]
         self.pk = self.product.pk
         self.url = reverse('admin:meadery_product_change', args=(self.pk,))
@@ -1004,7 +1007,8 @@ class ProductModifyTestCase(ProductTestCase):
         product = ProductTestCase.build_product(ProductTestCase.fields)
         product['description'] = new_description
         response = self.client.post(self.url, product, follow=True)
-        self.assertContains(response, 'The product &quot;{0} {1}&quot; was changed successfully.'.format(ProductTestCase.fields['brewname'], ProductTestCase.fields['batchletter']))
+        respstr = 'The product .*{0} {1}.* was changed successfully.'.format(ProductTestCase.fields['brewname'], ProductTestCase.fields['batchletter'])
+        self.assertRegex(response.content, bytes(respstr, 'utf8'))
         product = Product.objects.get(pk=self.pk)
         self.assertNotEqual(old_description, product.description)
         self.assertEqual(new_description, product.description)
@@ -1013,7 +1017,7 @@ class ProductModifyTestCase(ProductTestCase):
 class ProductDeleteTestCase(ProductTestCase):
 
     def setUp(self):
-        super(ProductTestCase, self).setUp()
+        super(ProductDeleteTestCase, self).setUp()
         self.product = Product.objects.all()[0]
         self.pk = self.product.pk
         self.url = reverse('admin:meadery_product_delete', args=(self.pk,))

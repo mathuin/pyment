@@ -1,7 +1,7 @@
-from models import IngredientItem, Recipe, Batch, Product
-from cStringIO import StringIO
+from meadery.models import IngredientItem, Recipe, Batch, Product
+from io import BytesIO
 from itertools import chain
-from labels import Sheet
+from meadery.labels import Sheet
 
 
 def create_batch_from_recipe(recipe, brewname, batchletter, event):
@@ -71,15 +71,15 @@ def create_product_from_batch(batch):
 try:
     from meadery_local import generate_labels
 except ImportError:
-    from labels import Label
+    from meadery.labels import Label
 
     def generate_labels(batch):
-        return [Label(seq, batch) for seq in xrange(batch.jars)]
+        return [Label(seq, batch) for seq in range(batch.jars)]
 
 
 def make_labels_from_batches(batches):
     # Create buffer.
-    buffer = StringIO()
+    buffer = BytesIO()
 
     # Build the label objects.
     if isinstance(batches, list):

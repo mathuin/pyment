@@ -3,18 +3,17 @@ from inventory.models import Jar
 from pyment import settings
 from django.utils import timezone
 from datetime import timedelta
-from optparse import make_option
 
 
 class Command(BaseCommand):
     help = 'Delete inactive jars more than %d days old' % settings.INACTIVE_JAR_AGE_DAYS
-    option_list = BaseCommand.option_list + (
-        make_option('--dry-run',
-                    action='store_true',
-                    dest='dryrun',
-                    default=False,
-                    help='Simulate the command'),
-    )
+
+    def add_arguments(self, parser):
+        parser.add_argument('--dry-run',
+                            action='store_true',
+                            dest='dryrun',
+                            default=False,
+                            help='Simulate the command')
 
     def handle(self, **options):
         self.stdout.write('Removing inactive jars\n')

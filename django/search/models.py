@@ -9,5 +9,5 @@ class SearchTerm(models.Model):
     user = models.ForeignKey(User, null=True)
     tracking_id = models.CharField(max_length=50, default='')
 
-    def __unicode__(self):
+    def __str__(self):
         return self.q

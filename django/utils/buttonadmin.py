@@ -41,9 +41,9 @@ class ButtonAdmin(admin.ModelAdmin):
         # Dispatch the url to a function call
         if url is not None:
             import re
-            res = re.match('(.*/)?(?P<id>\d+)/(?P<command>.*)', url)
+            res = re.match(r'(.*/)?(?P<id>\d+)/change/(?P<command>.*)', url)
             if res:
-                if res.group('command') in [b.func_name for b in self.change_buttons]:
+                if res.group('command') in [b.__name__ for b in self.change_buttons]:
                     obj = self.model._default_manager.get(pk=res.group('id'))
                     response = getattr(self, res.group('command'))(request, obj)
                     if response is None:
@@ -53,7 +53,7 @@ class ButtonAdmin(admin.ModelAdmin):
             else:
                 res = re.match('(.*/)?(?P<command>.*)', url)
                 if res:
-                    if res.group('command') in [b.func_name for b in self.list_buttons]:
+                    if res.group('command') in [b.__name__ for b in self.list_buttons]:
                         response = getattr(self, res.group('command'))(request)
                         if response is None:
                             referer = request.META.get('HTTP_REFERER', '')
@@ -69,6 +69,8 @@ class ButtonAdmin(admin.ModelAdmin):
             return self.history_view(request, unquote(url[:-8]))
         elif url.endswith('/delete'):
             return self.delete_view(request, unquote(url[:-7]))
+        elif url.endswith('/change'):
+            return self.change_view(request, unquote(url[:-7]))
         else:
             return self.change_view(request, unquote(url))
 
@@ -104,5 +106,5 @@ class ButtonAdmin(admin.ModelAdmin):
     def _convert_buttons(self, orig_buttons):
         buttons = []
         for b in orig_buttons:
-            buttons.append({'func_name': b.func_name, 'short_description': b.short_description})
+            buttons.append({'func_name': b.__name__, 'short_description': b.short_description})
         return buttons

@@ -2,7 +2,7 @@
 from django.shortcuts import render
 from django.http import HttpResponseRedirect
 from checkout import checkout
-import cart
+from cart import cart
 
 
 def show_cart(request, template_name="cart/cart.djhtml"):

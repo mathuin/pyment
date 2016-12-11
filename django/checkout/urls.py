@@ -1,5 +1,5 @@
 from django.conf.urls import url
-from views import show_checkout, receipt
+from checkout.views import show_checkout, receipt
 
 urlpatterns = [
     url(r'^$', show_checkout, {'template_name': 'checkout/checkout.djhtml'}, name='checkout'),

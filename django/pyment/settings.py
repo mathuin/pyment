@@ -102,6 +102,7 @@ TEMPLATES = [
         'DIRS': [BASE_DIR.child('templates')],
         'APP_DIRS': True,
         'OPTIONS': {
+            'debug': DEBUG,
             'context_processors': [
                 'django.template.context_processors.debug',
                 'django.template.context_processors.request',
@@ -117,15 +118,14 @@ TEMPLATES = [
     }
 ]
 
-MIDDLEWARE_CLASSES = (
+MIDDLEWARE = (
+    'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
-    'django.middleware.security.SecurityMiddleware',
 )
 
 ROOT_URLCONF = 'pyment.urls'
@@ -139,6 +139,7 @@ PRODUCTS_PER_PAGE = 12
 PRODUCTS_PER_ROW = 4
 SESSION_AGE_DAYS = 90
 SESSION_COOKIE_AGE = 60 * 60 * 24 * SESSION_AGE_DAYS
+SESSION_SERIALIZER = 'django.contrib.sessions.serializers.PickleSerializer'
 INACTIVE_JAR_AGE_DAYS = 14
 
 INSTALLED_APPS = (

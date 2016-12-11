@@ -1,4 +1,4 @@
-from models import SearchTerm
+from search.models import SearchTerm
 from meadery.models import Product
 from django.db.models import Q
 from stats import stats

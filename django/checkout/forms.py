@@ -1,11 +1,11 @@
 from django import forms
-from models import Order
+from checkout.models import Order
 import re
 
 
 def strip_non_numbers(data):
     """ gets rid of all non-number characters """
-    non_numbers = re.compile('\D')
+    non_numbers = re.compile(r'\D')
     return non_numbers.sub('', data)
 
 

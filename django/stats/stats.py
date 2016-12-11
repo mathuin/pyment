@@ -3,7 +3,7 @@ import base64
 from search.models import SearchTerm
 from pyment.settings import PRODUCTS_PER_ROW
 from meadery.models import Product
-from models import ProductView
+from stats.models import ProductView
 
 
 def tracking_id(request):

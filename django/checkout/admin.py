@@ -1,7 +1,7 @@
 from django.contrib import admin
 from utils.buttonadmin import ButtonAdmin
-from models import Order, OrderItem, PickList, PickListItem
-from checkout import create_picklist, all_in_stock, process_picklist, cancel_picklist, cancel_order
+from checkout.models import Order, OrderItem, PickList, PickListItem
+from checkout.checkout import create_picklist, all_in_stock, process_picklist, cancel_picklist, cancel_order
 from django.core.urlresolvers import reverse
 from django.utils.safestring import mark_safe
 
@@ -12,7 +12,7 @@ class OrderItemInline(admin.StackedInline):
 
 
 class OrderAdmin(ButtonAdmin):
-    list_display = ('__unicode__', 'picklist', 'date', 'status', 'user')
+    list_display = ('__str__', 'picklist', 'date', 'status', 'user')
     list_filter = ('status', 'date')
     search_fields = ('email', 'id')
     inlines = [OrderItemInline, ]
@@ -90,7 +90,7 @@ class PickListItemInline(admin.TabularInline):
 
 
 class PickListAdmin(ButtonAdmin):
-    list_display = ('__unicode__', 'link_order', 'date', 'status')
+    list_display = ('__str__', 'link_order', 'date', 'status')
     inlines = [PickListItemInline, ]
     actions = ['make_processed', 'make_cancelled']
     readonly_fields = ('order',)

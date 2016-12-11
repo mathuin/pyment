@@ -36,8 +36,8 @@ class Order(BaseOrderInfo):
     def name(self):
         return 'Order #' + str(self.id)
 
-    def __unicode__(self):
-        return u'%s' % (self.name,)
+    def __str__(self):
+        return '%s' % (self.name,)
 
     def get_absolute_url(self):
         return reverse('order_details', kwargs={'order_id': self.id})
@@ -60,7 +60,7 @@ class OrderItem(models.Model):
     def title(self):
         return self.product.title
 
-    def __unicode__(self):
+    def __str__(self):
         return self.product.title + ' (' + self.product.name + ')'
 
     def get_absolute_url(self):
@@ -87,8 +87,8 @@ class PickList(models.Model):
     def name(self):
         return 'Pick List #' + str(self.id)
 
-    def __unicode__(self):
-        return u'%s' % (self.name,)
+    def __str__(self):
+        return '%s' % (self.name,)
 
     def get_absolute_url(self):
         return reverse('picklist_details', kwargs={'picklist_id': self.id})
@@ -117,7 +117,7 @@ class PickListItem(models.Model):
     def crate(self):
         return self.jar.crate.name
 
-    def __unicode__(self):
+    def __str__(self):
         return self.name
 
     def get_absolute_url(self):

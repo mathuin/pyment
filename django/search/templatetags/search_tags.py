@@ -1,6 +1,6 @@
 from django import template
 from search.forms import SearchForm
-import urllib
+import urllib.request, urllib.parse, urllib.error
 
 register = template.Library()
 
@@ -21,7 +21,7 @@ def pagination_links(request, paginator):
         del raw_params['page']
     except KeyError:
         pass
-    params = urllib.urlencode(raw_params)
+    params = urllib.parse.urlencode(raw_params)
     return {'request': request,
             'paginator': paginator,
             'p': p,

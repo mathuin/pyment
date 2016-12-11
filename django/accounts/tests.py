@@ -46,9 +46,7 @@ class MyAccountTestCase(TestCase):
     def test_myaccount_notloggedin(self):
         response = self.client.get(self.url, follow=True)
         self.assertEqual(response.status_code, 200)
-        redirect_target = '{0}{1}?next={2}'.format('http://testserver',
-                                                   reverse('login'),
-                                                   self.url)
+        redirect_target = '{0}?next={1}'.format(reverse('login'), self.url)
         redirect_chain = [(redirect_target, 302)]
         self.assertEqual(response.redirect_chain, redirect_chain)
 
