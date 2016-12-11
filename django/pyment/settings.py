@@ -10,6 +10,7 @@ BASE_DIR = Path(__file__).parent.parent
 PUBLIC_ROOT = Path(config('PUBLIC_ROOT'))
 
 DEBUG = config('DEBUG', default=False, cast=bool)
+TEMPLATE_DEBUG = DEBUG
 
 TRAVIS = config('TRAVIS', default=False, cast=bool)
 
