@@ -1,30 +1,23 @@
+sudo: required
 language: python
-branches:
-  only:
-    - master
 python:
-  - "3.5"
+    - "3.5"
+branches:
+    only:
+        - master
 services:
-  - postgresql
+    - docker
 env:
-  global:
-    - DATABASE_URL='postgres://postgres@127.0.0.1/travis_ci_db'
-    - SECRET_KEY='*n4-$m9(fkr!ghro4=tz!%=0mkv5=90mi%8d$!p^ir@3mm@=zv'
-    - PUBLIC_ROOT=/tmp/public
-    - ALLOWED_HOSTS=localhost,127.0.0.1
+    global:
+        - DOCKER_COMPOSE_VERSION=1.8.0
+before_install:
+    - pip install --upgrade docker-compose==${DOCKER_COMPOSE_VERSION}
 install:
-  - cd django
-  - pip install -r requirements.txt
-  - pip install coveralls
-  - pip install flake8
-before_script:
-  - psql -c 'create database travis_ci_db;' -U postgres
-  - touch pyment/.envp
-  - mkdir -p /tmp/public
-  - python manage.py collectstatic --noinput
-  - python manage.py migrate
+    - ./dev-setup.sh
 script:
-  - flake8 --ignore=E402 --max-line-length=1200 .
-  - coverage run --source=. manage.py test
-after_success:
-  - coveralls
+    - docker-compose run --rm web python manage.py test
+deploy:
+    provider: script
+    script: scripts/deploy.sh
+    on:
+        branch: master
