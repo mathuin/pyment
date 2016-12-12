@@ -307,7 +307,7 @@ class SIPParent(Parent):
 
 
 class Batch(SIPParent):
-    recipe = models.ForeignKey(Recipe, blank=True, null=True, on_delete=models.SET_NULL)
+    batch_recipe = models.ForeignKey(Recipe, blank=True, null=True, on_delete=models.SET_NULL)
     # Used for labels!
     event = models.CharField('Brewing event', max_length=20, help_text='Brewing event (e.g., Lughnasadh 2013, Samhain 2012, Imbolc 2011, Beltane 2010)')
     jars = models.IntegerField(help_text='Number of jars actually produced from this batch.')

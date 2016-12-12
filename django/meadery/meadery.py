@@ -8,11 +8,11 @@ def create_batch_from_recipe(recipe, brewname, batchletter, event):
     batch = Batch()
     batch.brewname = brewname
     batch.batchletter = batchletter
-    batch.recipe = None
+    batch.batch_recipe = None
     batch.event = event
     batch.jars = 0
     batch.save()
-    batch.recipe = recipe
+    batch.batch_recipe = recipe
     # First copy fields from recipe to batch.
     for field in Recipe._meta.fields:
         if field.name != 'id' and field.name != 'pk':
