@@ -1,6 +1,8 @@
 from django import template
 from search.forms import SearchForm
-import urllib.request, urllib.parse, urllib.error
+import urllib.request
+import urllib.parse
+import urllib.error
 
 register = template.Library()
 
