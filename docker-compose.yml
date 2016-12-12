@@ -5,7 +5,6 @@ services:
         volumes:
             - dbdata:/var/lib/postgresql/data
     web:
-        # build: ./django
         image: registry.twilley.org/mathuin/pyment
         entrypoint: ./wait-for-it.sh -q db:5432 -- 
         command: gunicorn -b ":8000" pyment.wsgi
