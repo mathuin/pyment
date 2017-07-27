@@ -11,3 +11,4 @@ services:
         environment:
             - DATABASE_URL=postgres://pyment:pyment_password@db:5432/pyment
             - SECRET_KEY='qkmm6qcxz9npoCxtt8ofRu5vVFeTEfbDIJdmIKiEBIiVCi2ef9'
+            - ALLOWED_HOSTS=localhost
