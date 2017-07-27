@@ -49,31 +49,58 @@ Use the text editor of your choice to create a new file named `pyment/.env`.  Th
 
 ```
 # DEBUG must be false for production
+# DEBUG must be false for production
+DEBUG=False
 DEBUG=False
 
+
+# Site-specific parameters
 # Site-specific parameters
 SITE_NAME='My Pyment Site'
+SITE_NAME='My Pyment Site'
+META_KEYWORDS='mead, cyser, pyment, melomel, metheglin, braggot'
 META_KEYWORDS='mead, cyser, pyment, melomel, metheglin, braggot'
 META_DESCRIPTION='This is my pyment site where I track the production, storage, and distribution of my home-brewed mead.'
+META_DESCRIPTION='This is my pyment site where I track the production, storage, and distribution of my home-brewed mead.'
+BREWER_NAME='My Name'
 BREWER_NAME='My Name'
 BREWER_EMAIL='My Email'
+BREWER_EMAIL='My Email'
+BREWER_LOCATION='My Location'
 BREWER_LOCATION='My Location'
 
+
+# 1 is example.com 2 is production
 # 1 is example.com 2 is production
 SITE_ID=2
+SITE_ID=2
+
 
 # Make this unique, and don't share it with anybody.
+# Make this unique, and don't share it with anybody.
+SECRET_KEY='NOPE'
 SECRET_KEY='NOPE'
 
+
+# public file root
 # public file root
 PUBLIC_ROOT=/web/pyment-site
+PUBLIC_ROOT=/web/pyment-site
+
 
 # mail
+# mail
+EMAIL_URL='smtps://username@domain.org:password@mailhost:port'
 EMAIL_URL='smtps://username@domain.org:password@mailhost:port'
 EMAIL_SUBJECT_PREFIX='[Pyment] '
+EMAIL_SUBJECT_PREFIX='[Pyment] '
+
 
 # hosts
+# hosts
 USE_X_FORWARDED_HOST=True
+USE_X_FORWARDED_HOST=True
+ALLOWED_HOSTS=.example.org,
 ALLOWED_HOSTS=.example.org,
 ```
 
