@@ -104,7 +104,8 @@ div.product_thumbnail{
 	text-align: center;
 	float: left;
 	width: 150px;
-	height: 200px;
+	/* height: 200px; */
+	padding-bottom: 20px;
 }
 /* product page styles */
 div.product_image{
