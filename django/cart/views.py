@@ -15,6 +15,9 @@ def show_cart(request, template_name="cart/cart.djhtml"):
         if postdata['submit'] == 'Checkout':
             checkout_url = checkout.get_checkout_url(request)
             return HttpResponseRedirect(checkout_url)
+        if postdata['submit'] == 'Continue Shopping':
+            return_url = cart.get_return_url(request)
+            return HttpResponseRedirect(return_url)
 
     cart_items = cart.get_cart_items(request)
     page_title = 'Shopping Cart'

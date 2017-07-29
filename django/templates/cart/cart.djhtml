@@ -15,6 +15,8 @@
 			<th class='right' colspan='4'>
 				<form method='post' action='.'>{% csrf_token %}
 				<input type='submit' name='submit' value='Checkout' alt='Checkout' />
+				<input type='hidden' name='return' value='{{ request.META.HTTP_REFERER }}' />
+				<input type='submit' name='submit' value='Continue Shopping' alt='Continue Shopping' />
 				</form>
 			</th>
 		</tr>
@@ -29,7 +31,7 @@
 			<td class='right'>
 				<form method='post' action='.' class='cart'>{% csrf_token %}
 					<label for='quantity'>Quantity:</label>
-					<input type='text' name='quantity' value='{{ item.quantity }}' id='quantity' 
+					<input type='text' name='quantity' value='{{ item.quantity }}' id='quantity'
 					size='2' class='quantity' maxlength='5' />
 					<input type='hidden' name='item_id' value='{{ item.id }}' />
 					<input type='submit' name='submit' value='Update' />
