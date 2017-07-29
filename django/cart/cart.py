@@ -108,3 +108,9 @@ def remove_old_cart_items():
     # delete those CartItem instances
     to_remove.delete()
     print((str(len(cart_ids)) + " carts were removed"))
+
+
+def get_return_url(request):
+    postdata = request.POST.copy()
+    returnUrl = postdata['return']
+    return returnUrl
