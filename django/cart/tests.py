@@ -8,6 +8,7 @@ from django.core.urlresolvers import reverse
 # write test for adding to cart
 # write test for updating quantity in cart (adding and removing)
 # write test for continuing shopping
+# write test for empty cart
 
 
 class ViewTest(TestCase):

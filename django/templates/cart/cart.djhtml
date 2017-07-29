@@ -11,15 +11,22 @@
 	</thead>
 	<tfoot>
 		{% if cart_items %}
+		<form method='post' action='.'>{% csrf_token %}
 		<tr>
 			<th class='right' colspan='4'>
-				<form method='post' action='.'>{% csrf_token %}
-				<input type='submit' name='submit' value='Checkout' alt='Checkout' />
-				<input type='hidden' name='return' value='{{ request.META.HTTP_REFERER }}' />
-				<input type='submit' name='submit' value='Continue Shopping' alt='Continue Shopping' />
-				</form>
+				<input type='submit' name='submit' value='Remove All' alt='Remove All' />
 			</th>
 		</tr>
+		<tr>
+			<th class='left' colspan='2'>
+				<input type='hidden' name='return' value='{{ request.META.HTTP_REFERER }}' />
+				<input type='submit' name='submit' value='Continue Shopping' alt='Continue Shopping' />
+			</th>
+			<th class='right' colspan='2'>
+				<input type='submit' name='submit' value='Checkout' alt='Checkout' />
+			</th>
+		</tr>
+		</form>
 		{% endif %}
 	</tfoot>
 	<tbody>
@@ -37,7 +44,7 @@
 					<input type='submit' name='submit' value='Update' />
 				</form>
 			</td>
-			<td>
+			<td class='right'>
 				<form method='post' action='.' class='cart'>{% csrf_token %}
 					<input type='hidden' name='item_id' value='{{ item.id }}' />
 					<input type='submit' name='submit' value='Remove'/>

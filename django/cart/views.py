@@ -10,6 +10,9 @@ def show_cart(request, template_name="cart/cart.djhtml"):
         postdata = request.POST.copy()
         if postdata['submit'] == 'Remove':
             cart.remove_from_cart(request)
+        # someday consider a modal dialog for this
+        if postdata['submit'] == 'Remove All':
+            cart.empty_cart(request)
         if postdata['submit'] == 'Update':
             cart.update_cart(request)
         if postdata['submit'] == 'Checkout':
