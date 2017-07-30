@@ -4,6 +4,10 @@ from inventory.models import Warehouse, Row, Shelf, Bin, Crate, Jar
 from inventory.forms import WarehouseAdminForm, RowAdminForm, ShelfAdminForm, BinAdminForm, CrateAdminForm, JarAdminForm
 from django.core.urlresolvers import reverse
 from django.utils.safestring import mark_safe
+from django import forms
+# from django.db.models import F
+from django.http import HttpResponseRedirect
+from django.shortcuts import render
 
 
 class WarehouseAdmin(admin.ModelAdmin):
@@ -126,6 +130,42 @@ class JarAdmin(SmarterModelAdmin):
     ordering = ['-created_at', 'is_active']
     search_fields = ['product', 'crate']
     readonly_fields = ('created_at', 'updated_at',)
+    actions = ['move_multiple_jars']
+
+    class MoveMultipleJarsForm(forms.Form):
+        # JMT: this needs to somehow be restricted to those crates that have room
+        dest = forms.ModelChoiceField(queryset=Crate.objects.all().order_by('number'))
+
+    def move_multiple_jars(self, request, queryset):
+        form = None
+
+        if 'apply' in request.POST:
+            form = self.MoveMultipleJarsForm(request.POST)
+
+            if form.is_valid():
+                dest = form.cleaned_data['dest']
+
+                count = 0
+                for jar in queryset:
+                    jar.crate = dest
+                    jar.save()
+                    count += 1
+
+                plural = ''
+                if count != 1:
+                    plural = 's'
+
+                self.message_user(request, "Successfully moved %d jar%s to %s" % (count, plural, dest))
+                return HttpResponseRedirect(request.get_full_path())
+        if not form:
+            form = self.MoveMultipleJarsForm()
+
+        return render(request, 'admin/move_multiple_jars.djhtml', {
+            'jars': queryset,
+            'move_multiple_jars_form': form,
+            })
+
+    move_multiple_jars.short_description = "Move multiple jars to new crate"
 
 
 admin.site.register(Jar, JarAdmin)

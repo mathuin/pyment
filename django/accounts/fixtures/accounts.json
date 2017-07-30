@@ -10,7 +10,7 @@
     "last_login": "2015-05-31T19:19:13.069Z",
     "groups": [],
     "user_permissions": [],
-    "password": "pbkdf2_sha256$15000$hflhUywIR068$amPcc34KMFERYRLFibjhY2K/O84Q4Ig9yJSbPUMZliw=",
+    "password": "pbkdf2_sha256$36000$JJKUYdLZ7Rj0$nSRTENcq8DtPu+a4xCEqC7/j3u4yYrJ+nQHRosRdVPE=",
     "email": "user@example.org",
     "date_joined": "2015-05-29T21:18:07.289Z"
   },
@@ -28,7 +28,7 @@
     "last_login": "2015-05-29T21:33:16.877Z",
     "groups": [],
     "user_permissions": [],
-    "password": "pbkdf2_sha256$15000$JI985WVhdY4K$NxQDnwtHcaTzfsTwPWqFfhFJngKpS54Gbw3J2vgZ/i0=",
+    "password": "pbkdf2_sha256$36000$F9uET5mV9MsN$bWPugl2PwnWtCzmW7UCywUhpD6czydjrzpcrw40L56E=",
     "email": "admin@example.org",
     "date_joined": "2015-05-29T21:33:16.701Z"
   },
