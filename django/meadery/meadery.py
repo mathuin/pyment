@@ -69,7 +69,7 @@ def create_product_from_batch(batch):
 
 
 try:
-    from meadery_local import generate_labels
+    from meadery.meadery_local import generate_labels
 except ImportError:
     from meadery.labels import Label
 
