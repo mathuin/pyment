@@ -28,7 +28,7 @@ class RegisterTestCase(TestCase):
 def user_login(func):
     def _decorator(self, *args, **kwds):
         username = 'user'
-        rawpass = 'user'
+        rawpass = 'p@ssword'
 
         logged_in = self.client.login(username=username, password=rawpass)
         self.assertTrue(logged_in)

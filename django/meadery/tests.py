@@ -60,7 +60,7 @@ class ProductReviewTestCase(TestCase):
 def admin_login(func):
     def _decorator(self, *args, **kwds):
         username = 'admin'
-        rawpass = 'admin'
+        rawpass = 'p@ssword'
 
         logged_in = self.client.login(username=username, password=rawpass)
         self.assertTrue(logged_in)
