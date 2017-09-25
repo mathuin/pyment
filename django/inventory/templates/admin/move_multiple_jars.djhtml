@@ -9,14 +9,7 @@
 
     <p>Move the following jars:</p>
 
-    <ul>
-        {% for jar in jars %}
-        <li>
-            {{ jar }}
-            <input type="hidden" name="_selected_action" value="{{ jar.pk }}">
-        </li>
-        {% endfor %}
-    </ul>
+    <ul>{{ jars|unordered_list }}</ul>
 
     {{ move_multiple_jars_form }}
 

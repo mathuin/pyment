@@ -5,7 +5,7 @@ from inventory.forms import WarehouseAdminForm, RowAdminForm, ShelfAdminForm, Bi
 from django.core.urlresolvers import reverse
 from django.utils.safestring import mark_safe
 from django import forms
-# from django.db.models import F
+from django.db.models import F, Sum, Case, When, IntegerField
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
 
@@ -133,8 +133,13 @@ class JarAdmin(SmarterModelAdmin):
     actions = ['move_multiple_jars']
 
     class MoveMultipleJarsForm(forms.Form):
-        # JMT: this needs to somehow be restricted to those crates that have room
-        dest = forms.ModelChoiceField(queryset=Crate.objects.all().order_by('number'))
+        dest = forms.ModelChoiceField(Crate.objects.none())
+
+        def __init__(self, *args, **kwargs):
+            count = kwargs.pop('count')
+            super().__init__(*args, **kwargs)
+            self.fields['dest'].queryset = Crate.objects.annotate(room=F('capacity')-Sum(Case(When(jar__is_active=True, then=1), default=0), output_field=IntegerField())).filter(room__gte=count).order_by('number')
+
 
     def move_multiple_jars(self, request, queryset):
         form = None
@@ -158,7 +163,7 @@ class JarAdmin(SmarterModelAdmin):
                 self.message_user(request, "Successfully moved %d jar%s to %s" % (count, plural, dest))
                 return HttpResponseRedirect(request.get_full_path())
         if not form:
-            form = self.MoveMultipleJarsForm()
+            form = self.MoveMultipleJarsForm(count=queryset.count())
 
         return render(request, 'admin/move_multiple_jars.djhtml', {
             'jars': queryset,
