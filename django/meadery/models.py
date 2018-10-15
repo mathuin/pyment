@@ -92,8 +92,8 @@ class Ingredient(models.Model):
 
 
 class IngredientItem(models.Model):
-    parent = models.ForeignKey('Parent')
-    ingredient = models.ForeignKey(Ingredient)
+    parent = models.ForeignKey('Parent', on_delete=models.CASCADE)
+    ingredient = models.ForeignKey(Ingredient, on_delete=models.CASCADE)
     amount = models.DecimalField(max_digits=5, decimal_places=3, help_text='Amount of ingredient (kilograms if solid, liters if liquid, units if other)')
     temp = models.IntegerField(help_text='Temperature of ingredient in degrees Fahrenheit')
 
@@ -328,7 +328,7 @@ class Batch(SIPParent):
 
 class Sample(models.Model):
     """ Samples are small collections of data. """
-    batch = models.ForeignKey(Batch)
+    batch = models.ForeignKey(Batch, on_delete=models.CASCADE)
     date = models.DateField()
     temp = models.IntegerField(default=60, help_text='Temperature of mead in degrees Fahrenheit')
     sg = models.DecimalField(max_digits=4, decimal_places=3, default=Decimal('0.000'), help_text='Specific gravity of mead')
@@ -440,8 +440,8 @@ class ProductReview(models.Model):
                (3, '3 - Very Good'),
                (2, '2 - Good'),
                (1, '1 - Fair'), )
-    product = models.ForeignKey(Product)
-    user = models.ForeignKey(User)
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
     title = models.CharField(max_length=50)
     date = models.DateTimeField(auto_now_add=True)
     rating = models.PositiveSmallIntegerField(default=5, choices=RATINGS)

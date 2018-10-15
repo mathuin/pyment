@@ -39,7 +39,7 @@ class Migration(migrations.Migration):
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('amount', models.DecimalField(help_text=b'Amount of ingredient (kilograms if solid, liters if liquid, units if other)', max_digits=5, decimal_places=3)),
                 ('temp', models.IntegerField(help_text=b'Temperature of ingredient in degrees Fahrenheit')),
-                ('ingredient', models.ForeignKey(to='meadery.Ingredient')),
+                ('ingredient', models.ForeignKey(to='meadery.Ingredient', on_delete=models.CASCADE)),
             ],
             options={
                 'ordering': ('ingredient', '-temp'),
@@ -63,7 +63,7 @@ class Migration(migrations.Migration):
                 ('rating', models.PositiveSmallIntegerField(default=5, choices=[(5, b'5 - Outstanding'), (4, b'4 - Excellent'), (3, b'3 - Very Good'), (2, b'2 - Good'), (1, b'1 - Fair')])),
                 ('is_approved', models.BooleanField(default=True)),
                 ('content', models.TextField()),
-                ('user', models.ForeignKey(to=settings.AUTH_USER_MODEL)),
+                ('user', models.ForeignKey(to=settings.AUTH_USER_MODEL, on_delete=models.CASCADE)),
             ],
         ),
         migrations.CreateModel(
@@ -82,7 +82,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Batch',
             fields=[
-                ('parent_ptr', models.OneToOneField(parent_link=True, auto_created=True, primary_key=True, serialize=False, to='meadery.Parent')),
+                ('parent_ptr', models.OneToOneField(parent_link=True, auto_created=True, primary_key=True, serialize=False, to='meadery.Parent', on_delete=models.CASCADE)),
                 ('brewname', models.CharField(help_text=b'Unique value for brew name (e.g., SIP 99)', max_length=8, verbose_name=b'Brew Name')),
                 ('batchletter', models.CharField(help_text=b'Letter corresponding to batch (e.g., A)', max_length=1, verbose_name=b'Batch Letter')),
                 ('is_active', models.BooleanField(default=False)),
@@ -100,7 +100,7 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Product',
             fields=[
-                ('parent_ptr', models.OneToOneField(parent_link=True, auto_created=True, primary_key=True, serialize=False, to='meadery.Parent')),
+                ('parent_ptr', models.OneToOneField(parent_link=True, auto_created=True, primary_key=True, serialize=False, to='meadery.Parent', on_delete=models.CASCADE)),
                 ('brewname', models.CharField(help_text=b'Unique value for brew name (e.g., SIP 99)', max_length=8, verbose_name=b'Brew Name')),
                 ('batchletter', models.CharField(help_text=b'Letter corresponding to batch (e.g., A)', max_length=1, verbose_name=b'Batch Letter')),
                 ('is_active', models.BooleanField(default=False)),
@@ -128,24 +128,24 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Recipe',
             fields=[
-                ('parent_ptr', models.OneToOneField(parent_link=True, auto_created=True, primary_key=True, serialize=False, to='meadery.Parent')),
+                ('parent_ptr', models.OneToOneField(parent_link=True, auto_created=True, primary_key=True, serialize=False, to='meadery.Parent', on_delete=models.CASCADE)),
             ],
             bases=('meadery.parent',),
         ),
         migrations.AddField(
             model_name='ingredientitem',
             name='parent',
-            field=models.ForeignKey(to='meadery.Parent'),
+            field=models.ForeignKey(to='meadery.Parent', on_delete=models.CASCADE),
         ),
         migrations.AddField(
             model_name='sample',
             name='batch',
-            field=models.ForeignKey(to='meadery.Batch'),
+            field=models.ForeignKey(to='meadery.Batch', on_delete=models.CASCADE),
         ),
         migrations.AddField(
             model_name='productreview',
             name='product',
-            field=models.ForeignKey(to='meadery.Product'),
+            field=models.ForeignKey(to='meadery.Product', on_delete=models.CASCADE),
         ),
         migrations.AddField(
             model_name='batch',

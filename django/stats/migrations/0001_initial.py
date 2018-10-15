@@ -20,8 +20,8 @@ class Migration(migrations.Migration):
                 ('date', models.DateTimeField(auto_now=True)),
                 ('ip_address', models.GenericIPAddressField()),
                 ('tracking_id', models.CharField(default=b'', max_length=50)),
-                ('product', models.ForeignKey(to='meadery.Product')),
-                ('user', models.ForeignKey(to=settings.AUTH_USER_MODEL, null=True)),
+                ('product', models.ForeignKey(to='meadery.Product', on_delete=models.CASCADE)),
+                ('user', models.ForeignKey(to=settings.AUTH_USER_MODEL, null=True, on_delete=models.CASCADE)),
             ],
             options={
                 'abstract': False,

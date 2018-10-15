@@ -44,7 +44,7 @@ class Warehouse(models.Model):
 
 
 class Row(models.Model):
-    warehouse = models.ForeignKey(Warehouse)
+    warehouse = models.ForeignKey(Warehouse, on_delete=models.CASCADE)
     number = models.IntegerField()
     slug = models.SlugField(max_length=55, blank=True,
                             help_text='Unique value for this row page URL.')
@@ -84,7 +84,7 @@ class Row(models.Model):
 
 
 class Shelf(models.Model):
-    row = models.ForeignKey(Row)
+    row = models.ForeignKey(Row, on_delete=models.CASCADE)
     number = models.IntegerField()
     slug = models.SlugField(max_length=60, blank=True,
                             help_text='Unique value for this shelf page URL.')
@@ -129,7 +129,7 @@ class Shelf(models.Model):
 
 
 class Bin(models.Model):
-    shelf = models.ForeignKey(Shelf)
+    shelf = models.ForeignKey(Shelf, on_delete=models.CASCADE)
     # must be unique within the shelf
     number = models.IntegerField()
     slug = models.SlugField(max_length=65, blank=True,
@@ -189,7 +189,7 @@ class Crate(models.Model):
     slug = models.SlugField(max_length=10, unique=True, blank=True)
     capacity = models.IntegerField(default=12)
     # bin where the crate can currently be found
-    bin = models.ForeignKey(Bin)
+    bin = models.ForeignKey(Bin, on_delete=models.CASCADE)
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -235,12 +235,12 @@ class InStockJarManager(models.Manager):
 
 
 class Jar(models.Model):
-    product = models.ForeignKey(Product)
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
     number = models.IntegerField()
     slug = models.SlugField(max_length=13, unique=True, blank=True)
     # volume in liters
     volume = models.IntegerField(default=1)
-    crate = models.ForeignKey(Crate)
+    crate = models.ForeignKey(Crate, on_delete=models.CASCADE)
     # is_active = not yet sold
     is_active = models.BooleanField(default=True)
     # is_available = considered 'in stock'

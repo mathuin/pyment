@@ -30,7 +30,7 @@ class Order(BaseOrderInfo):
     status = models.IntegerField(choices=ORDER_STATUSES, default=SUBMITTED)
     ip_address = models.GenericIPAddressField()
     last_updated = models.DateTimeField(auto_now=True)
-    user = models.ForeignKey(User, null=True)
+    user = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
 
     @property
     def name(self):
@@ -48,9 +48,9 @@ class Order(BaseOrderInfo):
 
 
 class OrderItem(models.Model):
-    product = models.ForeignKey(Product)
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
     quantity = models.IntegerField(default=1)
-    order = models.ForeignKey(Order)
+    order = models.ForeignKey(Order, on_delete=models.CASCADE)
 
     @property
     def name(self):
@@ -78,7 +78,7 @@ class PickList(models.Model):
                          (PROCESSED, 'Processed'),
                          (CANCELLED, 'Cancelled'))
 
-    order = models.ForeignKey(Order)
+    order = models.ForeignKey(Order, on_delete=models.CASCADE)
     status = models.IntegerField(choices=PICKLIST_STATUSES, default=SUBMITTED)
     date = models.DateTimeField(auto_now_add=True)
     last_updated = models.DateTimeField(auto_now=True)
@@ -96,8 +96,8 @@ class PickList(models.Model):
 
 class PickListItem(models.Model):
     """A picklist item consists of the jar that is being picked.  The jar contains its name and location."""
-    picklist = models.ForeignKey(PickList)
-    jar = models.ForeignKey(Jar)
+    picklist = models.ForeignKey(PickList, on_delete=models.CASCADE)
+    jar = models.ForeignKey(Jar, on_delete=models.CASCADE)
 
     class Meta:
         ordering = ['jar__crate__bin__shelf__row__warehouse__number',
