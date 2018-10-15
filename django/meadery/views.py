@@ -1,6 +1,6 @@
 from django.shortcuts import get_object_or_404, render
 from .models import Product, ProductReview
-from django.core import urlresolvers
+from django.urls import reverse
 from cart.cart import add_to_cart
 from django.http import HttpResponseRedirect, HttpResponse, HttpResponseNotFound
 from .forms import ProductAddToCartForm, ProductReviewForm
@@ -42,7 +42,7 @@ def show_category(request, category_value, template_name='meadery/category.djhtm
 def show_product(request, product_slug, template_name="meadery/product.djhtml"):
     p = get_object_or_404(Product, slug=product_slug)
     cname = [name for (value, name) in Product.MEAD_VIEWS if value == p.category][0]
-    curl = urlresolvers.reverse('meadery_category', kwargs={'category_value': p.category})
+    curl = reverse('meadery_category', kwargs={'category_value': p.category})
     page_title = p.name
     # need to evaluate the HTTP method
     if request.method == 'POST':
@@ -55,7 +55,7 @@ def show_product(request, product_slug, template_name="meadery/product.djhtml"):
             # if test cookie worked, get rid of it
             if request.session.test_cookie_worked():
                 request.session.delete_test_cookie()
-            url = urlresolvers.reverse('show_cart')
+            url = reverse('show_cart')
             return HttpResponseRedirect(url)
     else:
         # it's a GET, create the unbound form. Note request as a kwarg
