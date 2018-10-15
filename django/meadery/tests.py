@@ -1,7 +1,7 @@
 from decimal import Decimal
 from django.db.models import Count
 from django.test import TestCase
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from meadery.models import Ingredient, Parent, Recipe, Batch, Sample, Product
 from unittest import skipIf
 

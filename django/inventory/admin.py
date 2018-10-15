@@ -2,7 +2,7 @@ from django.contrib import admin
 from utils.modeladmin import SmarterModelAdmin
 from inventory.models import Warehouse, Row, Shelf, Bin, Crate, Jar
 from inventory.forms import WarehouseAdminForm, RowAdminForm, ShelfAdminForm, BinAdminForm, CrateAdminForm, JarAdminForm
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.utils.safestring import mark_safe
 from django import forms
 from django.db.models import F, Sum, Case, When, IntegerField

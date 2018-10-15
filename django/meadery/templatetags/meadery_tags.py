@@ -2,7 +2,7 @@ from django import template
 from cart import cart
 from pyment.settings import BREWER_NAME, BREWER_EMAIL, BREWER_LOCATION
 from meadery.models import Product
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 
 register = template.Library()
 

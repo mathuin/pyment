@@ -3,7 +3,7 @@ from django.db import models
 from django.template.defaultfilters import slugify
 from decimal import Decimal
 from django.contrib.auth.models import User
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 
 
 # Stuff to consider for this app:

@@ -4,7 +4,7 @@ from checkout.forms import CheckoutForm
 from meadery.models import Product
 from django.core.exceptions import ValidationError
 from django.core.mail import mail_managers, send_mail
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from pyment import settings
 
 
