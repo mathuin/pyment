@@ -14,7 +14,7 @@ urlpatterns = [
     # (r'^inventory/$', 'inventory.views.home'),
     # (r'^brewery/$', 'meadery.views.home'),
 
-    url(r'^admin/', include(admin.site.urls)),
+    url(r'^admin/', admin.site.urls),
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

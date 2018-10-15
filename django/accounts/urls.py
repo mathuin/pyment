@@ -2,6 +2,7 @@ from django.conf.urls import url
 from accounts.views import register, my_account, order_details, order_info
 from django.contrib.auth.views import login, logout, password_change
 
+app_name = 'accounts'
 urlpatterns = [
     url(r'^register/$', register, {'template_name': 'registration/register.djhtml'}, name='register'),
     url(r'^my_account/$', my_account, {'template_name': 'registration/my_account.djhtml'}, name='my_account'),
