@@ -1,20 +1,20 @@
 from django.conf import settings
-from django.conf.urls import include, url
+from django.urls import include, path
 from django.conf.urls.static import static
 from django.contrib import admin
 
 urlpatterns = [
-    url(r'^', include('meadery.urls')),
-    url(r'^cart/', include('cart.urls')),
-    url(r'^checkout/', include('checkout.urls')),
-    url(r'^accounts/', include('accounts.urls')),
-    # url(r'^accounts/', include('django.contrib.auth.urls')),
-    url(r'^search/', include('search.urls')),
+    path('', include('meadery.urls', namespace='meadery')),
+    path('cart/', include('cart.urls', namespace='cart')),
+    path('checkout/', include('checkout.urls', namespace='checkout')),
+    path('accounts/', include('accounts.urls', namespace='accounts')),
+    # path('accounts/', include('django.contrib.auth.urls')),
+    path('search/', include('search.urls', namespace='search')),
 
-    # (r'^inventory/$', 'inventory.views.home'),
-    # (r'^brewery/$', 'meadery.views.home'),
+    # ('inventory/$', 'inventory.views.home'),
+    # ('brewery/$', 'meadery.views.home'),
 
-    url(r'^admin/', admin.site.urls),
+    path('admin/', admin.site.urls),
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

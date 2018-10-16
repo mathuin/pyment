@@ -13,7 +13,7 @@ from django.urls import reverse
 
 class ViewTest(TestCase):
     def setUp(self):
-        self.url = reverse('show_cart')
+        self.url = reverse('cart:show_cart')
 
     def test_show_cart_get(self):
         response = self.client.get(self.url)

@@ -5,7 +5,7 @@ from django.urls import reverse
 
 class RegisterTestCase(TestCase):
     def setUp(self):
-        self.url = reverse('register')
+        self.url = reverse('accounts:register')
 
     def test_register_view(self):
         response = self.client.get(self.url)
@@ -41,12 +41,12 @@ class MyAccountTestCase(TestCase):
     fixtures = ['accounts', 'checkout', 'meadery']
 
     def setUp(self):
-        self.url = reverse('my_account')
+        self.url = reverse('accounts:my_account')
 
     def test_myaccount_notloggedin(self):
         response = self.client.get(self.url, follow=True)
         self.assertEqual(response.status_code, 200)
-        redirect_target = '{0}?next={1}'.format(reverse('login'), self.url)
+        redirect_target = '{0}?next={1}'.format(reverse('accounts:login'), self.url)
         redirect_chain = [(redirect_target, 302)]
         self.assertEqual(response.redirect_chain, redirect_chain)
 
@@ -63,7 +63,7 @@ class OrderDetailsTestCase(TestCase):
 
     def setUp(self):
         self.orderpk = 1
-        self.url = reverse('order_details', args=[self.orderpk, ])
+        self.url = reverse('accounts:order_details', args=[self.orderpk, ])
 
     @user_login
     def test_orderdetails(self):
@@ -75,7 +75,7 @@ class OrderInfoTestCase(TestCase):
     fixtures = ['accounts', 'checkout', 'meadery']
 
     def setUp(self):
-        self.url = reverse('order_info')
+        self.url = reverse('accounts:order_info')
 
     @user_login
     def test_orderinfo_get_then_post(self):

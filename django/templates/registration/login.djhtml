@@ -7,7 +7,7 @@
 	</ul>
 	<br />
 {% endif %}
-<form method="post" action="{% url 'login' %}">{% csrf_token %}
+<form method="post" action="{% url 'accounts:login' %}">{% csrf_token %}
 <table summary="Login" id="login">
 	<caption>Login</caption>
 	<tr>

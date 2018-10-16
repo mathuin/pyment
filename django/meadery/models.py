@@ -415,7 +415,7 @@ class Product(SIPParent):
         super(Product, self).save(*args, **kwargs)
 
     def get_absolute_url(self):
-        return reverse('meadery_product', kwargs={'product_slug': self.slug})
+        return reverse('meadery:product', kwargs={'product_slug': self.slug})
 
     def cross_sells_hybrid(self):
         from checkout.models import Order, OrderItem

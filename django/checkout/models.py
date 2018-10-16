@@ -40,7 +40,7 @@ class Order(BaseOrderInfo):
         return '%s' % (self.name,)
 
     def get_absolute_url(self):
-        return reverse('order_details', kwargs={'order_id': self.id})
+        return reverse('accounts:order_details', kwargs={'order_id': self.id})
 
     def printstatus(self):
         # FIXME: ugly

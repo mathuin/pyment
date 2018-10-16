@@ -20,7 +20,7 @@ def category_list(request_path):
     # they have products,
     # and those products have jars
     # there has to be a more django-ish way to do this
-    active_categories = [(name, reverse('meadery_category', kwargs={'category_value': value})) for (value, name) in Product.MEAD_VIEWS if Product.instock.filter(category=value).exists() or value == Product.ALL]
+    active_categories = [(name, reverse('meadery:category', kwargs={'category_value': value})) for (value, name) in Product.MEAD_VIEWS if Product.instock.filter(category=value).exists() or value == Product.ALL]
     if len(active_categories) == 1:
         active_categories = []
     return {
