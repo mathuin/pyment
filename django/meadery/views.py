@@ -42,7 +42,6 @@ def show_category(request, category_value, template_name='meadery/category.djhtm
 def show_product(request, product_slug, template_name="meadery/product.djhtml"):
     p = get_object_or_404(Product, slug=product_slug)
     cname = [name for (value, name) in Product.MEAD_VIEWS if value == p.category][0]
-    curl = reverse('meadery:category', kwargs={'category_value': p.category})
     page_title = p.name
     # need to evaluate the HTTP method
     if request.method == 'POST':
