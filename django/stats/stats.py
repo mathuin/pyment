@@ -90,4 +90,4 @@ def get_recently_viewed(request):
     t_id = tracking_id(request)
     views = ProductView.objects.filter(tracking_id=t_id).values('product_id').order_by('-date')[0:PRODUCTS_PER_ROW]
     product_ids = [v['product_id'] for v in views]
-    return Product.active.filter(id__in=product_ids)
+    return Product.instock.filter(id__in=product_ids)
