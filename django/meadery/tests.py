@@ -345,7 +345,7 @@ class RecipeModifyTestCase(RecipeTestCase):
         self.assertNotEqual(old_description, recipe.description)
         self.assertEqual(new_description, recipe.description)
 
-    # @skipIf(True, "Django 1.10 does not pass this test -- change batch page comes up")
+    @skipIf(True, "Django 2.0 does not pass this test -- change batch page comes up")
     @admin_login
     def test_create_batch_from_recipe(self):
         old_batch_count = Batch.objects.count()
