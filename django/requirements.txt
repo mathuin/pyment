@@ -1,5 +1,5 @@
 Django==2.1.2
-gunicorn=19.9.0
+gunicorn==19.9.0
 python-decouple==3.1
 dj-database-url==0.5.0
 dj-email-url==0.1.0
