@@ -4,7 +4,7 @@ from search import search
 from pyment import settings
 
 
-def results(request, template_name="search/results.djhtml"):
+def results(request, template_name="search/results.html"):
     # get current search phrase
     q = request.GET.get('q', '')
     # get current page number. Set to 1 is missing or invalid

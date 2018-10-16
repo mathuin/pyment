@@ -5,7 +5,7 @@ from checkout import checkout
 from cart import cart
 
 
-def show_cart(request, template_name="cart/cart.djhtml"):
+def show_cart(request, template_name="cart/cart.html"):
     if request.method == 'POST':
         postdata = request.POST.copy()
         if postdata['submit'] == 'Remove':

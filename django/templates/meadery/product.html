@@ -1,4 +1,4 @@
-{% extends 'meadery.djhtml' %}
+{% extends 'meadery.html' %}
 
 {% load staticfiles %}
 
@@ -53,7 +53,7 @@
 	<div class="cb"><br /><br /></div>
 	<div id="reviews">
 	{% for review in product_reviews %}
-		{% include 'meadery/product_review.djhtml' %}
+		{% include 'meadery/product_review.html' %}
 	{% empty %}
 		<div id="no_reviews">
 			No product reviews yet.
@@ -64,7 +64,7 @@
 	<div class="cb"><br /><br /></div>
 	<h3>Related Products</h3>
 		{% for p in p.cross_sells_hybrid %}
-			{% include 'tags/product_thumbnail.djhtml' %}
+			{% include 'tags/product_thumbnail.html' %}
 		{% empty %}
 			No related products.
 		{% endfor %}

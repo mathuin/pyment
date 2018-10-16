@@ -11,7 +11,7 @@ from django.template.loader import render_to_string
 import json
 
 
-def index(request, template_name='meadery/index.djhtml'):
+def index(request, template_name='meadery/index.html'):
     page_title = SITE_NAME
     search_recs = stats.recommended_from_search(request)
     featured = Product.featured.all()[0:PRODUCTS_PER_ROW]
@@ -20,7 +20,7 @@ def index(request, template_name='meadery/index.djhtml'):
     return render(request, template_name, locals())
 
 
-def show_category(request, category_value, template_name='meadery/category.djhtml'):
+def show_category(request, category_value, template_name='meadery/category.html'):
     try:
         intcv = int(category_value)
     except ValueError:
@@ -39,7 +39,7 @@ def show_category(request, category_value, template_name='meadery/category.djhtm
 
 
 # new product view, with POST vs GET detection
-def show_product(request, product_slug, template_name="meadery/product.djhtml"):
+def show_product(request, product_slug, template_name="meadery/product.html"):
     p = get_object_or_404(Product, slug=product_slug)
     cname = [name for (value, name) in Product.MEAD_VIEWS if value == p.category][0]
     page_title = p.name
@@ -69,7 +69,7 @@ def show_product(request, product_slug, template_name="meadery/product.djhtml"):
     product_reviews = ProductReview.approved.filter(product=p).order_by('-date')
     review_form = ProductReviewForm()
 
-    return render(request, 'meadery/product.djhtml', locals())
+    return render(request, 'meadery/product.html', locals())
 
 
 @login_required
@@ -85,7 +85,7 @@ def add_review(request):
             review.product = product
             review.save()
 
-            template = "meadery/product_review.djhtml"
+            template = "meadery/product_review.html"
             html = render_to_string(template, {'review': review})
             response = json.dumps({'success': 'True', 'html': html})
 

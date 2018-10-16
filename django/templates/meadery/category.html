@@ -1,4 +1,4 @@
-{% extends 'meadery.djhtml' %}
+{% extends 'meadery.html' %}
 
 {% block content %}
 	<h1>{{ name }}</h1>
@@ -6,7 +6,7 @@
 	<br /><br />
 	{% for p in products %}
 		{% if p.is_active and p.jars_in_stock > 0 %}
-		{% include 'tags/product_thumbnail.djhtml' %}
+		{% include 'tags/product_thumbnail.html' %}
 		{% endif %}
 	{% endfor %}
 {% endblock %}

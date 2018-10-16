@@ -9,7 +9,7 @@ from cart import cart
 from accounts import profile
 
 
-def show_checkout(request, template_name='checkout/checkout.djhtml'):
+def show_checkout(request, template_name='checkout/checkout.html'):
     if cart.is_empty(request):
         cart_url = reverse('cart:show_cart')
         return HttpResponseRedirect(cart_url)
@@ -36,7 +36,7 @@ def show_checkout(request, template_name='checkout/checkout.djhtml'):
     return render(request, template_name, locals())
 
 
-def receipt(request, template_name='checkout/receipt.djhtml'):
+def receipt(request, template_name='checkout/receipt.html'):
     order_number = request.session.get('order_number', '')
     if order_number:
         order = Order.objects.filter(id=order_number)[0]
