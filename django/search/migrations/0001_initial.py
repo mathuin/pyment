@@ -20,7 +20,7 @@ class Migration(migrations.Migration):
                 ('search_date', models.DateTimeField(auto_now_add=True)),
                 ('ip_address', models.GenericIPAddressField()),
                 ('tracking_id', models.CharField(default=b'', max_length=50)),
-                ('user', models.ForeignKey(to=settings.AUTH_USER_MODEL, null=True)),
+                ('user', models.ForeignKey(to=settings.AUTH_USER_MODEL, null=True, on_delete=models.CASCADE)),
             ],
         ),
     ]

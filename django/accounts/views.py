@@ -1,5 +1,5 @@
 from django.shortcuts import render, get_object_or_404
-from django.core import urlresolvers
+from django.urls import reverse
 from django.http import HttpResponseRedirect
 from checkout.models import Order, OrderItem
 from django.contrib.auth.decorators import login_required
@@ -21,7 +21,7 @@ def register(request, template_name="registration/register.djhtml"):
             new_user = authenticate(username=un, password=pw)
             if new_user and new_user.is_active:
                 login(request, new_user)
-                url = urlresolvers.reverse('my_account')
+                url = reverse('accounts:my_account')
                 return HttpResponseRedirect(url)
     else:
         form = RegistrationForm()
@@ -52,7 +52,7 @@ def order_info(request, template_name="registration/order_info.djhtml"):
         form = UserProfileForm(postdata)
         if form.is_valid():
             profile.fill(request)
-            url = urlresolvers.reverse('my_account')
+            url = reverse('accounts:my_account')
             return HttpResponseRedirect(url)
     else:
         user_profile = profile.retrieve(request)

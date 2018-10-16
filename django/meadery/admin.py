@@ -3,7 +3,7 @@ from utils.buttonadmin import ButtonAdmin
 from meadery.models import Ingredient, IngredientItem, Recipe, Batch, Sample, Product, ProductReview
 from meadery.forms import IngredientAdminForm, IngredientItemFormset, RecipeAdminForm, BatchAdminForm, SampleAdminForm, ProductAdminForm
 from meadery.meadery import create_batch_from_recipe, create_recipe_from_batch, create_product_from_batch, make_labels_from_batches
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from decimal import Decimal
 from django.utils.safestring import mark_safe
 from django.http import HttpResponse, HttpResponseRedirect

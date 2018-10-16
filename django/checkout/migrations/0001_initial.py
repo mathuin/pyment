@@ -24,7 +24,7 @@ class Migration(migrations.Migration):
                 ('status', models.IntegerField(default=1, choices=[(1, b'Submitted'), (2, b'Processed'), (3, b'Delivered'), (4, b'Cancelled')])),
                 ('ip_address', models.GenericIPAddressField()),
                 ('last_updated', models.DateTimeField(auto_now=True)),
-                ('user', models.ForeignKey(to=settings.AUTH_USER_MODEL, null=True)),
+                ('user', models.ForeignKey(to=settings.AUTH_USER_MODEL, null=True, on_delete=models.CASCADE)),
             ],
             options={
                 'abstract': False,
@@ -35,8 +35,8 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
                 ('quantity', models.IntegerField(default=1)),
-                ('order', models.ForeignKey(to='checkout.Order')),
-                ('product', models.ForeignKey(to='meadery.Product')),
+                ('order', models.ForeignKey(to='checkout.Order', on_delete=models.CASCADE)),
+                ('product', models.ForeignKey(to='meadery.Product', on_delete=models.CASCADE)),
             ],
         ),
         migrations.CreateModel(
@@ -46,15 +46,15 @@ class Migration(migrations.Migration):
                 ('status', models.IntegerField(default=1, choices=[(1, b'Submitted'), (2, b'Processed'), (4, b'Cancelled')])),
                 ('date', models.DateTimeField(auto_now_add=True)),
                 ('last_updated', models.DateTimeField(auto_now=True)),
-                ('order', models.ForeignKey(to='checkout.Order')),
+                ('order', models.ForeignKey(to='checkout.Order', on_delete=models.CASCADE)),
             ],
         ),
         migrations.CreateModel(
             name='PickListItem',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-                ('jar', models.ForeignKey(to='inventory.Jar')),
-                ('picklist', models.ForeignKey(to='checkout.PickList')),
+                ('jar', models.ForeignKey(to='inventory.Jar', on_delete=models.CASCADE)),
+                ('picklist', models.ForeignKey(to='checkout.PickList', on_delete=models.CASCADE)),
             ],
             options={
                 'ordering': ['jar__crate__bin__shelf__row__warehouse__number', 'jar__crate__bin__shelf__row__number', 'jar__crate__bin__shelf__number', 'jar__crate__bin__number'],

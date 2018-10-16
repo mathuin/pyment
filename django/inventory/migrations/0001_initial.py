@@ -34,7 +34,7 @@ class Migration(migrations.Migration):
                 ('capacity', models.IntegerField(default=12)),
                 ('created_at', models.DateTimeField(auto_now_add=True)),
                 ('updated_at', models.DateTimeField(auto_now=True)),
-                ('bin', models.ForeignKey(to='inventory.Bin')),
+                ('bin', models.ForeignKey(to='inventory.Bin', on_delete=models.CASCADE)),
             ],
             options={
                 'ordering': ['number'],
@@ -51,8 +51,8 @@ class Migration(migrations.Migration):
                 ('is_available', models.BooleanField(default=True)),
                 ('created_at', models.DateTimeField(auto_now_add=True)),
                 ('updated_at', models.DateTimeField(auto_now=True)),
-                ('crate', models.ForeignKey(to='inventory.Crate')),
-                ('product', models.ForeignKey(to='meadery.Product')),
+                ('crate', models.ForeignKey(to='inventory.Crate', on_delete=models.CASCADE)),
+                ('product', models.ForeignKey(to='meadery.Product', on_delete=models.CASCADE)),
             ],
             options={
                 'ordering': ['created_at'],
@@ -79,7 +79,7 @@ class Migration(migrations.Migration):
                 ('slug', models.SlugField(help_text=b'Unique value for this shelf page URL.', max_length=60, blank=True)),
                 ('created_at', models.DateTimeField(auto_now_add=True)),
                 ('updated_at', models.DateTimeField(auto_now=True)),
-                ('row', models.ForeignKey(to='inventory.Row')),
+                ('row', models.ForeignKey(to='inventory.Row', on_delete=models.CASCADE)),
             ],
             options={
                 'ordering': ['row', 'number'],
@@ -103,12 +103,12 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='row',
             name='warehouse',
-            field=models.ForeignKey(to='inventory.Warehouse'),
+            field=models.ForeignKey(to='inventory.Warehouse', on_delete=models.CASCADE),
         ),
         migrations.AddField(
             model_name='bin',
             name='shelf',
-            field=models.ForeignKey(to='inventory.Shelf'),
+            field=models.ForeignKey(to='inventory.Shelf', on_delete=models.CASCADE),
         ),
         migrations.AlterUniqueTogether(
             name='shelf',

@@ -1,4 +1,4 @@
-<form id="search" action="{% url 'search_results' %}" method="get">{% csrf_token %}
+<form id="search" action="{% url 'search:search_results' %}" method="get">{% csrf_token %}
 <h3><label for="id_q">Search</label></h3>
 	<div style="text-align:right;">
 	{{ form.q }}

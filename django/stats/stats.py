@@ -60,7 +60,7 @@ def log_product_view(request, product):
             v.ip_address = '127.0.0.1'
         v.tracking_id = t_id
         v.user = None
-        if request.user.is_authenticated():
+        if request.user.is_authenticated:
             v.user = request.user
         v.save()
 

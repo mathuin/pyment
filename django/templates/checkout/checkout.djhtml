@@ -5,7 +5,7 @@
 {% block content %}
 {% if not request.user.is_authenticated %}
 <div class="fr">
-	<a href="{% url 'login' %}?next={{ request.path }}">
+	<a href="{% url 'accounts:login' %}?next={{ request.path }}">
 	Have an account?<br />Sign in now!
 	</a>
 </div>

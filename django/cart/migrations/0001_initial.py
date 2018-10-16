@@ -18,7 +18,7 @@ class Migration(migrations.Migration):
                 ('cart_id', models.CharField(max_length=50)),
                 ('date_added', models.DateTimeField(auto_now_add=True)),
                 ('quantity', models.IntegerField(default=1)),
-                ('product', models.ForeignKey(to='meadery.Product')),
+                ('product', models.ForeignKey(to='meadery.Product', on_delete=models.CASCADE)),
             ],
             options={
                 'ordering': ['date_added'],

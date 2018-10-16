@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from django.core import urlresolvers
+from django.urls import reverse
 from django.http import HttpResponseRedirect
 
 from checkout.forms import CheckoutForm
@@ -11,7 +11,7 @@ from accounts import profile
 
 def show_checkout(request, template_name='checkout/checkout.djhtml'):
     if cart.is_empty(request):
-        cart_url = urlresolvers.reverse('show_cart')
+        cart_url = reverse('cart:show_cart')
         return HttpResponseRedirect(cart_url)
     if request.method == 'POST':
         postdata = request.POST.copy()
@@ -22,12 +22,12 @@ def show_checkout(request, template_name='checkout/checkout.djhtml'):
             error_message = response.get('message', '')
             if order_number:
                 request.session['order_number'] = order_number
-                receipt_url = urlresolvers.reverse('checkout_receipt')
+                receipt_url = reverse('checkout_receipt')
                 return HttpResponseRedirect(receipt_url)
         else:
             error_message = 'Correct the errors below'
     else:
-        if request.user.is_authenticated():
+        if request.user.is_authenticated:
             user_profile = profile.retrieve(request)
             form = CheckoutForm(instance=user_profile)
         else:
@@ -43,6 +43,6 @@ def receipt(request, template_name='checkout/receipt.djhtml'):
         order_items = OrderItem.objects.filter(order=order)
         del request.session['order_number']
     else:
-        cart_url = urlresolvers.reverse('show_cart')
+        cart_url = reverse('cart:show_cart')
         return HttpResponseRedirect(cart_url)
     return render(request, template_name, locals())

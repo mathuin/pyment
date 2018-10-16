@@ -2,7 +2,7 @@ from django.contrib import admin
 from utils.buttonadmin import ButtonAdmin
 from checkout.models import Order, OrderItem, PickList, PickListItem
 from checkout.checkout import create_picklist, all_in_stock, process_picklist, cancel_picklist, cancel_order
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.utils.safestring import mark_safe
 
 

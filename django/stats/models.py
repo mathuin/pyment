@@ -9,9 +9,9 @@ class PageView(models.Model):
 
     date = models.DateTimeField(auto_now=True)
     ip_address = models.GenericIPAddressField()
-    user = models.ForeignKey(User, null=True)
-    tracking_id = models.CharField(max_length=50, default='')
+    user = models.ForeignKey(User, null=True, on_delete=models.CASCADE)
+    tracking_id = models.CharField(max_length=75, default='')
 
 
 class ProductView(PageView):
-    product = models.ForeignKey(Product)
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
