@@ -165,7 +165,7 @@ class JarAdmin(SmarterModelAdmin):
         if not form:
             form = self.MoveMultipleJarsForm(count=queryset.count())
 
-        return render(request, 'admin/move_multiple_jars.djhtml', {
+        return render(request, 'admin/move_multiple_jars.html', {
             'jars': queryset,
             'move_multiple_jars_form': form,
             })

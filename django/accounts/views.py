@@ -7,7 +7,7 @@ from accounts.forms import UserProfileForm, RegistrationForm
 from accounts import profile
 
 
-def register(request, template_name="registration/register.djhtml"):
+def register(request, template_name="registration/register.html"):
     if request.method == 'POST':
         postdata = request.POST.copy()
         form = RegistrationForm(postdata)
@@ -30,7 +30,7 @@ def register(request, template_name="registration/register.djhtml"):
 
 
 @login_required
-def my_account(request, template_name="registration/my_account.djhtml"):
+def my_account(request, template_name="registration/my_account.html"):
     page_title = 'My Account'
     orders = Order.objects.filter(user=request.user)
     name = request.user.username
@@ -38,7 +38,7 @@ def my_account(request, template_name="registration/my_account.djhtml"):
 
 
 @login_required
-def order_details(request, order_id, template_name="registration/order_details.djhtml"):
+def order_details(request, order_id, template_name="registration/order_details.html"):
     order = get_object_or_404(Order, id=order_id, user=request.user)
     page_title = 'Order Details for Order #' + order_id
     order_items = OrderItem.objects.filter(order=order)
@@ -46,7 +46,7 @@ def order_details(request, order_id, template_name="registration/order_details.d
 
 
 @login_required
-def order_info(request, template_name="registration/order_info.djhtml"):
+def order_info(request, template_name="registration/order_info.html"):
     if request.method == 'POST':
         postdata = request.POST.copy()
         form = UserProfileForm(postdata)

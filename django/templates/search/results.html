@@ -1,11 +1,11 @@
-{% extends 'meadery.djhtml' %}
+{% extends 'meadery.html' %}
 
 {% load search_tags %}
 
 {% block content %}
 	<h1>Search Results for: '{{ q }}'</h1>
 	{% for p in results %}
-	{% include 'tags/product_thumbnail.djhtml' %}
+	{% include 'tags/product_thumbnail.html' %}
 	{% empty %}
 	No products were found matching those search terms.
 	{% endfor %}

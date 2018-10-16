@@ -87,7 +87,7 @@ class RecipeAdmin(ButtonAdmin):
                 form = self.CreateBatchFromRecipeForm(initial={'_selected_action': recipe})
             data = {'create_batch_from_recipe_form': form, 'recipe': recipe}
             data.update(csrf(request))
-            return render_to_response('admin/create_batch_from_recipe.djhtml', data)
+            return render_to_response('admin/create_batch_from_recipe.html', data)
         else:
             return None
     create_batch.short_description = 'Create batch from recipe'
