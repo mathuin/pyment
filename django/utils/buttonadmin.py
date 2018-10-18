@@ -75,7 +75,7 @@ class ButtonAdmin(admin.ModelAdmin):
             return self.change_view(request, unquote(url))
 
     def get_urls(self):
-        from django.conf.urls import url
+        from django.urls import path
         from functools import update_wrapper
 
         # Define a wrapper view
@@ -84,7 +84,7 @@ class ButtonAdmin(admin.ModelAdmin):
                 return self.admin_site.admin_view(view)(*args, **kwargs)
             return update_wrapper(wrapper, view)
         #  Add the custom button url
-        urlpatterns = [url(r'^(.+)/$', wrap(self.button_view_dispatcher))]
+        urlpatterns = [path('(.+)/', wrap(self.button_view_dispatcher))]
         return urlpatterns + super(ButtonAdmin, self).get_urls()
 
     def change_view(self, request, object_id, form_url='', extra_context=None):
