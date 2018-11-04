@@ -9,7 +9,7 @@ from pyment import settings
 
 
 def get_checkout_url(request):
-    return reverse('checkout')
+    return reverse('checkout:checkout')
 
 
 def process(request):
