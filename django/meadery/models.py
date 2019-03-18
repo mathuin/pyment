@@ -425,7 +425,7 @@ class Product(SIPParent):
         items = OrderItem.objects.filter(Q(order__in=orders) |
                                          Q(order__user__in=users)
                                          ).exclude(product=self)
-        products = Product.active.filter(orderitem__in=items).distinct()
+        products = Product.instock.filter(is_active=True).filter(orderitem__in=items).distinct()
         return products
 
 
