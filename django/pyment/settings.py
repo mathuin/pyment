@@ -2,7 +2,7 @@
 
 from decouple import config, Csv
 from unipath import Path
-from dj_database_url import parse as db_url, config as djc
+from dj_database_url import parse as db_url
 from dj_email_url import parse as email_url
 
 BASE_DIR = Path(__file__).parent.parent

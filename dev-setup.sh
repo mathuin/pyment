@@ -3,6 +3,9 @@
 # clean up current situation
 docker-compose down -v
 
+# patch devssl certificate
+sudo chown 70 devssl/server.key
+
 # rebuild containers
 docker-compose build
 
