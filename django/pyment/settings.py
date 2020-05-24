@@ -2,7 +2,7 @@
 
 from decouple import config, Csv
 from unipath import Path
-from dj_database_url import parse as db_url
+from dj_database_url import parse as db_url, config as djc
 from dj_email_url import parse as email_url
 
 BASE_DIR = Path(__file__).parent.parent
@@ -14,10 +14,9 @@ DEBUG = config('DEBUG', default=False, cast=bool)
 TRAVIS = config('TRAVIS', default=False, cast=bool)
 
 DATABASES = {
-    'default': config(
-        'DATABASE_URL',
-        ssl_require=True,
-        cast=db_url
+    'default': db_url(
+        config('DATABASE_URL'),
+        ssl_require=True
     )
 }
 
