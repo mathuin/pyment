@@ -16,6 +16,7 @@ TRAVIS = config('TRAVIS', default=False, cast=bool)
 DATABASES = {
     'default': config(
         'DATABASE_URL',
+        ssl_require=True,
         cast=db_url
     )
 }
