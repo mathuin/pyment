@@ -1,9 +1,9 @@
-Django==2.2.0
+Django==2.2.10
 gunicorn==19.9.0
 python-decouple==3.1
 dj-database-url==0.5.0
 dj-email-url==0.1.0
-Pillow==5.3.0
+Pillow==6.2.2
 psycopg2-binary==2.8.5
 reportlab==3.5.9
 Sphinx==1.8.1
