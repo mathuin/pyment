@@ -65,6 +65,10 @@ Simple labels are created by default. Custom labels can be produced by creating 
 
 There's a `./dev-setup.sh` script which should do the right thing.
 
+The SSL setup is a little hairy.  To recreate it:
+* Make a directory, and put this script in it: https://gist.github.com/mrw34/c97bb03ea1054afb551886ffc8b63c3b
+* `./postgres.sh && sudo chown -R 999:130 . && sudo chmod 600 server.key && tar cf ~/git/pyment/devssl.tar .`
+
 ## Testing the software
 
 After running the aforementioned script, try this: `docker-compose run --rm web python manage.py test`.

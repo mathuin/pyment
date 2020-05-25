@@ -5,6 +5,10 @@ services:
             - POSTGRES_USER=pyment
             - POSTGRES_PASSWORD=pyment_password
             - POSTGRES_DATABASE=pyment
+            - POSTGRES_HOST_AUTH_METHOD=trust
+        volumes:
+            - devssl:/devssl
+        command: -c ssl=on -c ssl_cert_file=/devssl/server.crt -c ssl_key_file=/devssl/server.key
     web:
         build: ./django
         command: gunicorn --access-logfile "-" -b ":8000" pyment.wsgi
@@ -12,3 +16,6 @@ services:
             - DATABASE_URL=postgres://pyment:pyment_password@db:5432/pyment
             - SECRET_KEY='qkmm6qcxz9npoCxtt8ofRu5vVFeTEfbDIJdmIKiEBIiVCi2ef9'
             - ALLOWED_HOSTS=localhost
+volumes:
+    devssl:
+        driver: local

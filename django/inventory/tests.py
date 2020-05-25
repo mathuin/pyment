@@ -79,9 +79,9 @@ class BinTestCase(TestCase):
         # just saved a second crate, still okay!
         self.assertEqual(self.bin.capacity, self.bin.crates)
         newer_crate = Crate(number=38, bin=self.bin)
-        # saving this third crate should cause clean to throw a ValidateError
+        # not saving this third crate should cause clean to throw a TypeError
         # NB: calling .save() bypasses .clean()
-        self.assertRaises(ValidationError, newer_crate.clean())
+        self.assertRaises(TypeError, newer_crate.clean())
 
 
 class CrateTestCase(TestCase):

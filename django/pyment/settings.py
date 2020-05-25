@@ -14,9 +14,9 @@ DEBUG = config('DEBUG', default=False, cast=bool)
 TRAVIS = config('TRAVIS', default=False, cast=bool)
 
 DATABASES = {
-    'default': config(
-        'DATABASE_URL',
-        cast=db_url
+    'default': db_url(
+        config('DATABASE_URL'),
+        ssl_require=True
     )
 }
 
