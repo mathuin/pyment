@@ -19,6 +19,6 @@ script:
     - docker-compose run --rm web python manage.py test
 deploy:
     provider: script
-    script: scripts/deploy.sh
+    script: bash docker_push
     on:
         branch: master
