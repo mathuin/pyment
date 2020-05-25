@@ -23,8 +23,9 @@ services:
             - web
         ports:
             - "8000:8000"
+        volumes_from:
+            - web
         volumes:
-            - public:/public
             - ./nginx:/etc/nginx/conf.d
 volumes:
     dbdata:

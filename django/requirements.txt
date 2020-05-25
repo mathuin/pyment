@@ -1,5 +1,5 @@
 Django==2.2.10
-gunicorn==19.9.0
+gunicorn==20.0.4
 python-decouple==3.1
 dj-database-url==0.5.0
 dj-email-url==0.1.0
@@ -8,3 +8,5 @@ psycopg2-binary==2.8.5
 reportlab==3.5.9
 Sphinx==1.8.1
 unipath==1.1
+django-storages==1.9.1
+boto3==1.13.16

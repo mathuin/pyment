@@ -7,7 +7,7 @@ from dj_email_url import parse as email_url
 
 BASE_DIR = Path(__file__).parent.parent
 
-PUBLIC_ROOT = Path(config('PUBLIC_ROOT'))
+PUBLIC_ROOT = Path(config('PUBLIC_ROOT', default=''))
 
 DEBUG = config('DEBUG', default=False, cast=bool)
 
@@ -60,24 +60,28 @@ USE_L10N = True
 # If you set this to False, Django will not use timezone-aware datetimes.
 USE_TZ = True
 
-# Absolute filesystem path to the directory that will hold user-uploaded files.
-# Example: "/home/media/media.lawrence.com/media/"
-MEDIA_ROOT = PUBLIC_ROOT.child('media')
+# DigitalOcean Spaces uses AWS-style credentials
+AWS_ACCESS_KEY_ID = config('AWS_ACCESS_KEY_ID', default='')
+AWS_SECRET_ACCESS_KEY = config('AWS_SECRET_ACCESS_KEY', default='')
+AWS_STORAGE_BUCKET_NAME = config('AWS_STORAGE_BUCKET_NAME', default='')
+AWS_DEFAULT_ACL = None
+AWS_S3_OBJECT_PARAMETERS = {
+    'CacheControl': 'max-age=86400',
+}
+AWS_IS_GZIPPED = True
+AWS_S3_REGION_NAME = config('AWS_S3_REGION_NAME', default='')
+AWS_S3_ENDPOINT_URL = config('AWS_S3_ENDPOINT_URL', default='')
 
-# URL that handles the media served from MEDIA_ROOT. Make sure to use a
-# trailing slash.
-# Examples: "http://media.lawrence.com/media/", "http://example.com/media/"
-MEDIA_URL = '/media/'
+# If we have an S3 endpoint URL use it instead of standard root settings
+if AWS_S3_ENDPOINT_URL:
+    STATICFILES_STORAGE = 'pyment.storage_backends.StaticStorage'
+    DEFAULT_FILE_STORAGE = 'pyment.storage_backends.PublicMediaStorage'
+else:
+    STATIC_ROOT = PUBLIC_ROOT.child('static')
+    MEDIA_ROOT = PUBLIC_ROOT.child('media')
 
-# Absolute path to the directory static files should be collected to.
-# Don't put anything in this directory yourself; store your static files
-# in apps' "static/" subdirectories and in STATICFILES_DIRS.
-# Example: "/home/media/media.lawrence.com/static/"
-STATIC_ROOT = PUBLIC_ROOT.child('static')
-
-# URL prefix for static files.
-# Example: "http://media.lawrence.com/static/"
-STATIC_URL = '/static/'
+MEDIA_URL = '{}/media/'.format(AWS_S3_ENDPOINT_URL)
+STATIC_URL = '{}/static/'.format(AWS_S3_ENDPOINT_URL)
 
 # Additional locations of static files
 STATICFILES_DIRS = (
@@ -101,6 +105,7 @@ TEMPLATES = [
         'DIRS': [BASE_DIR.child('templates')],
         'APP_DIRS': True,
         'OPTIONS': {
+            'debug': DEBUG,
             'context_processors': [
                 'django.template.context_processors.debug',
                 'django.template.context_processors.request',
@@ -157,6 +162,7 @@ INSTALLED_APPS = (
     'search',
     'stats',
     'meadery',
+    'storages'
 )
 
 # A sample logging configuration. The only tangible logging
