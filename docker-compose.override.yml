@@ -5,7 +5,6 @@ services:
             - POSTGRES_USER=pyment
             - POSTGRES_PASSWORD=pyment_password
             - POSTGRES_DATABASE=pyment
-            - POSTGRES_HOST_AUTH_METHOD=trust
         volumes:
             - devssl:/devssl
         command: -c ssl=on -c ssl_cert_file=/devssl/server.crt -c ssl_key_file=/devssl/server.key
