@@ -43,7 +43,7 @@ Racking
 
 After sufficient time has passed (anywhere from three weeks to three
 months, depending on the ingredients and conditions), the airlock will
-stop bubbling, and it will be time to rack the mead.  
+stop bubbling, and it will be time to rack the mead.
 
 Sanitize the following: a glass carboy (and stopper or other closure)
 with a capacity of at least 6.5 gallons, an airlock, a wine thief, and

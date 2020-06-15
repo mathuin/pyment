@@ -1,873 +1,873 @@
 [
 {
-  "pk": 1, 
-  "model": "meadery.ingredient", 
+  "pk": 1,
+  "model": "meadery.ingredient",
   "fields": {
-    "appellation": "Oregon", 
-    "name": "Local Honey", 
-    "sg": "1.422", 
-    "subtype": 101, 
-    "state": 1, 
-    "sh": "0.57", 
-    "tolerance": 12, 
-    "is_natural": true, 
-    "type": 1, 
+    "appellation": "Oregon",
+    "name": "Local Honey",
+    "sg": "1.422",
+    "subtype": 101,
+    "state": 1,
+    "sh": "0.57",
+    "tolerance": 12,
+    "is_natural": true,
+    "type": 1,
     "cpu": "10.00"
   }
 },
 {
-  "pk": 2, 
-  "model": "meadery.ingredient", 
+  "pk": 2,
+  "model": "meadery.ingredient",
   "fields": {
-    "appellation": "(None)", 
-    "name": "Scary Honey", 
-    "sg": "1.422", 
-    "subtype": 101, 
-    "state": 1, 
-    "sh": "0.57", 
-    "tolerance": 12, 
-    "is_natural": false, 
-    "type": 1, 
+    "appellation": "(None)",
+    "name": "Scary Honey",
+    "sg": "1.422",
+    "subtype": 101,
+    "state": 1,
+    "sh": "0.57",
+    "tolerance": 12,
+    "is_natural": false,
+    "type": 1,
     "cpu": "5.00"
   }
 },
 {
-  "pk": 3, 
-  "model": "meadery.ingredient", 
+  "pk": 3,
+  "model": "meadery.ingredient",
   "fields": {
-    "appellation": "Oregon", 
-    "name": "Local Water", 
-    "sg": "1.000", 
-    "subtype": 201, 
-    "state": 2, 
-    "sh": "1.00", 
-    "tolerance": 12, 
-    "is_natural": true, 
-    "type": 2, 
+    "appellation": "Oregon",
+    "name": "Local Water",
+    "sg": "1.000",
+    "subtype": 201,
+    "state": 2,
+    "sh": "1.00",
+    "tolerance": 12,
+    "is_natural": true,
+    "type": 2,
     "cpu": "0.20"
   }
 },
 {
-  "pk": 4, 
-  "model": "meadery.ingredient", 
+  "pk": 4,
+  "model": "meadery.ingredient",
   "fields": {
-    "appellation": "Oregon", 
-    "name": "Tap Water", 
-    "sg": "1.000", 
-    "subtype": 201, 
-    "state": 2, 
-    "sh": "1.00", 
-    "tolerance": 12, 
-    "is_natural": false, 
-    "type": 2, 
+    "appellation": "Oregon",
+    "name": "Tap Water",
+    "sg": "1.000",
+    "subtype": 201,
+    "state": 2,
+    "sh": "1.00",
+    "tolerance": 12,
+    "is_natural": false,
+    "type": 2,
     "cpu": "0.01"
   }
 },
 {
-  "pk": 5, 
-  "model": "meadery.ingredient", 
+  "pk": 5,
+  "model": "meadery.ingredient",
   "fields": {
-    "appellation": "(None)", 
-    "name": "Apple Juice", 
-    "sg": "1.042", 
-    "subtype": 203, 
-    "state": 2, 
-    "sh": "0.67", 
-    "tolerance": 12, 
-    "is_natural": true, 
-    "type": 2, 
+    "appellation": "(None)",
+    "name": "Apple Juice",
+    "sg": "1.042",
+    "subtype": 203,
+    "state": 2,
+    "sh": "0.67",
+    "tolerance": 12,
+    "is_natural": true,
+    "type": 2,
     "cpu": "1.20"
   }
 },
 {
-  "pk": 6, 
-  "model": "meadery.ingredient", 
+  "pk": 6,
+  "model": "meadery.ingredient",
   "fields": {
-    "appellation": "(None)", 
-    "name": "Cinnamon Sticks", 
-    "sg": "1.000", 
-    "subtype": 301, 
-    "state": 3, 
-    "sh": "1.00", 
-    "tolerance": 12, 
-    "is_natural": true, 
-    "type": 3, 
+    "appellation": "(None)",
+    "name": "Cinnamon Sticks",
+    "sg": "1.000",
+    "subtype": 301,
+    "state": 3,
+    "sh": "1.00",
+    "tolerance": 12,
+    "is_natural": true,
+    "type": 3,
     "cpu": "0.05"
   }
 },
 {
-  "pk": 7, 
-  "model": "meadery.ingredient", 
+  "pk": 7,
+  "model": "meadery.ingredient",
   "fields": {
-    "appellation": "(None)", 
-    "name": "Ghirardelli Unsweetened Cocoa", 
-    "sg": "1.000", 
-    "subtype": 301, 
-    "state": 3, 
-    "sh": "1.00", 
-    "tolerance": 12, 
-    "is_natural": true, 
-    "type": 3, 
+    "appellation": "(None)",
+    "name": "Ghirardelli Unsweetened Cocoa",
+    "sg": "1.000",
+    "subtype": 301,
+    "state": 3,
+    "sh": "1.00",
+    "tolerance": 12,
+    "is_natural": true,
+    "type": 3,
     "cpu": "33.47"
   }
 },
 {
-  "pk": 8, 
-  "model": "meadery.ingredient", 
+  "pk": 8,
+  "model": "meadery.ingredient",
   "fields": {
-    "appellation": "Oregon", 
-    "name": "Freeze-Dried Blueberry Powder", 
-    "sg": "1.000", 
-    "subtype": 304, 
-    "state": 3, 
-    "sh": "1.00", 
-    "tolerance": 12, 
-    "is_natural": true, 
-    "type": 3, 
+    "appellation": "Oregon",
+    "name": "Freeze-Dried Blueberry Powder",
+    "sg": "1.000",
+    "subtype": 304,
+    "state": 3,
+    "sh": "1.00",
+    "tolerance": 12,
+    "is_natural": true,
+    "type": 3,
     "cpu": "143.20"
   }
 },
 {
-  "pk": 9, 
-  "model": "meadery.ingredient", 
+  "pk": 9,
+  "model": "meadery.ingredient",
   "fields": {
-    "appellation": "(None)", 
-    "name": "Red Star Champagne Yeast", 
-    "sg": "1.000", 
-    "subtype": 401, 
-    "state": 3, 
-    "sh": "1.00", 
-    "tolerance": 18, 
-    "is_natural": true, 
-    "type": 4, 
+    "appellation": "(None)",
+    "name": "Red Star Champagne Yeast",
+    "sg": "1.000",
+    "subtype": 401,
+    "state": 3,
+    "sh": "1.00",
+    "tolerance": 18,
+    "is_natural": true,
+    "type": 4,
     "cpu": "3.95"
   }
 },
 {
-  "pk": 10, 
-  "model": "meadery.ingredient", 
+  "pk": 10,
+  "model": "meadery.ingredient",
   "fields": {
-    "appellation": "(None)", 
-    "name": "Red Star Cote des Blancs", 
-    "sg": "1.000", 
-    "subtype": 401, 
-    "state": 3, 
-    "sh": "1.00", 
-    "tolerance": 12, 
-    "is_natural": true, 
-    "type": 4, 
+    "appellation": "(None)",
+    "name": "Red Star Cote des Blancs",
+    "sg": "1.000",
+    "subtype": 401,
+    "state": 3,
+    "sh": "1.00",
+    "tolerance": 12,
+    "is_natural": true,
+    "type": 4,
     "cpu": "3.95"
   }
 },
 {
-  "pk": 87, 
-  "model": "meadery.ingredientitem", 
+  "pk": 87,
+  "model": "meadery.ingredientitem",
   "fields": {
-    "amount": "4.540", 
-    "temp": 70, 
-    "parent": 19, 
+    "amount": "4.540",
+    "temp": 70,
+    "parent": 19,
     "ingredient": 1
   }
 },
 {
-  "pk": 88, 
-  "model": "meadery.ingredientitem", 
+  "pk": 88,
+  "model": "meadery.ingredientitem",
   "fields": {
-    "amount": "9.725", 
-    "temp": 140, 
-    "parent": 19, 
+    "amount": "9.725",
+    "temp": 140,
+    "parent": 19,
     "ingredient": 3
   }
 },
 {
-  "pk": 89, 
-  "model": "meadery.ingredientitem", 
+  "pk": 89,
+  "model": "meadery.ingredientitem",
   "fields": {
-    "amount": "9.725", 
-    "temp": 70, 
-    "parent": 19, 
+    "amount": "9.725",
+    "temp": 70,
+    "parent": 19,
     "ingredient": 3
   }
 },
 {
-  "pk": 90, 
-  "model": "meadery.ingredientitem", 
+  "pk": 90,
+  "model": "meadery.ingredientitem",
   "fields": {
-    "amount": "1.000", 
-    "temp": 100, 
-    "parent": 19, 
+    "amount": "1.000",
+    "temp": 100,
+    "parent": 19,
     "ingredient": 10
   }
 },
 {
-  "pk": 91, 
-  "model": "meadery.ingredientitem", 
+  "pk": 91,
+  "model": "meadery.ingredientitem",
   "fields": {
-    "amount": "4.540", 
-    "temp": 70, 
-    "parent": 20, 
+    "amount": "4.540",
+    "temp": 70,
+    "parent": 20,
     "ingredient": 2
   }
 },
 {
-  "pk": 92, 
-  "model": "meadery.ingredientitem", 
+  "pk": 92,
+  "model": "meadery.ingredientitem",
   "fields": {
-    "amount": "9.725", 
-    "temp": 140, 
-    "parent": 20, 
+    "amount": "9.725",
+    "temp": 140,
+    "parent": 20,
     "ingredient": 4
   }
 },
 {
-  "pk": 93, 
-  "model": "meadery.ingredientitem", 
+  "pk": 93,
+  "model": "meadery.ingredientitem",
   "fields": {
-    "amount": "9.725", 
-    "temp": 70, 
-    "parent": 20, 
+    "amount": "9.725",
+    "temp": 70,
+    "parent": 20,
     "ingredient": 4
   }
 },
 {
-  "pk": 94, 
-  "model": "meadery.ingredientitem", 
+  "pk": 94,
+  "model": "meadery.ingredientitem",
   "fields": {
-    "amount": "1.000", 
-    "temp": 100, 
-    "parent": 20, 
+    "amount": "1.000",
+    "temp": 100,
+    "parent": 20,
     "ingredient": 10
   }
 },
 {
-  "pk": 95, 
-  "model": "meadery.ingredientitem", 
+  "pk": 95,
+  "model": "meadery.ingredientitem",
   "fields": {
-    "amount": "4.540", 
-    "temp": 70, 
-    "parent": 21, 
+    "amount": "4.540",
+    "temp": 70,
+    "parent": 21,
     "ingredient": 1
   }
 },
 {
-  "pk": 96, 
-  "model": "meadery.ingredientitem", 
+  "pk": 96,
+  "model": "meadery.ingredientitem",
   "fields": {
-    "amount": "9.725", 
-    "temp": 140, 
-    "parent": 21, 
+    "amount": "9.725",
+    "temp": 140,
+    "parent": 21,
     "ingredient": 3
   }
 },
 {
-  "pk": 97, 
-  "model": "meadery.ingredientitem", 
+  "pk": 97,
+  "model": "meadery.ingredientitem",
   "fields": {
-    "amount": "9.725", 
-    "temp": 70, 
-    "parent": 21, 
+    "amount": "9.725",
+    "temp": 70,
+    "parent": 21,
     "ingredient": 3
   }
 },
 {
-  "pk": 98, 
-  "model": "meadery.ingredientitem", 
+  "pk": 98,
+  "model": "meadery.ingredientitem",
   "fields": {
-    "amount": "0.454", 
-    "temp": 100, 
-    "parent": 21, 
+    "amount": "0.454",
+    "temp": 100,
+    "parent": 21,
     "ingredient": 8
   }
 },
 {
-  "pk": 99, 
-  "model": "meadery.ingredientitem", 
+  "pk": 99,
+  "model": "meadery.ingredientitem",
   "fields": {
-    "amount": "1.000", 
-    "temp": 100, 
-    "parent": 21, 
+    "amount": "1.000",
+    "temp": 100,
+    "parent": 21,
     "ingredient": 9
   }
 },
 {
-  "pk": 100, 
-  "model": "meadery.ingredientitem", 
+  "pk": 100,
+  "model": "meadery.ingredientitem",
   "fields": {
-    "amount": "4.540", 
-    "temp": 70, 
-    "parent": 22, 
+    "amount": "4.540",
+    "temp": 70,
+    "parent": 22,
     "ingredient": 1
   }
 },
 {
-  "pk": 101, 
-  "model": "meadery.ingredientitem", 
+  "pk": 101,
+  "model": "meadery.ingredientitem",
   "fields": {
-    "amount": "9.725", 
-    "temp": 140, 
-    "parent": 22, 
+    "amount": "9.725",
+    "temp": 140,
+    "parent": 22,
     "ingredient": 5
   }
 },
 {
-  "pk": 102, 
-  "model": "meadery.ingredientitem", 
+  "pk": 102,
+  "model": "meadery.ingredientitem",
   "fields": {
-    "amount": "9.725", 
-    "temp": 70, 
-    "parent": 22, 
+    "amount": "9.725",
+    "temp": 70,
+    "parent": 22,
     "ingredient": 5
   }
 },
 {
-  "pk": 103, 
-  "model": "meadery.ingredientitem", 
+  "pk": 103,
+  "model": "meadery.ingredientitem",
   "fields": {
-    "amount": "10.000", 
-    "temp": 100, 
-    "parent": 22, 
+    "amount": "10.000",
+    "temp": 100,
+    "parent": 22,
     "ingredient": 6
   }
 },
 {
-  "pk": 104, 
-  "model": "meadery.ingredientitem", 
+  "pk": 104,
+  "model": "meadery.ingredientitem",
   "fields": {
-    "amount": "1.000", 
-    "temp": 100, 
-    "parent": 22, 
+    "amount": "1.000",
+    "temp": 100,
+    "parent": 22,
     "ingredient": 9
   }
 },
 {
-  "pk": 105, 
-  "model": "meadery.ingredientitem", 
+  "pk": 105,
+  "model": "meadery.ingredientitem",
   "fields": {
-    "amount": "4.540", 
-    "temp": 70, 
-    "parent": 23, 
+    "amount": "4.540",
+    "temp": 70,
+    "parent": 23,
     "ingredient": 1
   }
 },
 {
-  "pk": 106, 
-  "model": "meadery.ingredientitem", 
+  "pk": 106,
+  "model": "meadery.ingredientitem",
   "fields": {
-    "amount": "9.725", 
-    "temp": 140, 
-    "parent": 23, 
+    "amount": "9.725",
+    "temp": 140,
+    "parent": 23,
     "ingredient": 3
   }
 },
 {
-  "pk": 107, 
-  "model": "meadery.ingredientitem", 
+  "pk": 107,
+  "model": "meadery.ingredientitem",
   "fields": {
-    "amount": "9.725", 
-    "temp": 70, 
-    "parent": 23, 
+    "amount": "9.725",
+    "temp": 70,
+    "parent": 23,
     "ingredient": 3
   }
 },
 {
-  "pk": 108, 
-  "model": "meadery.ingredientitem", 
+  "pk": 108,
+  "model": "meadery.ingredientitem",
   "fields": {
-    "amount": "0.283", 
-    "temp": 100, 
-    "parent": 23, 
+    "amount": "0.283",
+    "temp": 100,
+    "parent": 23,
     "ingredient": 7
   }
 },
 {
-  "pk": 109, 
-  "model": "meadery.ingredientitem", 
+  "pk": 109,
+  "model": "meadery.ingredientitem",
   "fields": {
-    "amount": "10.000", 
-    "temp": 100, 
-    "parent": 23, 
+    "amount": "10.000",
+    "temp": 100,
+    "parent": 23,
     "ingredient": 6
   }
 },
 {
-  "pk": 110, 
-  "model": "meadery.ingredientitem", 
+  "pk": 110,
+  "model": "meadery.ingredientitem",
   "fields": {
-    "amount": "1.000", 
-    "temp": 100, 
-    "parent": 23, 
+    "amount": "1.000",
+    "temp": 100,
+    "parent": 23,
     "ingredient": 9
   }
 },
 {
-  "pk": 123, 
-  "model": "meadery.ingredientitem", 
+  "pk": 123,
+  "model": "meadery.ingredientitem",
   "fields": {
-    "amount": "1.000", 
-    "temp": 100, 
-    "parent": 26, 
+    "amount": "1.000",
+    "temp": 100,
+    "parent": 26,
     "ingredient": 10
   }
 },
 {
-  "pk": 124, 
-  "model": "meadery.ingredientitem", 
+  "pk": 124,
+  "model": "meadery.ingredientitem",
   "fields": {
-    "amount": "9.725", 
-    "temp": 70, 
-    "parent": 26, 
+    "amount": "9.725",
+    "temp": 70,
+    "parent": 26,
     "ingredient": 3
   }
 },
 {
-  "pk": 125, 
-  "model": "meadery.ingredientitem", 
+  "pk": 125,
+  "model": "meadery.ingredientitem",
   "fields": {
-    "amount": "9.725", 
-    "temp": 140, 
-    "parent": 26, 
+    "amount": "9.725",
+    "temp": 140,
+    "parent": 26,
     "ingredient": 3
   }
 },
 {
-  "pk": 126, 
-  "model": "meadery.ingredientitem", 
+  "pk": 126,
+  "model": "meadery.ingredientitem",
   "fields": {
-    "amount": "4.540", 
-    "temp": 70, 
-    "parent": 26, 
+    "amount": "4.540",
+    "temp": 70,
+    "parent": 26,
     "ingredient": 1
   }
 },
 {
-  "pk": 127, 
-  "model": "meadery.ingredientitem", 
+  "pk": 127,
+  "model": "meadery.ingredientitem",
   "fields": {
-    "amount": "4.540", 
-    "temp": 70, 
-    "parent": 27, 
+    "amount": "4.540",
+    "temp": 70,
+    "parent": 27,
     "ingredient": 1
   }
 },
 {
-  "pk": 128, 
-  "model": "meadery.ingredientitem", 
+  "pk": 128,
+  "model": "meadery.ingredientitem",
   "fields": {
-    "amount": "9.725", 
-    "temp": 140, 
-    "parent": 27, 
+    "amount": "9.725",
+    "temp": 140,
+    "parent": 27,
     "ingredient": 3
   }
 },
 {
-  "pk": 129, 
-  "model": "meadery.ingredientitem", 
+  "pk": 129,
+  "model": "meadery.ingredientitem",
   "fields": {
-    "amount": "9.725", 
-    "temp": 70, 
-    "parent": 27, 
+    "amount": "9.725",
+    "temp": 70,
+    "parent": 27,
     "ingredient": 3
   }
 },
 {
-  "pk": 130, 
-  "model": "meadery.ingredientitem", 
+  "pk": 130,
+  "model": "meadery.ingredientitem",
   "fields": {
-    "amount": "0.454", 
-    "temp": 100, 
-    "parent": 27, 
+    "amount": "0.454",
+    "temp": 100,
+    "parent": 27,
     "ingredient": 8
   }
 },
 {
-  "pk": 131, 
-  "model": "meadery.ingredientitem", 
+  "pk": 131,
+  "model": "meadery.ingredientitem",
   "fields": {
-    "amount": "1.000", 
-    "temp": 100, 
-    "parent": 27, 
+    "amount": "1.000",
+    "temp": 100,
+    "parent": 27,
     "ingredient": 9
   }
 },
 {
-  "pk": 132, 
-  "model": "meadery.ingredientitem", 
+  "pk": 132,
+  "model": "meadery.ingredientitem",
   "fields": {
-    "amount": "4.540", 
-    "temp": 70, 
-    "parent": 28, 
+    "amount": "4.540",
+    "temp": 70,
+    "parent": 28,
     "ingredient": 1
   }
 },
 {
-  "pk": 133, 
-  "model": "meadery.ingredientitem", 
+  "pk": 133,
+  "model": "meadery.ingredientitem",
   "fields": {
-    "amount": "9.725", 
-    "temp": 140, 
-    "parent": 28, 
+    "amount": "9.725",
+    "temp": 140,
+    "parent": 28,
     "ingredient": 3
   }
 },
 {
-  "pk": 134, 
-  "model": "meadery.ingredientitem", 
+  "pk": 134,
+  "model": "meadery.ingredientitem",
   "fields": {
-    "amount": "9.725", 
-    "temp": 70, 
-    "parent": 28, 
+    "amount": "9.725",
+    "temp": 70,
+    "parent": 28,
     "ingredient": 3
   }
 },
 {
-  "pk": 135, 
-  "model": "meadery.ingredientitem", 
+  "pk": 135,
+  "model": "meadery.ingredientitem",
   "fields": {
-    "amount": "1.000", 
-    "temp": 100, 
-    "parent": 28, 
+    "amount": "1.000",
+    "temp": 100,
+    "parent": 28,
     "ingredient": 10
   }
 },
 {
-  "pk": 136, 
-  "model": "meadery.ingredientitem", 
+  "pk": 136,
+  "model": "meadery.ingredientitem",
   "fields": {
-    "amount": "4.540", 
-    "temp": 70, 
-    "parent": 29, 
+    "amount": "4.540",
+    "temp": 70,
+    "parent": 29,
     "ingredient": 2
   }
 },
 {
-  "pk": 137, 
-  "model": "meadery.ingredientitem", 
+  "pk": 137,
+  "model": "meadery.ingredientitem",
   "fields": {
-    "amount": "9.725", 
-    "temp": 140, 
-    "parent": 29, 
+    "amount": "9.725",
+    "temp": 140,
+    "parent": 29,
     "ingredient": 4
   }
 },
 {
-  "pk": 138, 
-  "model": "meadery.ingredientitem", 
+  "pk": 138,
+  "model": "meadery.ingredientitem",
   "fields": {
-    "amount": "9.725", 
-    "temp": 70, 
-    "parent": 29, 
+    "amount": "9.725",
+    "temp": 70,
+    "parent": 29,
     "ingredient": 4
   }
 },
 {
-  "pk": 139, 
-  "model": "meadery.ingredientitem", 
+  "pk": 139,
+  "model": "meadery.ingredientitem",
   "fields": {
-    "amount": "1.000", 
-    "temp": 100, 
-    "parent": 29, 
+    "amount": "1.000",
+    "temp": 100,
+    "parent": 29,
     "ingredient": 9
   }
 },
 {
-  "pk": 1, 
-  "model": "meadery.parent", 
+  "pk": 1,
+  "model": "meadery.parent",
   "fields": {
-    "category": 263, 
-    "description": "Sounds yummy.", 
+    "category": 263,
+    "description": "Sounds yummy.",
     "title": "Blackberry/Chocolate"
   }
 },
 {
-  "pk": 2, 
-  "model": "meadery.parent", 
+  "pk": 2,
+  "model": "meadery.parent",
   "fields": {
-    "category": 263, 
-    "description": "Sounds yummy.", 
+    "category": 263,
+    "description": "Sounds yummy.",
     "title": "Blackberry/Chocolate"
   }
 },
 {
-  "pk": 19, 
-  "model": "meadery.parent", 
+  "pk": 19,
+  "model": "meadery.parent",
   "fields": {
-    "category": 241, 
-    "description": "Local!", 
+    "category": 241,
+    "description": "Local!",
     "title": "Local Mead"
   }
 },
 {
-  "pk": 20, 
-  "model": "meadery.parent", 
+  "pk": 20,
+  "model": "meadery.parent",
   "fields": {
-    "category": 241, 
-    "description": "Cheap!", 
+    "category": 241,
+    "description": "Cheap!",
     "title": "Cheap Mead"
   }
 },
 {
-  "pk": 21, 
-  "model": "meadery.parent", 
+  "pk": 21,
+  "model": "meadery.parent",
   "fields": {
-    "category": 241, 
-    "description": "Blue!", 
+    "category": 241,
+    "description": "Blue!",
     "title": "Blueberry Mead"
   }
 },
 {
-  "pk": 22, 
-  "model": "meadery.parent", 
+  "pk": 22,
+  "model": "meadery.parent",
   "fields": {
-    "category": 241, 
-    "description": "Two great tastes!", 
+    "category": 241,
+    "description": "Two great tastes!",
     "title": "Apple Cinnamon"
   }
 },
 {
-  "pk": 23, 
-  "model": "meadery.parent", 
+  "pk": 23,
+  "model": "meadery.parent",
   "fields": {
-    "category": 241, 
-    "description": "Yum!", 
+    "category": 241,
+    "description": "Yum!",
     "title": "Metheglin of Champions"
   }
 },
 {
-  "pk": 26, 
-  "model": "meadery.parent", 
+  "pk": 26,
+  "model": "meadery.parent",
   "fields": {
-    "category": 241, 
-    "description": "Local!", 
+    "category": 241,
+    "description": "Local!",
     "title": "Local Mead"
   }
 },
 {
-  "pk": 27, 
-  "model": "meadery.parent", 
+  "pk": 27,
+  "model": "meadery.parent",
   "fields": {
-    "category": 241, 
-    "description": "Blue!", 
+    "category": 241,
+    "description": "Blue!",
     "title": "Blueberry Mead"
   }
 },
 {
-  "pk": 28, 
-  "model": "meadery.parent", 
+  "pk": 28,
+  "model": "meadery.parent",
   "fields": {
-    "category": 241, 
-    "description": "Ripoff of local mead", 
+    "category": 241,
+    "description": "Ripoff of local mead",
     "title": "Local Ripoff"
   }
 },
 {
-  "pk": 29, 
-  "model": "meadery.parent", 
+  "pk": 29,
+  "model": "meadery.parent",
   "fields": {
-    "category": 241, 
-    "description": "Ripoff of cheap mead", 
+    "category": 241,
+    "description": "Ripoff of cheap mead",
     "title": "Cheap Ripoff"
   }
 },
 {
-  "pk": 30, 
-  "model": "meadery.parent", 
+  "pk": 30,
+  "model": "meadery.parent",
   "fields": {
-    "category": 241, 
-    "description": "Local!", 
+    "category": 241,
+    "description": "Local!",
     "title": "Local Mead"
   }
 },
 {
-  "pk": 19, 
-  "model": "meadery.recipe", 
+  "pk": 19,
+  "model": "meadery.recipe",
   "fields": {}
 },
 {
-  "pk": 20, 
-  "model": "meadery.recipe", 
+  "pk": 20,
+  "model": "meadery.recipe",
   "fields": {}
 },
 {
-  "pk": 21, 
-  "model": "meadery.recipe", 
+  "pk": 21,
+  "model": "meadery.recipe",
   "fields": {}
 },
 {
-  "pk": 22, 
-  "model": "meadery.recipe", 
+  "pk": 22,
+  "model": "meadery.recipe",
   "fields": {}
 },
 {
-  "pk": 23, 
-  "model": "meadery.recipe", 
+  "pk": 23,
+  "model": "meadery.recipe",
   "fields": {}
 },
 {
-  "pk": 26, 
-  "model": "meadery.batch", 
+  "pk": 26,
+  "model": "meadery.batch",
   "fields": {
-    "batchletter": "A", 
-    "is_active": false, 
-    "created_at": "2013-05-24T17:23:38.470Z", 
-    "batch_recipe": 19, 
-    "brewname": "SIP 98", 
-    "updated_at": "2013-05-24T17:56:20.370Z", 
-    "jars": 24, 
+    "batchletter": "A",
+    "is_active": false,
+    "created_at": "2013-05-24T17:23:38.470Z",
+    "batch_recipe": 19,
+    "brewname": "SIP 98",
+    "updated_at": "2013-05-24T17:56:20.370Z",
+    "jars": 24,
     "event": "Christmas"
   }
 },
 {
-  "pk": 27, 
-  "model": "meadery.batch", 
+  "pk": 27,
+  "model": "meadery.batch",
   "fields": {
-    "batchletter": "B", 
-    "is_active": false, 
-    "created_at": "2013-05-24T17:25:41.063Z", 
-    "batch_recipe": 21, 
-    "brewname": "SIP 98", 
-    "updated_at": "2013-05-24T17:25:56.348Z", 
-    "jars": 0, 
+    "batchletter": "B",
+    "is_active": false,
+    "created_at": "2013-05-24T17:25:41.063Z",
+    "batch_recipe": 21,
+    "brewname": "SIP 98",
+    "updated_at": "2013-05-24T17:25:56.348Z",
+    "jars": 0,
     "event": "Christmas"
   }
 },
 {
-  "pk": 28, 
-  "model": "meadery.batch", 
+  "pk": 28,
+  "model": "meadery.batch",
   "fields": {
-    "batchletter": "C", 
-    "is_active": false, 
-    "created_at": "2013-05-24T17:29:38.674Z", 
-    "batch_recipe": null, 
-    "brewname": "SIP 98", 
-    "updated_at": "2013-05-24T17:57:32.202Z", 
-    "jars": 24, 
+    "batchletter": "C",
+    "is_active": false,
+    "created_at": "2013-05-24T17:29:38.674Z",
+    "batch_recipe": null,
+    "brewname": "SIP 98",
+    "updated_at": "2013-05-24T17:57:32.202Z",
+    "jars": 24,
     "event": "Christmas"
   }
 },
 {
-  "pk": 29, 
-  "model": "meadery.batch", 
+  "pk": 29,
+  "model": "meadery.batch",
   "fields": {
-    "batchletter": "D", 
-    "is_active": false, 
-    "created_at": "2013-05-24T17:31:13.770Z", 
-    "batch_recipe": null, 
-    "brewname": "SIP 98", 
-    "updated_at": "2013-05-24T17:31:13.770Z", 
-    "jars": 0, 
+    "batchletter": "D",
+    "is_active": false,
+    "created_at": "2013-05-24T17:31:13.770Z",
+    "batch_recipe": null,
+    "brewname": "SIP 98",
+    "updated_at": "2013-05-24T17:31:13.770Z",
+    "jars": 0,
     "event": "Christmas"
   }
 },
 {
-  "pk": 9, 
-  "model": "meadery.sample", 
+  "pk": 9,
+  "model": "meadery.sample",
   "fields": {
-    "date": "2013-05-04", 
-    "notes": "Good start!", 
-    "sg": "1.126", 
-    "batch": 26, 
+    "date": "2013-05-04",
+    "notes": "Good start!",
+    "sg": "1.126",
+    "batch": 26,
     "temp": 60
   }
 },
 {
-  "pk": 10, 
-  "model": "meadery.sample", 
+  "pk": 10,
+  "model": "meadery.sample",
   "fields": {
-    "date": "2013-05-24", 
-    "notes": "Delicious!", 
-    "sg": "0.998", 
-    "batch": 26, 
+    "date": "2013-05-24",
+    "notes": "Delicious!",
+    "sg": "0.998",
+    "batch": 26,
     "temp": 60
   }
 },
 {
-  "pk": 11, 
-  "model": "meadery.sample", 
+  "pk": 11,
+  "model": "meadery.sample",
   "fields": {
-    "date": "2013-05-04", 
-    "notes": "Light!", 
-    "sg": "1.126", 
-    "batch": 28, 
+    "date": "2013-05-04",
+    "notes": "Light!",
+    "sg": "1.126",
+    "batch": 28,
     "temp": 60
   }
 },
 {
-  "pk": 12, 
-  "model": "meadery.sample", 
+  "pk": 12,
+  "model": "meadery.sample",
   "fields": {
-    "date": "2013-05-24", 
-    "notes": "Tasty!", 
-    "sg": "0.996", 
-    "batch": 28, 
+    "date": "2013-05-24",
+    "notes": "Tasty!",
+    "sg": "0.996",
+    "batch": 28,
     "temp": 60
   }
 },
 {
-  "pk": 1, 
-  "model": "meadery.product", 
+  "pk": 1,
+  "model": "meadery.product",
   "fields": {
-    "meta_description": "blackberry-chocolate", 
-    "bottled_sg": "1.126", 
-    "is_featured": false, 
-    "batchletter": "A", 
-    "abv": "0.00", 
-    "created_at": "2013-05-13T01:52:09.149Z", 
-    "is_active": true, 
-    "brewname": "SIP 1", 
-    "updated_at": "2013-05-13T01:59:03.113Z", 
-    "thumbnail": "", 
-    "meta_keywords": "blackberry, chocolate", 
-    "is_bestseller": false, 
-    "image": "", 
-    "brewed_sg": "1.126", 
-    "bottled_date": "2007-02-03", 
-    "slug": "sip-1-a", 
+    "meta_description": "blackberry-chocolate",
+    "bottled_sg": "1.126",
+    "is_featured": false,
+    "batchletter": "A",
+    "abv": "0.00",
+    "created_at": "2013-05-13T01:52:09.149Z",
+    "is_active": true,
+    "brewname": "SIP 1",
+    "updated_at": "2013-05-13T01:59:03.113Z",
+    "thumbnail": "",
+    "meta_keywords": "blackberry, chocolate",
+    "is_bestseller": false,
+    "image": "",
+    "brewed_sg": "1.126",
+    "bottled_date": "2007-02-03",
+    "slug": "sip-1-a",
     "brewed_date": "2007-02-03"
   }
 },
 {
-  "pk": 2, 
-  "model": "meadery.product", 
+  "pk": 2,
+  "model": "meadery.product",
   "fields": {
-    "meta_description": "blackberry-chocolate", 
-    "bottled_sg": "1.126", 
-    "is_featured": false, 
-    "batchletter": "B", 
-    "abv": "0.00", 
-    "created_at": "2013-05-13T02:00:13.517Z", 
-    "is_active": true, 
-    "brewname": "SIP 1", 
-    "updated_at": "2013-05-13T02:00:13.517Z", 
-    "thumbnail": "", 
-    "meta_keywords": "blackberry, chocolate", 
-    "is_bestseller": false, 
-    "image": "", 
-    "brewed_sg": "1.126", 
-    "bottled_date": "2007-02-03", 
-    "slug": "sip-1-b", 
+    "meta_description": "blackberry-chocolate",
+    "bottled_sg": "1.126",
+    "is_featured": false,
+    "batchletter": "B",
+    "abv": "0.00",
+    "created_at": "2013-05-13T02:00:13.517Z",
+    "is_active": true,
+    "brewname": "SIP 1",
+    "updated_at": "2013-05-13T02:00:13.517Z",
+    "thumbnail": "",
+    "meta_keywords": "blackberry, chocolate",
+    "is_bestseller": false,
+    "image": "",
+    "brewed_sg": "1.126",
+    "bottled_date": "2007-02-03",
+    "slug": "sip-1-b",
     "brewed_date": "2007-02-03"
   }
 },
 {
-  "pk": 30, 
-  "model": "meadery.product", 
+  "pk": 30,
+  "model": "meadery.product",
   "fields": {
-    "meta_description": "bogus", 
-    "bottled_sg": "0.998", 
-    "is_featured": false, 
-    "batchletter": "A", 
-    "abv": "0.00", 
-    "created_at": "2013-05-24T17:56:24.778Z", 
-    "is_active": true, 
-    "brewname": "SIP 98", 
-    "updated_at": "2013-05-24T17:58:22.499Z", 
-    "thumbnail": "", 
-    "meta_keywords": "bogus", 
-    "is_bestseller": false, 
-    "image": "", 
-    "brewed_sg": "1.126", 
-    "bottled_date": "2013-05-24", 
-    "slug": "sip-98-a", 
+    "meta_description": "bogus",
+    "bottled_sg": "0.998",
+    "is_featured": false,
+    "batchletter": "A",
+    "abv": "0.00",
+    "created_at": "2013-05-24T17:56:24.778Z",
+    "is_active": true,
+    "brewname": "SIP 98",
+    "updated_at": "2013-05-24T17:58:22.499Z",
+    "thumbnail": "",
+    "meta_keywords": "bogus",
+    "is_bestseller": false,
+    "image": "",
+    "brewed_sg": "1.126",
+    "bottled_date": "2013-05-24",
+    "slug": "sip-98-a",
     "brewed_date": "2013-05-04"
   }
 }

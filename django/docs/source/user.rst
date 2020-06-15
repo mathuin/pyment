@@ -40,9 +40,9 @@ included.
 Ingredients
 ~~~~~~~~~~~
 
-Ingredients are the raw components of the mead.  
+Ingredients are the raw components of the mead.
 
-There are four types of ingredients: 
+There are four types of ingredients:
 
 * sugars (example: wildflower honey)
 * solvents (example: spring water)
@@ -192,13 +192,13 @@ consolidation can be identified by running a Django management
 command.  Here is an example::
 
   (venv)# python manage.py crate_utilization --warehouse=2
-  Crate ID |         Bin         | Capacity | Jars 
+  Crate ID |         Bin         | Capacity | Jars
   ==================================================
-     21    | Row 1 Shelf 2 Bin 2 |    12    |  5   
-     39    | Row 1 Shelf 2 Bin 2 |    12    |  5   
-     44    | Row 2 Shelf 2 Bin 2 |    12    |  6   
-     32    | Row 1 Shelf 1 Bin 2 |    11    |  6   
-     33    | Row 1 Shelf 1 Bin 1 |    11    |  6   
+     21    | Row 1 Shelf 2 Bin 2 |    12    |  5
+     39    | Row 1 Shelf 2 Bin 2 |    12    |  5
+     44    | Row 2 Shelf 2 Bin 2 |    12    |  6
+     32    | Row 1 Shelf 1 Bin 2 |    11    |  6
+     33    | Row 1 Shelf 1 Bin 1 |    11    |  6
 
 A number of crates in this example can be consolidated.  To transfer
 all the jars from crate 21 to crate 32, use the following command::
@@ -233,7 +233,7 @@ the web.
 #. The consumer presses the "Checkout" button, possibly updates
    contact info, then presses the "Place Order" button.
 
-This causes an order to be generated, and emails to be sent to the 
+This causes an order to be generated, and emails to be sent to the
 consumer and the producer.
 
 Order fulfillment
@@ -254,4 +254,3 @@ Order fulfillment
 
 Individual orders and pick lists can also be modified and/or cancelled by
 the producer.
-

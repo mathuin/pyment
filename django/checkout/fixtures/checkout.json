@@ -8,7 +8,7 @@
       "phone": "202-555-1212",
       "user": 1,
       "date": "2012-10-27T17:15:50.295Z",
-      "ip_address": "169.254.12.34", 
+      "ip_address": "169.254.12.34",
       "email": "user@example.org"
     }
   },
@@ -21,7 +21,7 @@
       "phone": "202-555-1212",
       "user": null,
       "date": "2012-11-03T21:28:52.432Z",
-      "ip_address": "169.254.12.34", 
+      "ip_address": "169.254.12.34",
       "email": "foo@example.com"
     }
   },
@@ -34,7 +34,7 @@
       "phone": "202-555-1212",
       "user": null,
       "date": "2012-11-03T21:28:52.432Z",
-      "ip_address": "169.254.12.34", 
+      "ip_address": "169.254.12.34",
       "email": "foo@example.com"
     }
   },

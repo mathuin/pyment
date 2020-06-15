@@ -16,7 +16,7 @@ before_install:
 install:
     - ./dev-setup.sh
 script:
-    - docker-compose run --rm web python manage.py test
+    - docker-compose run --rm web python -X dev manage.py test
 deploy:
     provider: script
     script: bash docker_push

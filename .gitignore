@@ -10,3 +10,4 @@ ghostdriver.log
 # coverage
 .coverage
 htmlcov/
+.vscode

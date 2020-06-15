@@ -8,19 +8,20 @@ from stats.models import ProductView
 
 def tracking_id(request):
     try:
-        return request.session['tracking_id']
+        return request.session["tracking_id"]
     except KeyError:
-        request.session['tracking_id'] = base64.b64encode(os.urandom(36))
-        return request.session['tracking_id']
+        request.session["tracking_id"] = base64.b64encode(os.urandom(36))
+        return request.session["tracking_id"]
 
 
 def recommended_from_search(request):
     # get the common words from the stored searches
     common_words = frequent_search_words(request)
     from search import search
+
     matching = []
     for word in common_words:
-        results = search.products(word).get('products', [])
+        results = search.products(word).get("products", [])
         for r in results:
             if len(matching) < PRODUCTS_PER_ROW and r not in matching:
                 matching.append(r)
@@ -29,9 +30,9 @@ def recommended_from_search(request):
 
 def frequent_search_words(request):
     # get the ten most recent searches from the database.
-    searches = SearchTerm.objects.filter(tracking_id=tracking_id(request)).values('q').order_by('-search_date')[0:10]
+    searches = SearchTerm.objects.filter(tracking_id=tracking_id(request)).values("q").order_by("-search_date")[0:10]
     # join all of the searches together into a single string.
-    search_string = ' '.join([search['q'] for search in searches])
+    search_string = " ".join([search["q"] for search in searches])
     # return the top three most common words in the searches
     return sort_words_by_frequency(search_string)[0:3]
 
@@ -55,9 +56,9 @@ def log_product_view(request, product):
     except ProductView.DoesNotExist:
         v = ProductView()
         v.product = product
-        v.ip_address = request.META.get('REMOTE_ADDR')
-        if not request.META.get('REMOTE_ADDR'):
-            v.ip_address = '127.0.0.1'
+        v.ip_address = request.META.get("REMOTE_ADDR")
+        if not request.META.get("REMOTE_ADDR"):
+            v.ip_address = "127.0.0.1"
         v.tracking_id = t_id
         v.user = None
         if request.user.is_authenticated:
@@ -73,8 +74,8 @@ def recommended_from_views(request):
     # if there are previously viewed products, get other tracking ids that have
     # viewed those products also
     if viewed:
-        productviews = ProductView.objects.filter(product__in=viewed).values('tracking_id')
-        t_ids = [v['tracking_id'] for v in productviews]
+        productviews = ProductView.objects.filter(product__in=viewed).values("tracking_id")
+        t_ids = [v["tracking_id"] for v in productviews]
         # if there are other tracking ids, get other products.
         if t_ids:
             all_viewed = Product.instock.filter(is_active=True).filter(productview__tracking_id__in=t_ids)
@@ -88,6 +89,6 @@ def recommended_from_views(request):
 
 def get_recently_viewed(request):
     t_id = tracking_id(request)
-    views = ProductView.objects.filter(tracking_id=t_id).values('product_id').order_by('-date')[0:PRODUCTS_PER_ROW]
-    product_ids = [v['product_id'] for v in views]
+    views = ProductView.objects.filter(tracking_id=t_id).values("product_id").order_by("-date")[0:PRODUCTS_PER_ROW]
+    product_ids = [v["product_id"] for v in views]
     return Product.instock.filter(id__in=product_ids)

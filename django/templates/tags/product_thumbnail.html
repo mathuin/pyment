@@ -1,10 +1,10 @@
-{% load staticfiles %}
+{% load static %}
 
 <div class="product_thumbnail">
 	<a href="{{ p.get_absolute_url }}">
 		<img src="{% if p.thumbnail %}{{ p.thumbnail.url }}{% else %}{% static "meadery/thumbnails/ImageNotAvailable.png" %}{% endif %}" alt="{{ p.name }}" class="bn" />
 		<br />
-		{{ p.title }} 
+		{{ p.title }}
 		<br />
 		({{ p.name }})
 		<br />

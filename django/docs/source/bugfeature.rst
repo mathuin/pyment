@@ -10,4 +10,3 @@ For bug reports, please include as a minimum the following:
  * what you expected to happen
 
 .. _`issue tracker`: https://github.com/mathuin/pyment/issues
-

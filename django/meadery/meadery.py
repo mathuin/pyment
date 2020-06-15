@@ -15,7 +15,7 @@ def create_batch_from_recipe(recipe, brewname, batchletter, event):
     batch.batch_recipe = recipe
     # First copy fields from recipe to batch.
     for field in Recipe._meta.fields:
-        if field.name != 'id' and field.name != 'pk':
+        if field.name != "id" and field.name != "pk":
             setattr(batch, field.name, getattr(recipe, field.name))
     batch.save()
     for item in IngredientItem.objects.filter(parent=recipe):
@@ -30,9 +30,9 @@ def create_recipe_from_batch(batch):
     recipe = Recipe()
     # First copy fields from recipe to batch.
     for field in Recipe._meta.fields:
-        if field.name != 'id' and field.name != 'pk':
+        if field.name != "id" and field.name != "pk":
             setattr(recipe, field.name, getattr(batch, field.name))
-    recipe.title = '%s Recipe' % batch.name
+    recipe.title = "%s Recipe" % batch.name
     recipe.save()
     # Now copy separate items.
     for item in IngredientItem.objects.filter(parent=batch):
@@ -54,14 +54,14 @@ def create_product_from_batch(batch):
         product.title = batch.title
         product.is_active = False
         product.description = batch.description
-        firstsample = batch.sample_set.order_by('date')[0]
-        lastsample = batch.sample_set.order_by('-date')[0]
+        firstsample = batch.sample_set.order_by("date")[0]
+        lastsample = batch.sample_set.order_by("-date")[0]
         product.brewed_date = firstsample.date
         product.brewed_sg = firstsample.corrsg
         product.bottled_date = lastsample.date
         product.bottled_sg = lastsample.corrsg
-        product.meta_keywords = 'bogus'
-        product.meta_description = 'bogus'
+        product.meta_keywords = "bogus"
+        product.meta_description = "bogus"
         product.category = batch.category
         product.abv = batch.abv
         product.save()

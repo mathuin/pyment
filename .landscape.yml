@@ -1,5 +1,5 @@
 strictness: medium
-python-targets: 
+python-targets:
  - 3
 requirements:
  - django/requirements.txt

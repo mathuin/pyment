@@ -21,10 +21,7 @@ class Order(BaseOrderInfo):
     DELIVERED = 3
     CANCELLED = 4
     # set of possible order statuses
-    ORDER_STATUSES = ((SUBMITTED, 'Submitted'),
-                      (PROCESSED, 'Processed'),
-                      (DELIVERED, 'Delivered'),
-                      (CANCELLED, 'Cancelled'))
+    ORDER_STATUSES = ((SUBMITTED, "Submitted"), (PROCESSED, "Processed"), (DELIVERED, "Delivered"), (CANCELLED, "Cancelled"))
     # order info
     date = models.DateTimeField(auto_now_add=True)
     status = models.IntegerField(choices=ORDER_STATUSES, default=SUBMITTED)
@@ -34,13 +31,13 @@ class Order(BaseOrderInfo):
 
     @property
     def name(self):
-        return 'Order #' + str(self.id)
+        return "Order #" + str(self.id)
 
     def __str__(self):
-        return '%s' % (self.name,)
+        return "%s" % (self.name,)
 
     def get_absolute_url(self):
-        return reverse('accounts:order_details', kwargs={'order_id': self.id})
+        return reverse("accounts:order_details", kwargs={"order_id": self.id})
 
     def printstatus(self):
         # FIXME: ugly
@@ -61,7 +58,7 @@ class OrderItem(models.Model):
         return self.product.title
 
     def __str__(self):
-        return self.product.title + ' (' + self.product.name + ')'
+        return self.product.title + " (" + self.product.name + ")"
 
     def get_absolute_url(self):
         return self.product.get_absolute_url()
@@ -69,14 +66,13 @@ class OrderItem(models.Model):
 
 class PickList(models.Model):
     """A picklist consists of the items to be picked to fulfill a single order."""
+
     # each individual status
     SUBMITTED = 1
     PROCESSED = 2
     CANCELLED = 4
     # set of possible order statuses
-    PICKLIST_STATUSES = ((SUBMITTED, 'Submitted'),
-                         (PROCESSED, 'Processed'),
-                         (CANCELLED, 'Cancelled'))
+    PICKLIST_STATUSES = ((SUBMITTED, "Submitted"), (PROCESSED, "Processed"), (CANCELLED, "Cancelled"))
 
     order = models.ForeignKey(Order, on_delete=models.CASCADE)
     status = models.IntegerField(choices=PICKLIST_STATUSES, default=SUBMITTED)
@@ -85,25 +81,28 @@ class PickList(models.Model):
 
     @property
     def name(self):
-        return 'Pick List #' + str(self.id)
+        return "Pick List #" + str(self.id)
 
     def __str__(self):
-        return '%s' % (self.name,)
+        return "%s" % (self.name,)
 
     def get_absolute_url(self):
-        return reverse('picklist_details', kwargs={'picklist_id': self.id})
+        return reverse("picklist_details", kwargs={"picklist_id": self.id})
 
 
 class PickListItem(models.Model):
     """A picklist item consists of the jar that is being picked.  The jar contains its name and location."""
+
     picklist = models.ForeignKey(PickList, on_delete=models.CASCADE)
     jar = models.ForeignKey(Jar, on_delete=models.CASCADE)
 
     class Meta:
-        ordering = ['jar__crate__bin__shelf__row__warehouse__number',
-                    'jar__crate__bin__shelf__row__number',
-                    'jar__crate__bin__shelf__number',
-                    'jar__crate__bin__number', ]
+        ordering = [
+            "jar__crate__bin__shelf__row__warehouse__number",
+            "jar__crate__bin__shelf__row__number",
+            "jar__crate__bin__shelf__number",
+            "jar__crate__bin__number",
+        ]
 
     @property
     def name(self):

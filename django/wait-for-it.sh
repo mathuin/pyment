@@ -66,7 +66,7 @@ wait_for_wrapper()
 while [[ $# -gt 0 ]]
 do
     case "$1" in
-        *:* ) 
+        *:* )
         hostport=(${1//:/ })
         HOST=${hostport[0]}
         PORT=${hostport[1]}
@@ -84,12 +84,12 @@ do
         STRICT=1
         shift 1
         ;;
-        -h) 
+        -h)
         HOST="$2"
         if [[ $HOST == "" ]]; then break; fi
         shift 2
         ;;
-        --host=*) 
+        --host=*)
         HOST="${1#*=}"
         shift 1
         ;;

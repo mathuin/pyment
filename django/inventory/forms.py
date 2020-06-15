@@ -6,7 +6,7 @@ from inventory.models import Warehouse, Row, Shelf, Bin, Crate, Jar
 class WarehouseAdminForm(forms.ModelForm):
     class Meta:
         model = Warehouse
-        exclude = ['slug']
+        exclude = ["slug"]
 
 
 class RowAdminForm(forms.ModelForm):
@@ -14,7 +14,7 @@ class RowAdminForm(forms.ModelForm):
 
     class Meta:
         model = Row
-        exclude = ['slug']
+        exclude = ["slug"]
 
 
 class ShelfAdminForm(forms.ModelForm):
@@ -22,7 +22,7 @@ class ShelfAdminForm(forms.ModelForm):
 
     class Meta:
         model = Shelf
-        exclude = ['slug']
+        exclude = ["slug"]
 
 
 class BinAdminForm(forms.ModelForm):
@@ -30,7 +30,7 @@ class BinAdminForm(forms.ModelForm):
 
     class Meta:
         model = Bin
-        exclude = ['slug']
+        exclude = ["slug"]
 
 
 class CrateAdminForm(forms.ModelForm):
@@ -38,7 +38,7 @@ class CrateAdminForm(forms.ModelForm):
 
     class Meta:
         model = Crate
-        exclude = ['slug']
+        exclude = ["slug"]
 
 
 class JarAdminForm(forms.ModelForm):
@@ -46,4 +46,4 @@ class JarAdminForm(forms.ModelForm):
 
     class Meta:
         model = Jar
-        exclude = ['slug']
+        exclude = ["slug"]

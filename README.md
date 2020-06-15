@@ -71,7 +71,7 @@ The SSL setup is a little hairy.  To recreate it:
 
 ## Testing the software
 
-After running the aforementioned script, try this: `docker-compose run --rm web python manage.py test`.
+After running the aforementioned script, try this: `docker-compose run --rm web python -X dev manage.py test`.
 
 ## Running a local instance for testing purposes
 
