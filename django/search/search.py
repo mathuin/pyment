@@ -3,7 +3,7 @@ from meadery.models import Product
 from django.db.models import Q
 from stats import stats
 
-STRIP_WORDS = ['a', 'an', 'and', 'by', 'for', 'from', 'in', 'no', 'not', 'of', 'on', 'or', 'that', 'the', 'to', 'with']
+STRIP_WORDS = ["a", "an", "and", "by", "for", "from", "in", "no", "not", "of", "on", "or", "that", "the", "to", "with"]
 
 
 # store the search text in the database
@@ -12,7 +12,7 @@ def store(request, q):
     if len(q) > 2:
         term = SearchTerm()
         term.q = q
-        term.ip_address = request.META.get('REMOTE_ADDR')
+        term.ip_address = request.META.get("REMOTE_ADDR")
         term.tracking_id = stats.tracking_id(request)
         term.user = None
         if request.user.is_authenticated:
@@ -25,14 +25,13 @@ def products(search_text):
     words = _prepare_words(search_text)
     products = Product.active.all()
     results = {}
-    results['products'] = []
+    results["products"] = []
     # iterate through keywords
     for word in words:
-        products = products.filter(Q(title__icontains=word) |
-                                   Q(description__icontains=word) |
-                                   Q(meta_description__icontains=word) |
-                                   Q(meta_keywords__icontains=word))
-        results['products'] = products
+        products = products.filter(
+            Q(title__icontains=word) | Q(description__icontains=word) | Q(meta_description__icontains=word) | Q(meta_keywords__icontains=word)
+        )
+        results["products"] = products
     return results
 
 

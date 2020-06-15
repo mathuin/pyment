@@ -33,7 +33,7 @@ from checkout.checkout import all_in_stock, create_picklist, process_picklist, c
 
 
 class OrderTestCase(TestCase):
-    fixtures = ['accounts', 'meadery', 'inventory', 'checkout']
+    fixtures = ["accounts", "meadery", "inventory", "checkout"]
 
     def setUp(self):
         self.order = Order.objects.all()[0]
@@ -48,7 +48,7 @@ class OrderTestCase(TestCase):
         # FIXME: check that it redirects the right place
 
     def test_str(self):
-        self.assertEqual(self.order.__str__(), 'Order #' + str(self.order.id))
+        self.assertEqual(self.order.__str__(), "Order #" + str(self.order.id))
 
     # FIXME: test show_checkout somehow?
 
@@ -71,7 +71,7 @@ class OrderTestCase(TestCase):
 
     def test_create_picklist(self):
         # confirm both jars are marked active and available
-        sip1a = Product.active.get(slug='sip-1-a')
+        sip1a = Product.active.get(slug="sip-1-a")
         self.assertEqual(sip1a.jar_set.filter(is_active=True).count(), 14)
         self.assertEqual(sip1a.jar_set.filter(is_available=True).count(), 14)
         # generate valid picklist from order #1
@@ -92,7 +92,7 @@ class OrderTestCase(TestCase):
     # FIXME: check process_picklist
     def test_process_picklist(self):
         # confirm both jars are marked available and active
-        sip1a = Product.active.get(slug='sip-1-a')
+        sip1a = Product.active.get(slug="sip-1-a")
         self.assertEqual(sip1a.jar_set.filter(is_active=True).count(), 14)
         self.assertEqual(sip1a.jar_set.filter(is_available=True).count(), 14)
         # generate valid picklist from order #1
@@ -113,7 +113,7 @@ class OrderTestCase(TestCase):
     # FIXME: check cancel_picklist
     def test_cancel_picklist(self):
         # confirm both jars are marked available and active
-        sip1a = Product.active.get(slug='sip-1-a')
+        sip1a = Product.active.get(slug="sip-1-a")
         self.assertEqual(sip1a.jar_set.filter(is_active=True).count(), 14)
         self.assertEqual(sip1a.jar_set.filter(is_available=True).count(), 14)
         # generate valid picklist from order #1

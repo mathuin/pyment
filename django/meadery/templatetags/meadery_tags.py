@@ -10,7 +10,7 @@ register = template.Library()
 @register.inclusion_tag("tags/cart_box.html")
 def cart_box(request):
     cart_item_count = cart.cart_distinct_item_count(request)
-    return {'cart_item_count': cart_item_count}
+    return {"cart_item_count": cart_item_count}
 
 
 @register.inclusion_tag("tags/category_list.html")
@@ -20,27 +20,21 @@ def category_list(request_path):
     # they have products,
     # and those products have jars
     # there has to be a more django-ish way to do this
-    active_categories = [(name, reverse('meadery:category', kwargs={'category_value': value})) for (value, name) in Product.MEAD_VIEWS if Product.instock.filter(category=value).exists() or value == Product.ALL]
+    active_categories = [
+        (name, reverse("meadery:category", kwargs={"category_value": value}))
+        for (value, name) in Product.MEAD_VIEWS
+        if Product.instock.filter(category=value).exists() or value == Product.ALL
+    ]
     if len(active_categories) == 1:
         active_categories = []
-    return {
-        'active_categories': active_categories,
-        'request_path': request_path
-    }
+    return {"active_categories": active_categories, "request_path": request_path}
 
 
 @register.inclusion_tag("tags/footer.html")
 def footer():
-    return {
-        'name': BREWER_NAME,
-        'email': BREWER_EMAIL,
-        'location': BREWER_LOCATION,
-    }
+    return {"name": BREWER_NAME, "email": BREWER_EMAIL, "location": BREWER_LOCATION}
 
 
 @register.inclusion_tag("tags/product_list.html")
 def product_list(products, header_text):
-    return {
-        'products': products,
-        'header_text': header_text
-    }
+    return {"products": products, "header_text": header_text}

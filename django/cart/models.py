@@ -9,7 +9,7 @@ class CartItem(models.Model):
     product = models.ForeignKey(Product, unique=False, on_delete=models.CASCADE)
 
     class Meta:
-        ordering = ['date_added']
+        ordering = ["date_added"]
 
     def name(self):
         return self.product.name

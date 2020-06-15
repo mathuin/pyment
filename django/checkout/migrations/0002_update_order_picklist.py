@@ -5,19 +5,15 @@ from django.db import migrations, models
 
 class Migration(migrations.Migration):
 
-    dependencies = [
-        ('checkout', '0001_initial'),
-    ]
+    dependencies = [("checkout", "0001_initial")]
 
     operations = [
         migrations.AlterField(
-            model_name='order',
-            name='status',
-            field=models.IntegerField(choices=[(1, 'Submitted'), (2, 'Processed'), (3, 'Delivered'), (4, 'Cancelled')], default=1),
+            model_name="order",
+            name="status",
+            field=models.IntegerField(choices=[(1, "Submitted"), (2, "Processed"), (3, "Delivered"), (4, "Cancelled")], default=1),
         ),
         migrations.AlterField(
-            model_name='picklist',
-            name='status',
-            field=models.IntegerField(choices=[(1, 'Submitted'), (2, 'Processed'), (4, 'Cancelled')], default=1),
+            model_name="picklist", name="status", field=models.IntegerField(choices=[(1, "Submitted"), (2, "Processed"), (4, "Cancelled")], default=1)
         ),
     ]

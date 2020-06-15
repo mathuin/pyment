@@ -6,20 +6,20 @@ from django.conf import settings
 from django.db.models import Max
 from datetime import datetime, timedelta
 
-CART_ID_SESSION_KEY = 'cart_id'
+CART_ID_SESSION_KEY = "cart_id"
 
 
 # get the current user's cart id, sets new one if blank
 def _cart_id(request):
-    if request.session.get(CART_ID_SESSION_KEY, '') == '':
+    if request.session.get(CART_ID_SESSION_KEY, "") == "":
         request.session[CART_ID_SESSION_KEY] = _generate_cart_id()
     return request.session[CART_ID_SESSION_KEY]
 
 
 def _generate_cart_id():
-    characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890!@#$%^&*()'
+    characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890!@#$%^&*()"
     cart_id_length = 50
-    return ''.join(characters[random.randint(0, len(characters) - 1)] for _ in range(cart_id_length))
+    return "".join(characters[random.randint(0, len(characters) - 1)] for _ in range(cart_id_length))
 
 
 # return all items from the current user's cart
@@ -31,9 +31,9 @@ def get_cart_items(request):
 def add_to_cart(request):
     postdata = request.POST.copy()
     # get product slug from post data, return blank if empty
-    product_slug = postdata.get('product_slug', '')
+    product_slug = postdata.get("product_slug", "")
     # get quantity added, return 1 if empty
-    quantity = postdata.get('quantity', 1)
+    quantity = postdata.get("quantity", 1)
     # fetch the product or return a missing page error
     p = get_object_or_404(Product, slug=product_slug)
     # get products in cart
@@ -66,8 +66,8 @@ def get_single_item(request, item_id):
 # update quantity for single item
 def update_cart(request):
     postdata = request.POST.copy()
-    item_id = postdata['item_id']
-    quantity = postdata['quantity']
+    item_id = postdata["item_id"]
+    quantity = postdata["quantity"]
     cart_item = get_single_item(request, item_id)
     if cart_item:
         if int(quantity) > 0:
@@ -80,7 +80,7 @@ def update_cart(request):
 # remove a single item from cart
 def remove_from_cart(request):
     postdata = request.POST.copy()
-    item_id = postdata['item_id']
+    item_id = postdata["item_id"]
     cart_item = get_single_item(request, item_id)
     if cart_item:
         cart_item.delete()
@@ -100,10 +100,10 @@ def remove_old_cart_items():
     # calculate date of SESSION_AGE_DAYS days ago
     remove_before = datetime.now() + timedelta(days=-settings.SESSION_AGE_DAYS)
     cart_ids = []
-    old_items = CartItem.objects.values('cart_id').annotate(last_change=Max('date_added')).filter(last_change__lt=remove_before).order_by()
+    old_items = CartItem.objects.values("cart_id").annotate(last_change=Max("date_added")).filter(last_change__lt=remove_before).order_by()
     # create a list of cart IDs that haven't been modified
     for item in old_items:
-        cart_ids.append(item['cart_id'])
+        cart_ids.append(item["cart_id"])
     to_remove = CartItem.objects.filter(cart_id__in=cart_ids)
     # delete those CartItem instances
     to_remove.delete()
@@ -112,5 +112,5 @@ def remove_old_cart_items():
 
 def get_return_url(request):
     postdata = request.POST.copy()
-    returnUrl = postdata['return']
+    returnUrl = postdata["return"]
     return returnUrl

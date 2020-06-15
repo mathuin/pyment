@@ -6,20 +6,16 @@ from datetime import timedelta
 
 
 class Command(BaseCommand):
-    help = 'Delete inactive jars more than %d days old' % settings.INACTIVE_JAR_AGE_DAYS
+    help = "Delete inactive jars more than %d days old" % settings.INACTIVE_JAR_AGE_DAYS
 
     def add_arguments(self, parser):
-        parser.add_argument('--dry-run',
-                            action='store_true',
-                            dest='dryrun',
-                            default=False,
-                            help='Simulate the command')
+        parser.add_argument("--dry-run", action="store_true", dest="dryrun", default=False, help="Simulate the command")
 
     def handle(self, **options):
-        self.stdout.write('Removing inactive jars\n')
+        self.stdout.write("Removing inactive jars\n")
         # calculate date of INACTIVE_JAR_AGE_DAYS days ago
         remove_before = timezone.now() + timedelta(days=-settings.INACTIVE_JAR_AGE_DAYS)
         old_jars = Jar.objects.filter(is_active=False, updated_at__lt=remove_before)
-        if not options['dryrun']:
+        if not options["dryrun"]:
             old_jars.delete()
-        self.stdout.write('%d jars were removed\n' % len(old_jars))
+        self.stdout.write("%d jars were removed\n" % len(old_jars))

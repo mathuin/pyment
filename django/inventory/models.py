@@ -6,15 +6,14 @@ from django.core.exceptions import ValidationError
 
 class Warehouse(models.Model):
     number = models.IntegerField()
-    slug = models.SlugField(max_length=50, unique=True,
-                            help_text='Unique value for warehouse page URL, created from name.')
+    slug = models.SlugField(max_length=50, unique=True, help_text="Unique value for warehouse page URL, created from name.")
     location = models.TextField()
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
-        ordering = ['number']
+        ordering = ["number"]
 
     @property
     def rows(self):
@@ -36,25 +35,24 @@ class Warehouse(models.Model):
         return self.name
 
     def save(self, *args, **kwargs):
-        self.slug = 'w%d' % self.number
+        self.slug = "w%d" % self.number
         super(Warehouse, self).save(*args, **kwargs)
 
     def get_absolute_url(self):
-        return reverse('inventory_warehouse', kwargs={'warehouse_slug': self.slug})
+        return reverse("inventory_warehouse", kwargs={"warehouse_slug": self.slug})
 
 
 class Row(models.Model):
     warehouse = models.ForeignKey(Warehouse, on_delete=models.CASCADE)
     number = models.IntegerField()
-    slug = models.SlugField(max_length=55, blank=True,
-                            help_text='Unique value for this row page URL.')
+    slug = models.SlugField(max_length=55, blank=True, help_text="Unique value for this row page URL.")
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
-        ordering = ['warehouse', 'number']
-        unique_together = ('warehouse', 'number')
+        ordering = ["warehouse", "number"]
+        unique_together = ("warehouse", "number")
 
     @property
     def shelves(self):
@@ -76,26 +74,25 @@ class Row(models.Model):
         return self.name
 
     def save(self, *args, **kwargs):
-        self.slug = '-'.join([self.warehouse.slug, 'r%d' % self.number])
+        self.slug = "-".join([self.warehouse.slug, "r%d" % self.number])
         super(Row, self).save(*args, **kwargs)
 
     def get_absolute_url(self):
-        return reverse('inventory_row', kwargs={'row_slug': self.slug})
+        return reverse("inventory_row", kwargs={"row_slug": self.slug})
 
 
 class Shelf(models.Model):
     row = models.ForeignKey(Row, on_delete=models.CASCADE)
     number = models.IntegerField()
-    slug = models.SlugField(max_length=60, blank=True,
-                            help_text='Unique value for this shelf page URL.')
+    slug = models.SlugField(max_length=60, blank=True, help_text="Unique value for this shelf page URL.")
 
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
-        ordering = ['row', 'number']
-        unique_together = ('row', 'number')
-        verbose_name_plural = 'Shelves'
+        ordering = ["row", "number"]
+        unique_together = ("row", "number")
+        verbose_name_plural = "Shelves"
 
     @property
     def warehouse(self):
@@ -121,19 +118,18 @@ class Shelf(models.Model):
         return self.name
 
     def save(self, *args, **kwargs):
-        self.slug = '-'.join([self.row.slug, 's%d' % self.number])
+        self.slug = "-".join([self.row.slug, "s%d" % self.number])
         super(Shelf, self).save(*args, **kwargs)
 
     def get_absolute_url(self):
-        return reverse('inventory_shelf', kwargs={'shelf_slug': self.slug})
+        return reverse("inventory_shelf", kwargs={"shelf_slug": self.slug})
 
 
 class Bin(models.Model):
     shelf = models.ForeignKey(Shelf, on_delete=models.CASCADE)
     # must be unique within the shelf
     number = models.IntegerField()
-    slug = models.SlugField(max_length=65, blank=True,
-                            help_text='Unique value for this bin page URL.')
+    slug = models.SlugField(max_length=65, blank=True, help_text="Unique value for this bin page URL.")
     # how many crates can fit in this bin
     capacity = models.IntegerField(default=1)
 
@@ -141,8 +137,8 @@ class Bin(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
-        ordering = ['shelf', 'number']
-        unique_together = ('shelf', 'number')
+        ordering = ["shelf", "number"]
+        unique_together = ("shelf", "number")
 
     @property
     def warehouse(self):
@@ -172,16 +168,16 @@ class Bin(models.Model):
         return self.name
 
     def save(self, *args, **kwargs):
-        self.slug = '-'.join([self.shelf.slug, 'b%d' % self.number])
+        self.slug = "-".join([self.shelf.slug, "b%d" % self.number])
         super(Bin, self).save(*args, **kwargs)
 
     def get_absolute_url(self):
-        return reverse('inventory_bin', kwargs={'bin_slug': self.slug})
+        return reverse("inventory_bin", kwargs={"bin_slug": self.slug})
 
     def clean(self):
         # ensure that the current number of crates is less than or equal to the capacity
         if self.crates > self.capacity:
-            raise ValidationError('Capacity of bin exceeded')
+            raise ValidationError("Capacity of bin exceeded")
 
 
 class Crate(models.Model):
@@ -195,7 +191,7 @@ class Crate(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
-        ordering = ['number']
+        ordering = ["number"]
 
     @property
     def jars(self):
@@ -217,16 +213,16 @@ class Crate(models.Model):
         return self.name
 
     def save(self, *args, **kwargs):
-        self.slug = 'c%d' % self.number
+        self.slug = "c%d" % self.number
         super(Crate, self).save(*args, **kwargs)
 
     def get_absolute_url(self):
-        return reverse('inventory_crate', kwargs={'crate_slug': self.slug})
+        return reverse("inventory_crate", kwargs={"crate_slug": self.slug})
 
     def clean(self):
         # ensure that the current number of jars is less than or equal to the capacity
         if self.jars > self.capacity:
-            raise ValidationError('Capacity of crate exceeded')
+            raise ValidationError("Capacity of crate exceeded")
 
 
 class InStockJarManager(models.Manager):
@@ -252,8 +248,8 @@ class Jar(models.Model):
     instock = InStockJarManager()
 
     class Meta:
-        ordering = ['created_at']
-        unique_together = ('product', 'number')
+        ordering = ["created_at"]
+        unique_together = ("product", "number")
 
     @property
     def name(self):
@@ -263,8 +259,8 @@ class Jar(models.Model):
         return self.name
 
     def save(self, *args, **kwargs):
-        self.slug = ''.join([self.product.slug, str(self.number)])
+        self.slug = "".join([self.product.slug, str(self.number)])
         super(Jar, self).save(*args, **kwargs)
 
     def get_absolute_url(self):
-        return reverse('inventory_jar', kwargs={'jar_slug': self.slug})
+        return reverse("inventory_jar", kwargs={"jar_slug": self.slug})

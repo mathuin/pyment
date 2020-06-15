@@ -6,7 +6,7 @@ services:
             - dbdata:/var/lib/postgresql/data
     web:
         image: registry.twilley.org/mathuin/pyment
-        entrypoint: ./wait-for-it.sh -q db:5432 -- 
+        entrypoint: ./wait-for-it.sh -q db:5432 --
         command: gunicorn -b ":8000" pyment.wsgi
         depends_on:
             - db
