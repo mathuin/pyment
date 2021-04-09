@@ -1,7 +1,15 @@
-FROM python:3-slim
+FROM python:3-alpine
 ENV PYTHONUNBUFFERED 1
-RUN mkdir /code
+RUN pip install --upgrade pip
+RUN apk add --no-cache bash
 WORKDIR /code
-COPY requirements.txt /code/
-RUN pip install -r requirements.txt
+COPY requirements.txt /code
+RUN apk add --no-cache --virtual .build-deps \
+gcc \
+jpeg-dev \
+musl-dev \
+postgresql-dev \
+python3-dev \
+zlib-dev \
+&& pip install --no-cache-dir -r requirements.txt
 COPY . /code/
