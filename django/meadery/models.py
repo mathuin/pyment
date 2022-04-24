@@ -336,7 +336,7 @@ class Batch(SIPParent):
 
 
 class Sample(models.Model):
-    """ Samples are small collections of data. """
+    """Samples are small collections of data."""
 
     batch = models.ForeignKey(Batch, on_delete=models.CASCADE)
     date = models.DateField()

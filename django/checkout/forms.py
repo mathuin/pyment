@@ -4,7 +4,7 @@ import re
 
 
 def strip_non_numbers(data):
-    """ gets rid of all non-number characters """
+    """gets rid of all non-number characters"""
     non_numbers = re.compile(r"\D")
     return non_numbers.sub("", data)
 
