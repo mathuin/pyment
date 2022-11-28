@@ -7,6 +7,7 @@ COPY requirements.txt /code
 RUN apk add --no-cache --virtual .build-deps \
 gcc \
 jpeg-dev \
+freetype-dev \
 musl-dev \
 postgresql-dev \
 python3-dev \
