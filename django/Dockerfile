@@ -1,4 +1,4 @@
-FROM python:3-alpine
+FROM python:3.9-alpine
 ENV PYTHONUNBUFFERED 1
 RUN pip install --upgrade pip
 RUN apk add --no-cache bash
