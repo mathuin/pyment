@@ -221,6 +221,8 @@ class Crate(models.Model):
 
     def clean(self):
         # ensure that the current number of jars is less than or equal to the capacity
+        if not self.id:
+            raise TypeError
         if self.jars > self.capacity:
             raise ValidationError("Capacity of crate exceeded")
 

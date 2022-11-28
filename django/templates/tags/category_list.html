@@ -3,11 +3,11 @@
 	{% with active_categories as cats %}
 	{% for name, link in cats %}
 	<li>
-		{% ifequal link request_path %}
+		{% if link == request_path %}
 		{{ name }}<br />
 		{% else %}
 		<a href="{{ link }}" class="category">{{ name }}</a><br />
-		{% endifequal %}
+		{% endif %}
 	</li>
 	{% endfor %}
 	{% endwith %}
