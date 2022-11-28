@@ -6,7 +6,7 @@ from meadery.models import Product
 from pyment import settings
 from datetime import datetime, timedelta
 from django.utils.timezone import utc
-from django.utils.six import StringIO
+from io import StringIO
 
 
 # admin.py
@@ -81,7 +81,8 @@ class BinTestCase(TestCase):
         newer_crate = Crate(number=38, bin=self.bin)
         # not saving this third crate should cause clean to throw a TypeError
         # NB: calling .save() bypasses .clean()
-        self.assertRaises(TypeError, newer_crate.clean())
+        with self.assertRaises(TypeError):
+            newer_crate.clean()
 
 
 class CrateTestCase(TestCase):
