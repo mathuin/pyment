@@ -11,7 +11,7 @@ PUBLIC_ROOT = Path(config("PUBLIC_ROOT", default=""))
 
 DEBUG = config("DEBUG", default=False, cast=bool)
 
-DATABASES = {'default': dj_database_url.config(ssl_require=True)}
+DATABASES = {"default": dj_database_url.config(ssl_require=True)}
 
 SITE_NAME = config("SITE_NAME", default="Site Name")
 META_KEYWORDS = config("META_KEYWORDS", default="meta")
@@ -182,4 +182,4 @@ DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 TEST_RUNNER = "django.test.runner.DiscoverRunner"
 
 # New default auto field setting
-DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
+DEFAULT_AUTO_FIELD = "django.db.models.AutoField"
