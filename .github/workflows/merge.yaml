@@ -1,14 +1,9 @@
-name: Build and publish to registry
-
 on:
   push:
     branches:
     - 'main'
     tags:
     - 'v*'
-  pull_request:
-    branches:
-    - 'main'
 
 env:
   REGISTRY: "registry.digitalocean.com/bunnymonkey"
@@ -18,18 +13,14 @@ env:
   DEPLOYMENT: "pyment"
 
 jobs:
-  build-container:
+  publish-to-registry:
+    if: github.event_name != 'pull_request'
     runs-on: ubuntu-latest
     steps:
     - name: Checkout main
       uses: actions/checkout@v3
     - name: Build image
       run: docker build -t $REGISTRY/$IMAGE_NAME ./django
-  publish-to-registry:
-    needs: build-container
-    if: github.event_name != 'pull_request'
-    runs-on: ubuntu-latest
-    steps:
     - name: Install doctl
       uses: digitalocean/action-doctl@v2
       with:
