@@ -39,7 +39,7 @@ jobs:
     - name: Push image to registry
       run: docker push $REGISTRY/$IMAGE_NAME
   deploy-to-kubernetes:
-    needs: build-container
+    needs: publish-to-registry
     if: github.event_name != 'pull_request'
     runs-on: ubuntu-latest
     steps:
