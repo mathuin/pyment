@@ -11,3 +11,5 @@ ghostdriver.log
 .coverage
 htmlcov/
 .vscode
+# direnv
+.direnv/
