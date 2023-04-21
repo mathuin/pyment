@@ -1,0 +1,55 @@
+name: Build and publish to registry
+
+on:
+  push:
+    branches:
+    - 'main'
+    tags:
+    - 'v*'
+  pull_request:
+    branches:
+    - 'main'
+
+env:
+  REGISTRY: "registry.digitalocean.com/bunnymonkey"
+  IMAGE_NAME: "mathuin/pyment"
+  CLUSTER: "bunnymonkey-prod"
+  NAMESPACE: "django-pyment"
+  DEPLOYMENT: "pyment"
+
+jobs:
+  build-container:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout main
+      uses: actions/checkout@v3
+    - name: Build image
+      run: docker build -t $REGISTRY/$IMAGE_NAME ./django
+  publish-to-registry:
+    needs: build-container
+    if: github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+    - name: Install doctl
+      uses: digitalocean/action-doctl@v2
+      with:
+        token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
+    - name: Log in to container registry
+      run: doctl registry login --expiry-seconds 600
+    - name: Push image to registry
+      run: docker push $REGISTRY/$IMAGE_NAME
+  deploy-to-kubernetes:
+    needs: build-container
+    if: github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+    - name: Install doctl
+      uses: digitalocean/action-doctl@v2
+      with:
+        token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
+    - name: Save credentials
+      run: doctl kubernetes cluster kubeconfig save --expiry-seconds 600 $CLUSTER
+    - name: Scale down deployment
+      run: kubectl -n $NAMESPACE scale --replicas=0 deployment $DEPLOYMENT
+    - name: Scale deployment back up
+      run: kubectl -n $NAMESPACE scale --replicas=1 deployment $DEPLOYMENT
