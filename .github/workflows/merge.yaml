@@ -40,7 +40,7 @@ jobs:
         token: ${{ secrets.DIGITALOCEAN_ACCESS_TOKEN }}
     - name: Save credentials
       run: doctl kubernetes cluster kubeconfig save --expiry-seconds 600 $CLUSTER
-    - name: Scale down deployment
-      run: kubectl -n $NAMESPACE scale --replicas=0 deployment $DEPLOYMENT
-    - name: Scale deployment back up
-      run: kubectl -n $NAMESPACE scale --replicas=1 deployment $DEPLOYMENT
+    - name: Restart deployment
+      run: kubectl -n $NAMESPACE rollout restart deployment/$DEPLOYMENT
+    - name: Wait for deployment to finish restarting
+      run: kubectl -n $NAMESPACE rollout status deployment/$DEPLOYMENT
